@@ -12,3 +12,11 @@ await mkdir(new URL('../samples/808/', import.meta.url), { recursive: true });
 for (const [voice, params] of Object.entries(KIT_808)) {
   await writeFile(new URL(`../samples/808/${voice}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice, params))));
 }
+
+const { KIT_ORIGINAL_REFINED, KIT_808_REFINED } = await import('../src/kits.js');
+for (const [pack, presets] of Object.entries({'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED})) {
+  await mkdir(new URL(`../samples/${pack}/`, import.meta.url), {recursive:true});
+  for (const [voice, params] of Object.entries(presets)) {
+    await writeFile(new URL(`../samples/${pack}/${voice}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice, params))));
+  }
+}

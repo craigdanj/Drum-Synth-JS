@@ -158,7 +158,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **808-inspired · Vol. 01** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Select **Original · Drum Forge** to compare the same sequence; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **808-inspired · Refined** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose a pack and use **A · Previous / B · Refined** to compare the same sequence; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -195,3 +195,13 @@ drums.trigger('snare', { params: {
 Original and 808-inspired defaults preserve their previous rendered PCM. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
 
 The demo exposes the independent controls in place of Noise mix, shared Decay, and Transient amount. Reset restores the active pack's voice. Exported JSON includes all seven new values.
+
+## Previous / Refined comparison
+
+Both Drum Forge and 808-inspired kits now have Previous and Refined versions. The previous presets and WAV samples are unchanged. Refined versions change only the seven layer controls; tuning, brightness, drive, body attack, and output gain are retained.
+
+Select a drum pad, then press **A · Previous** or **B · Refined** to audition it. If the groove is playing, either button restarts the same pattern at step 1 using the chosen version. Tempo, pattern, and master gain stay fixed. Edits are retained separately; **Reset voice** restores the current version’s factory preset. Comparisons use your current edits, so reset each version if you want a factory comparison. Output gain is unchanged, but envelope changes can alter perceived loudness; this is not a loudness-normalized comparison.
+
+The refined sounds target longer kick and tom bodies, snare bodies that finish before the rattle, more diffuse claps, metallic hat rings that fade before their noise tails, and shorter clicks. These are sound-design alternatives for auditioning, not verified hardware emulations.
+
+`KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. `npm run samples` writes the new WAVs to `samples/original-refined/` and `samples/808-refined/`, alongside the old samples.

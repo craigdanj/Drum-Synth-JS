@@ -1,9 +1,9 @@
 import { DrumForge, PRESETS, PARAMS, render, encodeWav } from '../src/drum-forge.js';
-import { KITS } from '../src/kits.js';
+import { KITS, REFINEMENT_NOTES } from '../src/kits.js';
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-let activeKit = '808';
+let activeKit = '808-refined';
 const edits = Object.fromEntries(Object.entries(KITS).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
@@ -33,7 +33,7 @@ const groups = [
 ];
 function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
 function select(voice) {
-  selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
+  selected=voice; $('refinement-note').textContent=`Refinement: ${REFINEMENT_NOTES[voice]}`; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   for(const [group, labels] of groups) {
@@ -79,12 +79,19 @@ $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(select
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
 $('reset').onclick=()=>{kit[selected]={...KITS[activeKit][selected]};select(selected);};
-$('kit').onchange=guarded(async()=>{
-  const resume = running; stop(); activeKit=$('kit').value; kit=edits[activeKit];
-  select(selected); $('pack-description').textContent=activeKit==='808' ? 'Deep kick · crisp snare · metallic hats. An 808-inspired preset pack, not a hardware emulation.' : 'The original Drum Forge sounds. Your edits are kept separately for each kit.';
-  status(`${activeKit==='808'?'808-inspired':'Original'} kit loaded`);
-  if(resume) await toggle();
-});
+async function changeKit(id, audition = false) {
+  const resume = running; stop(); activeKit=id; kit=edits[activeKit]; $('kit').value=id;
+  const refined=id.endsWith('-refined');
+  $('compare-old').setAttribute('aria-pressed',String(!refined));
+  $('compare-new').setAttribute('aria-pressed',String(refined));
+  select(selected);
+  $('pack-description').textContent = `${id.startsWith('808') ? '808-inspired' : 'Drum Forge'} · ${refined ? 'Refined envelopes' : 'Previous sounds, unchanged'}. Your edits are kept separately for each version.`;
+  if(resume) await toggle(); else if(audition) await hit(selected);
+  status(`${refined?'B · Refined':'A · Previous'} kit loaded`);
+}
+$('kit').onchange=guarded(()=>changeKit($('kit').value));
+$('compare-old').onclick=guarded(()=>changeKit(activeKit.startsWith('808')?'808':'original',true));
+$('compare-new').onclick=guarded(()=>changeKit(activeKit.startsWith('808')?'808-refined':'original-refined',true));
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(false));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
 $('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected])),'audio/wav',`drum-forge-${activeKit}-${selected}.wav`);status('WAV exported');});
 $('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);

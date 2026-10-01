@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Added refined versions of both kits, 16 additional WAV samples, A/B audition controls, and per-voice refinement notes. Previous kits remain unchanged.
+
 - Added seven independent body, noise, and transient controls, typed API support, grouped demo controls, and legacy macro compatibility.
 - Verified unchanged PCM for all 16 kit defaults; added layer isolation, duration, validation, and playback compatibility tests.
 

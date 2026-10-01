@@ -4,12 +4,14 @@
 .pack{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:20px}.pack>div{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.pack label{font-size:10px;letter-spacing:1.7px;color:var(--accent);font-weight:700}.pack select{font:inherit;font-weight:650;background:#282c25;color:var(--text);border:1px solid #566047;padding:10px;border-radius:6px;max-width:100%}.pack p{color:var(--muted);font-size:12px;line-height:1.6;margin:12px 0 0}.pack .hint{margin-top:6px}select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
 .control-group{grid-column:1 / -1;margin:10px 0 0;color:var(--accent);font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:8px}
+
+.compare{margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.compare button[aria-pressed=true]{background:var(--accent);color:#1a2210;border-color:var(--accent)}.compare span{font-size:11px;color:var(--muted)}#refinement-note{color:var(--text);border-top:1px solid var(--line);padding-top:12px}
 </style></head>
 <body><main>
 <header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM FORGE <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
 <section class="intro"><div class="eyebrow">YOUR BROWSER IS A DRUM MACHINE</div><h1>Shape your next <em>beat.</em></h1><p>Eight voices. Endless character. Sculpt a sound, build a groove, take it with you.</p></section>
 <div class="toolbar"><button id="enable" class="primary">Enable audio</button><span id="status" role="status">Audio is off</span><label class="master">Master <input id="master" type="range" min="0" max="1" step=".01" value=".7"></label></div>
-<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="808" selected>808-inspired · Vol. 01</option><option value="original">Original · Drum Forge</option></select></div><p id="pack-description">Deep kick · crisp snare · metallic hats. An 808-inspired preset pack, not a hardware emulation.</p><p class="hint">Press Play groove to listen, or tap a pad to audition a single sound. Switch packs to compare the same beat.</p></section>
+<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="808-refined" selected>808-inspired · Refined</option><option value="808">808-inspired · Previous</option><option value="original-refined">Drum Forge · Refined</option><option value="original">Drum Forge · Previous</option></select></div><p id="pack-description">Refined 808-inspired kit · independent body, noise, and transient envelopes.</p><p class="hint">Choose a pad, then press A or B below to hear its previous or refined sound. During groove playback, A/B restarts the same beat with the chosen version. Edits are kept separately.</p><div class="compare"><button id="compare-old" aria-pressed="false">A · Previous</button><button id="compare-new" aria-pressed="true">B · Refined</button><span>Same tempo, pattern & master level</span></div><p id="refinement-note"></p></section>
 <section aria-label="Drum pads" id="pads" class="pads"></section>
 <div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export WAV</button><button id="preset">↓ Save preset</button></div></section>
 <section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><button id="clear">Clear</button><button id="restore">Starter beat</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">Click a step to toggle it. Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p></section></div>
@@ -229,14 +231,46 @@ const patches = {
   cowbell: { frequency: 540, decay: .34, pitchDrop: 0, tone: .95, noise: 0, snap: .025, drive: .6, volume: .48 }
 };
 export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, patches[voice]))])));
-export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808 });
+// Independent envelope designs; keep the two previous kits intact for comparison.
+const refine = (base, changes) => Object.freeze(Object.fromEntries(Object.entries(base).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, {...params, ...changes[voice]}))])));
+export const KIT_ORIGINAL_REFINED = refine(PRESETS, {
+  kick: {bodyLevel:.98, bodyDecay:.65, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.22, transientDecay:.01},
+  snare: {bodyLevel:.34, bodyDecay:.13, noiseLevel:.7, noiseAttack:.002, noiseDecay:.32, transientLevel:.25, transientDecay:.011},
+  clap: {bodyLevel:.025, bodyDecay:.075, noiseLevel:.93, noiseAttack:.0015, noiseDecay:.29, transientLevel:.25, transientDecay:.008},
+  closedHat: {bodyLevel:.4, bodyDecay:.045, noiseLevel:.58, noiseAttack:.0005, noiseDecay:.09, transientLevel:.045, transientDecay:.005},
+  openHat: {bodyLevel:.4, bodyDecay:.38, noiseLevel:.58, noiseAttack:.002, noiseDecay:.78, transientLevel:.045, transientDecay:.008},
+  tom: {bodyLevel:.96, bodyDecay:.56, noiseLevel:.075, noiseAttack:.0005, noiseDecay:.065, transientLevel:.1, transientDecay:.009},
+  rim: {bodyLevel:.9, bodyDecay:.085, noiseLevel:.12, noiseAttack:.0005, noiseDecay:.035, transientLevel:.4, transientDecay:.005},
+  cowbell: {bodyLevel:.98, bodyDecay:.32, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.09, transientDecay:.007}
+});
+export const KIT_808_REFINED = refine(KIT_808, {
+  kick: {bodyLevel:1, bodyDecay:1.65, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.045, transientDecay:.008},
+  snare: {bodyLevel:.44, bodyDecay:.14, noiseLevel:.6, noiseAttack:.0015, noiseDecay:.37, transientLevel:.16, transientDecay:.009},
+  clap: {bodyLevel:0, bodyDecay:.06, noiseLevel:1, noiseAttack:.001, noiseDecay:.32, transientLevel:.07, transientDecay:.006},
+  closedHat: {bodyLevel:.72, bodyDecay:.04, noiseLevel:.28, noiseAttack:.0005, noiseDecay:.075, transientLevel:.018, transientDecay:.004},
+  openHat: {bodyLevel:.67, bodyDecay:.48, noiseLevel:.33, noiseAttack:.0015, noiseDecay:.9, transientLevel:.018, transientDecay:.006},
+  tom: {bodyLevel:.985, bodyDecay:.64, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.045, transientLevel:.045, transientDecay:.007},
+  rim: {bodyLevel:.96, bodyDecay:.06, noiseLevel:.04, noiseAttack:.0005, noiseDecay:.03, transientLevel:.1, transientDecay:.004},
+  cowbell: {bodyLevel:1, bodyDecay:.41, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.018, transientDecay:.005}
+});
+export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED });
+export const REFINEMENT_NOTES = Object.freeze({
+  kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
+  snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',
+  clap:'Longer noise wash with a gentler initial click; the original kit’s tonal component fades earlier.',
+  closedHat:'Shorter metallic ring followed by a small noise tail, with less initial click.',
+  openHat:'Metallic tone fades before the longer noise tail; the noise has a slightly softer onset.',
+  tom:'Longer tonal body, brief impact noise, and a shorter click.',
+  rim:'Slightly longer resonant knock with a much shorter click and noise burst.',
+  cowbell:'Longer tonal ring with less initial click; the original kit’s noise fades earlier.'
+});
 
 
 
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-let activeKit = '808';
+let activeKit = '808-refined';
 const edits = Object.fromEntries(Object.entries(KITS).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
@@ -266,7 +300,7 @@ const groups = [
 ];
 function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
 function select(voice) {
-  selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
+  selected=voice; $('refinement-note').textContent=`Refinement: ${REFINEMENT_NOTES[voice]}`; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   for(const [group, labels] of groups) {
@@ -312,12 +346,19 @@ $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(select
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
 $('reset').onclick=()=>{kit[selected]={...KITS[activeKit][selected]};select(selected);};
-$('kit').onchange=guarded(async()=>{
-  const resume = running; stop(); activeKit=$('kit').value; kit=edits[activeKit];
-  select(selected); $('pack-description').textContent=activeKit==='808' ? 'Deep kick · crisp snare · metallic hats. An 808-inspired preset pack, not a hardware emulation.' : 'The original Drum Forge sounds. Your edits are kept separately for each kit.';
-  status(`${activeKit==='808'?'808-inspired':'Original'} kit loaded`);
-  if(resume) await toggle();
-});
+async function changeKit(id, audition = false) {
+  const resume = running; stop(); activeKit=id; kit=edits[activeKit]; $('kit').value=id;
+  const refined=id.endsWith('-refined');
+  $('compare-old').setAttribute('aria-pressed',String(!refined));
+  $('compare-new').setAttribute('aria-pressed',String(refined));
+  select(selected);
+  $('pack-description').textContent = `${id.startsWith('808') ? '808-inspired' : 'Drum Forge'} · ${refined ? 'Refined envelopes' : 'Previous sounds, unchanged'}. Your edits are kept separately for each version.`;
+  if(resume) await toggle(); else if(audition) await hit(selected);
+  status(`${refined?'B · Refined':'A · Previous'} kit loaded`);
+}
+$('kit').onchange=guarded(()=>changeKit($('kit').value));
+$('compare-old').onclick=guarded(()=>changeKit(activeKit.startsWith('808')?'808':'original',true));
+$('compare-new').onclick=guarded(()=>changeKit(activeKit.startsWith('808')?'808-refined':'original-refined',true));
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(false));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
 $('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected])),'audio/wav',`drum-forge-${activeKit}-${selected}.wav`);status('WAV exported');});
 $('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
