@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { render, resolveParams } from '../src/drum-forge.js';
+import { render, resolveParams } from '../src/drum-synth.js';
 const muted = {bodyLevel:0,noiseLevel:0,transientLevel:0};
 test('all three layers can be muted independently',()=>{
  assert.ok(render('snare',muted).samples.every(s=>s===0));

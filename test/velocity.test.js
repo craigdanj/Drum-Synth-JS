@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DrumForge,render,PRESETS} from '../src/drum-forge.js';
+import {DrumSynth,render,PRESETS} from '../src/drum-synth.js';
 import {KIT_808_REFINED,KIT_ORIGINAL_REFINED} from '../src/kits.js';
 test('full strength preserves presets and zero strength stays silent',()=>{
  for(const kit of [KIT_808_REFINED,KIT_ORIGINAL_REFINED])for(const [voice,p] of Object.entries(kit)) {
@@ -25,14 +25,14 @@ test('live cached buffers with gain match offline rendering; velocity is not app
  const param=()=>({value:1,setValueAtTime(){},cancelScheduledValues(){},linearRampToValueAtTime(){}});
  const node=()=>({connect(){},disconnect(){}});
  const ctx={sampleRate:44100,currentTime:0,destination:{},createGain(){const n={...node(),gain:param()};gains.push(n);return n;},createStereoPanner(){return {...node(),pan:param()};},createBuffer(c,n,r){const b={duration:n/r,copyToChannel(s){this.samples=s.slice();}};buffers.push(b);return b;},createBufferSource(){const n={...node(),start(){},stop(){}};sources.push(n);return n;}};
- const s=new DrumForge({context:ctx});const p=KIT_808_REFINED.snare;
+ const s=new DrumSynth({context:ctx});const p=KIT_808_REFINED.snare;
  for(const v of [.35,.65,1,.35]) {
   s.trigger('snare',{params:p,velocity:v});
   const expected=render('snare',p,{velocity:v}).samples,actual=sources.at(-1).buffer.samples;
   for(let i=0;i<actual.length;i++)assert.ok(Math.abs(actual[i]*gains.at(-1).gain.value-expected[i])<1e-7);
  }
  assert.equal(buffers.length,3);
- const legacy=new DrumForge({context:ctx});legacy.trigger('kick',{velocity:.3});legacy.trigger('kick',{velocity:.7});assert.equal(legacy.cache.size,1);
+ const legacy=new DrumSynth({context:ctx});legacy.trigger('kick',{velocity:.3});legacy.trigger('kick',{velocity:.7});assert.equal(legacy.cache.size,1);
 });
 test('response controls reject invalid values without mutating presets',()=>{
  for(const key of ['velocityToBrightness','velocityToTransient'])for(const v of [-1,2,NaN,Infinity])assert.throws(()=>render('snare',{[key]:v}));

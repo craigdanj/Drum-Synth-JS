@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {DrumForge} from '../src/drum-forge.js';
+import {DrumSynth} from '../src/drum-synth.js';
 function setup(options={}) {
  const sources=[],gains=[];
  const param=()=>({value:1,events:[],setTargetAtTime(v,t){this.events.push(['target',v,t]);},setValueAtTime(v,t){this.events.push(['set',v,t]);},cancelScheduledValues(t){this.events.push(['cancel',t]);},linearRampToValueAtTime(v,t){this.events.push(['ramp',v,t]);}});
  const node=()=>({connect(){},disconnect(){this.disconnected=true;}});
  const ctx={currentTime:5,sampleRate:44100,state:'running',destination:{},createGain(){const n={...node(),gain:param()};gains.push(n);return n;},createStereoPanner(){return {...node(),pan:param()};},createBuffer(c,n,r){return {duration:n/r,copyToChannel(){}};},createBufferSource(){const n={...node(),stops:[],start(t){this.started=t;},stop(t){this.stops.push(t);}};sources.push(n);return n;}};
- return {ctx,sources,gains,s:new DrumForge({context:ctx,...options})};
+ return {ctx,sources,gains,s:new DrumSynth({context:ctx,...options})};
 }
 test('choke uses scheduled time and velocity without cutting later open hats',()=>{
  const {s,sources,gains}=setup();s.trigger('openHat',{when:8,velocity:.6});s.trigger('openHat',{when:8.3});s.trigger('closedHat',{when:8.2});

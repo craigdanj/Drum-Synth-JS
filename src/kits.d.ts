@@ -1,0 +1,13 @@
+import type {Voice,Params} from './drum-synth.js';
+export type Kit = Readonly<Record<Voice,Readonly<Params>>>;
+export const KIT_808: Kit;
+export const KIT_ORIGINAL_REFINED: Kit;
+export const KIT_808_REFINED: Kit;
+export const KIT_ELECTRO_FM: Kit;
+export const KIT_MINIMAL: Kit;
+export const KIT_INDUSTRIAL: Kit;
+export const KIT_DEEP_DUB: Kit;
+export const KIT_RETRO_ARCADE: Kit;
+export const KIT_SOFT_DUSTY: Kit;
+export const KITS: Readonly<Record<'original' | '808' | 'original-refined' | '808-refined' | 'electro-fm' | 'minimal' | 'industrial' | 'deep-dub' | 'retro-arcade' | 'soft-dusty', Kit>>;
+export const REFINEMENT_NOTES: Readonly<Record<Voice,string>>;

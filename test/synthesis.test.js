@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PRESETS, PARAMS, render, encodeWav, resolveParams } from '../src/drum-forge.js';
+import { PRESETS, PARAMS, render, encodeWav, resolveParams } from '../src/drum-synth.js';
 for (const voice of Object.keys(PRESETS)) {
   test(`${voice}: finite, bounded, audible, deterministic, tapered PCM`, () => {
     const a=render(voice), b=render(voice); assert.deepEqual(a.samples,b.samples);

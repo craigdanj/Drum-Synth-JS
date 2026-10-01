@@ -13,4 +13,4 @@ http.createServer(async (req, res) => {
     const body = await readFile(file);
     res.writeHead(200, { 'Content-Type': mime[extname(file)] || 'application/octet-stream' }).end(body);
   } catch { res.writeHead(404).end('Not found'); }
-}).listen(8080, '127.0.0.1', () => console.log('Drum Forge: http://localhost:8080'));
+}).listen(8080, '127.0.0.1', () => console.log('Drum Synth: http://localhost:8080'));

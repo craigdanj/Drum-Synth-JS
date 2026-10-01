@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DrumForge } from '../src/drum-forge.js';
+import { DrumSynth } from '../src/drum-synth.js';
 function context(){
   const nodes=[],param=()=>({value:1,setTargetAtTime(v){this.value=v;},setValueAtTime(v){this.value=v;},cancelScheduledValues(){},linearRampToValueAtTime(){}});
   const node=()=>{const n={gain:param(),pan:param(),connect(){},disconnect(){this.disconnected=true;},start(t){this.startTime=t;},stop(t){this.stopTime=t;}};nodes.push(n);return n;};
   return {nodes,currentTime:5,sampleRate:44100,state:'suspended',destination:{},createGain:node,createBufferSource:node,createStereoPanner:node,createBuffer(c,n,r){return {duration:n/r,copyToChannel(s){assert.equal(s.length,n);},sampleRate:r};},async resume(){this.state='running';},async close(){this.state='closed';}};
 }
 test('scheduling, cancellation, cache, polyphony and disposal',async()=>{
-  const ctx=context(),s=new DrumForge({context:ctx,maxVoices:2});await s.resume();assert.equal(ctx.state,'running');
+  const ctx=context(),s=new DrumSynth({context:ctx,maxVoices:2});await s.resume();assert.equal(ctx.state,'running');
   const a=s.trigger('kick',{when:8});s.trigger('snare',{when:9});s.trigger('kick',{when:10});
   assert.equal(s.active.size,2);assert.equal(s.cache.size,2);assert.equal(ctx.nodes[1].startTime,8);assert.equal(ctx.nodes[1].stopTime,5.006);
   a.stop();s.stopAll();assert.equal(s.active.size,0);
@@ -16,13 +16,13 @@ test('scheduling, cancellation, cache, polyphony and disposal',async()=>{
   await s.dispose();await s.dispose();assert.equal(ctx.state,'running');assert.throws(()=>s.trigger('kick'));
 });
 test('kit edits merge; invalid values are rejected; past times clamp to now',()=>{
-  const ctx=context(),s=new DrumForge({context:ctx});s.configure('kick',{frequency:80});s.configure('kick',{decay:.7});assert.equal(s.getParams('kick').frequency,80);
+  const ctx=context(),s=new DrumSynth({context:ctx});s.configure('kick',{frequency:80});s.configure('kick',{decay:.7});assert.equal(s.getParams('kick').frequency,80);
   s.trigger('kick',{when:0});assert.equal(ctx.nodes[1].startTime,5);
   assert.throws(()=>s.trigger('kick',{pan:2}));assert.throws(()=>s.trigger('kick',{params:{typo:1}}));assert.throws(()=>s.setVolume(-1));
-  assert.throws(()=>new DrumForge({context:ctx,maxVoices:1.5}));
+  assert.throws(()=>new DrumSynth({context:ctx,maxVoices:1.5}));
 });
 test('legacy configure and trigger updates map to layers without losing independent edits',()=>{
- const s=new DrumForge({context:context()});
+ const s=new DrumSynth({context:context()});
  s.configure('snare',{bodyDecay:.2,noiseDecay:1});s.configure('snare',{frequency:200});
  assert.equal(s.getParams('snare').noiseDecay,1);
  s.configure('snare',{decay:.5,bodyDecay:.1});
@@ -30,4 +30,17 @@ test('legacy configure and trigger updates map to layers without losing independ
  s.trigger('snare',{params:{noise:.2,transientDecay:.1}});
  const p=JSON.parse([...s.cache.keys()][0])[1];assert.equal(p.bodyLevel,.8);assert.equal(p.noiseLevel,.2);assert.equal(p.transientDecay,.1);
  assert.equal(s.getParams('snare').noiseLevel,.75);
+});
+test('waveform edits survive configuration and JSON export and distinguish playback buffers',()=>{
+ const s=new DrumSynth({context:context()});
+ s.configure('tom',{bodyWaveform:'square',bodyPulseWidth:.25,bodyWaveformMix:.8});
+ s.configure('tom',{frequency:250});
+ const preset=JSON.parse(JSON.stringify(s.getParams('tom')));
+ assert.equal(preset.bodyWaveform,'square');assert.equal(preset.bodyPulseWidth,.25);assert.equal(preset.bodyWaveformMix,.8);
+ s.trigger('tom');s.trigger('tom',{params:preset});assert.equal(s.cache.size,1);
+ s.trigger('tom',{params:{bodyPulseWidth:.5}});assert.equal(s.cache.size,2);
+ s.trigger('tom',{params:{bodyWaveform:'triangle'}});assert.equal(s.cache.size,3);
+ s.trigger('tom',{params:{bodyWaveformMix:.3}});assert.equal(s.cache.size,4);
+ assert.deepEqual(s.getParams('tom'),preset);
+ assert.throws(()=>s.configure('tom',{bodyWaveform:'invalid'}));assert.deepEqual(s.getParams('tom'),preset);
 });

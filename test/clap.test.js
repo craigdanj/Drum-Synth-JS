@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {render,resolveParams,PARAMS,PRESETS} from '../src/drum-forge.js';
+import {render,resolveParams,PARAMS,PRESETS} from '../src/drum-synth.js';
 const base={bodyLevel:0,noiseLevel:.6,transientLevel:0,burstCount:3,burstSpacing:.015,burstDecay:.012,tailLevel:.4,tailDecay:.3,burstVariation:0};
 test('each clap control alters its sound',()=>{
  const a=render('clap',base).samples;

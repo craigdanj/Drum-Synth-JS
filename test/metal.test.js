@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {render,PARAMS,PRESETS} from '../src/drum-forge.js';
+import {render,PARAMS,PRESETS} from '../src/drum-synth.js';
 const base={bodyLevel:.5,noiseLevel:.5,transientLevel:0,bodyDecay:.5,noiseDecay:.5,metalMix:.5,metalDetune:10,metalDamping:.2,metalHighpass:1000,metalLowpass:16000};
 test('five metallic controls alter both hats deterministically',()=>{
  for(const voice of ['closedHat','openHat']) {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {render,resolveParams,PARAMS} from '../src/drum-forge.js';
+import {render,resolveParams,PARAMS} from '../src/drum-synth.js';
 const noiseOnly={bodyLevel:0,noiseLevel:.1,transientLevel:0,noiseDecay:.3,noiseHighpass:0,noiseLowpass:16000};
 const energy=a=>a.reduce((sum,s)=>sum+s*s,0)/a.length;
 test('legacy pitch and tone map to new controls; explicit settings win',()=>{

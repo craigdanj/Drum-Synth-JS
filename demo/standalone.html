@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Drum Forge • Sound laboratory</title><style>:root{color-scheme:dark;--bg:#141513;--panel:#1c1e1b;--line:#343831;--muted:#a0a69a;--text:#edf0e6;--accent:#d4f67a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}main{max-width:1440px;margin:auto;padding:30px 42px}header,.section-top,.toolbar,.transport,footer,.actions{display:flex;align-items:center;justify-content:space-between;gap:16px}header{border-bottom:1px solid var(--line);padding-bottom:25px}.brand{color:inherit;text-decoration:none;font-weight:850;letter-spacing:2px;font-size:19px}.brand small{color:var(--accent);font-size:10px}.mark{display:inline-grid;place-items:center;background:var(--accent);color:var(--bg);width:32px;height:32px;margin-right:8px;border-radius:7px}.badge,.eyebrow{font-size:10px;letter-spacing:1.7px;font-weight:700;color:var(--muted)}.badge{border:1px solid var(--line);padding:8px 10px;border-radius:4px}.intro{padding:40px 0 26px}h1{font-size:clamp(36px,5vw,64px);line-height:1.1;letter-spacing:-3px;margin:14px 0}h1 em{color:var(--accent);font-style:normal}.intro p,.hint{color:var(--muted);font-size:14px;line-height:1.7}button,input{font:inherit}button{color:var(--text);background:#282c25;border:1px solid #42483b;border-radius:7px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:650;transition:background .12s}button:hover{background:#3a4230}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.primary{background:var(--accent);color:#1a2210;border-color:var(--accent)}.primary:hover{background:#e3ff9b}.toolbar{justify-content:flex-start;padding-bottom:20px}#status{color:var(--muted);font-size:12px}.master{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}input[type=range]{accent-color:var(--accent);width:100%;cursor:pointer}.master input{width:110px}.pads{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:22px}.pad{height:108px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;background:#20231e;border-color:var(--line);font-size:14px;padding:16px}.pad .pad-top{width:100%;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.pad.selected{border-color:var(--accent);background:#2b3320}.pad.selected .number{color:var(--accent)}.pad.hit{background:#526332}.studio{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(500px,1.3fr);gap:22px}.panel{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--panel)}h2{font-size:25px;letter-spacing:-.8px;margin:8px 0 0}.section-top button{padding:8px 10px;font-size:11px}canvas{width:100%;height:82px;background:#151813;margin:20px 0 14px;border:1px solid var(--line);border-radius:6px}.sliders{display:grid;grid-template-columns:1fr 1fr;gap:15px 22px}.control label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.control output{color:var(--text);font-variant-numeric:tabular-nums}.actions{justify-content:flex-start;margin-top:24px;gap:8px;flex-wrap:wrap}.transport{justify-content:flex-start;margin:25px 0;flex-wrap:wrap;gap:10px}.transport label{font-size:11px;color:var(--muted)}input[type=number]{width:60px;padding:7px;color:var(--text);background:#11150f;border:1px solid var(--line);border-radius:5px}.grid-scroll{overflow:auto}.row{display:grid;grid-template-columns:66px repeat(16,minmax(20px,1fr));gap:5px;align-items:center;min-width:470px;margin:9px 0}.row-label{font-size:10px;color:var(--muted)}.step{height:29px;padding:0;border-radius:4px;border:1px solid #373e31;background:#292f24}.step.beat{background:#38412e}.step.on{background:var(--accent);border-color:var(--accent)}.step.current{outline:2px solid #fff;outline-offset:1px}.numbers span{text-align:center;color:#858d7c;font-size:9px}.hint{font-size:11px;margin-top:25px}footer{padding:28px 0 0;font-size:10px;color:#858d7c;letter-spacing:.5px}footer b{font-weight:400;margin-left:12px}@media(max-width:1100px){.studio{grid-template-columns:1fr}.pads{grid-template-columns:repeat(4,1fr)}}@media(max-width:600px){main{padding:20px 16px}.badge{display:none}.intro{padding-top:30px}h1{letter-spacing:-1.5px}.pads{gap:7px}.pad{height:85px;padding:10px;font-size:12px}.panel{padding:18px}.master{display:none}.toolbar{flex-wrap:wrap}.sliders{gap:15px}footer{display:block}footer span{display:block;margin-bottom:10px}.section-top{gap:8px}}
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Drum Synth • Sound laboratory</title><style>:root{color-scheme:dark;--bg:#141513;--panel:#1c1e1b;--line:#343831;--muted:#a0a69a;--text:#edf0e6;--accent:#d4f67a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}main{max-width:1440px;margin:auto;padding:30px 42px}header,.section-top,.toolbar,.transport,footer,.actions{display:flex;align-items:center;justify-content:space-between;gap:16px}header{border-bottom:1px solid var(--line);padding-bottom:25px}.brand{color:inherit;text-decoration:none;font-weight:850;letter-spacing:2px;font-size:19px}.brand small{color:var(--accent);font-size:10px}.mark{display:inline-grid;place-items:center;background:var(--accent);color:var(--bg);width:32px;height:32px;margin-right:8px;border-radius:7px}.badge,.eyebrow{font-size:10px;letter-spacing:1.7px;font-weight:700;color:var(--muted)}.badge{border:1px solid var(--line);padding:8px 10px;border-radius:4px}.intro{padding:40px 0 26px}h1{font-size:clamp(36px,5vw,64px);line-height:1.1;letter-spacing:-3px;margin:14px 0}h1 em{color:var(--accent);font-style:normal}.intro p,.hint{color:var(--muted);font-size:14px;line-height:1.7}button,input{font:inherit}button{color:var(--text);background:#282c25;border:1px solid #42483b;border-radius:7px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:650;transition:background .12s}button:hover{background:#3a4230}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.primary{background:var(--accent);color:#1a2210;border-color:var(--accent)}.primary:hover{background:#e3ff9b}.toolbar{justify-content:flex-start;padding-bottom:20px}#status{color:var(--muted);font-size:12px}.master{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}input[type=range]{accent-color:var(--accent);width:100%;cursor:pointer}.master input{width:110px}.pads{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:22px}.pad{height:108px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;background:#20231e;border-color:var(--line);font-size:14px;padding:16px}.pad .pad-top{width:100%;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.pad.selected{border-color:var(--accent);background:#2b3320}.pad.selected .number{color:var(--accent)}.pad.hit{background:#526332}.studio{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(500px,1.3fr);gap:22px}.panel{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--panel)}h2{font-size:25px;letter-spacing:-.8px;margin:8px 0 0}.section-top button{padding:8px 10px;font-size:11px}canvas{width:100%;height:82px;background:#151813;margin:20px 0 14px;border:1px solid var(--line);border-radius:6px}.sliders{display:grid;grid-template-columns:1fr 1fr;gap:15px 22px}.control label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.control output{color:var(--text);font-variant-numeric:tabular-nums}.actions{justify-content:flex-start;margin-top:24px;gap:8px;flex-wrap:wrap}.transport{justify-content:flex-start;margin:25px 0;flex-wrap:wrap;gap:10px}.transport label{font-size:11px;color:var(--muted)}input[type=number]{width:60px;padding:7px;color:var(--text);background:#11150f;border:1px solid var(--line);border-radius:5px}.grid-scroll{overflow:auto}.row{display:grid;grid-template-columns:66px repeat(16,minmax(20px,1fr));gap:5px;align-items:center;min-width:470px;margin:9px 0}.row-label{font-size:10px;color:var(--muted)}.step{height:29px;padding:0;border-radius:4px;border:1px solid #373e31;background:#292f24}.step.beat{background:#38412e}.step.on{background:var(--accent);border-color:var(--accent)}.step.current{outline:2px solid #fff;outline-offset:1px}.numbers span{text-align:center;color:#858d7c;font-size:9px}.hint{font-size:11px;margin-top:25px}footer{padding:28px 0 0;font-size:10px;color:#858d7c;letter-spacing:.5px}footer b{font-weight:400;margin-left:12px}@media(max-width:1100px){.studio{grid-template-columns:1fr}.pads{grid-template-columns:repeat(4,1fr)}}@media(max-width:600px){main{padding:20px 16px}.badge{display:none}.intro{padding-top:30px}h1{letter-spacing:-1.5px}.pads{gap:7px}.pad{height:85px;padding:10px;font-size:12px}.panel{padding:18px}.master{display:none}.toolbar{flex-wrap:wrap}.sliders{gap:15px}footer{display:block}footer span{display:block;margin-bottom:10px}.section-top{gap:8px}}
 
 .pack{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:20px}.pack>div{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.pack label{font-size:10px;letter-spacing:1.7px;color:var(--accent);font-weight:700}.pack select{font:inherit;font-weight:650;background:#282c25;color:var(--text);border:1px solid #566047;padding:10px;border-radius:6px;max-width:100%}.pack p{color:var(--muted);font-size:12px;line-height:1.6;margin:12px 0 0}.pack .hint{margin-top:6px}select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 
@@ -9,18 +9,27 @@
 .choke-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px;font-size:12px;color:var(--muted)}.choke-controls label{display:flex;align-items:center;gap:8px}.choke-controls input[type=range]{width:140px}.choke-controls input[type=checkbox]{accent-color:var(--accent)}.choke-controls output{color:var(--text);min-width:44px}
 
 .hit-strength{margin-top:20px;padding:12px;background:#151813;border-radius:6px}.hit-strength label{display:flex;justify-content:space-between;font-size:12px}.hit-strength small{color:var(--muted);font-size:10px}.step.on{color:#17220b;font-size:11px}.step[data-velocity="0.35"]{background:#698442;border-color:#8ca855}.step[data-velocity="0.65"]{background:#a0c562;border-color:#b6d77b}
+
+.control label{gap:10px;align-items:flex-start;line-height:1.5}.control label span{min-width:0}.control output{flex-shrink:0}.control-note{grid-column:1 / -1;margin:0;font-size:11px;line-height:1.65;color:var(--muted)}
+
+.control select{width:100%;padding:8px;border:1px solid var(--line);border-radius:5px;background:#151813;color:var(--text);font:inherit;font-size:12px}
 </style></head>
 <body><main>
-<header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM FORGE <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
+<header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM SYNTH <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
 <section class="intro"><div class="eyebrow">YOUR BROWSER IS A DRUM MACHINE</div><h1>Shape your next <em>beat.</em></h1><p>Eight voices. Endless character. Sculpt a sound, build a groove, take it with you.</p></section>
 <div class="toolbar"><button id="enable" class="primary">Enable audio</button><span id="status" role="status">Audio is off</span><label class="master">Master <input id="master" type="range" min="0" max="1" step=".01" value=".7"></label></div>
-<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="808-refined" selected>808-inspired</option><option value="original-refined">Drum Forge</option></select></div><p id="pack-description">808-inspired kit · shaped pitch sweeps, independent layers, and focused noise filters.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
+<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="deep-dub" selected>Deep / Dub</option><option value="retro-arcade">Retro Arcade</option><option value="soft-dusty">Soft / Dusty</option><option value="electro-fm">Electro / FM</option><option value="minimal">Minimal</option><option value="industrial">Industrial</option><option value="original-refined">Drum Synth</option><option value="808-refined">808-inspired</option></select></div><p id="pack-description">Rounded low drums, dark hats, muted claps, and lingering percussion.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
 <div class="choke-controls"><label><input id="choke-enabled" type="checkbox" checked> Hi-hat choking</label><label for="choke-fade">Fade <output id="choke-value">5 ms</output></label><input id="choke-fade" type="range" min="1" max="100" step="1" value="5"><span>Closed hats cut off ringing open hats.</span></div>
 <section aria-label="Drum pads" id="pads" class="pads"></section>
 <div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><div class="hit-strength"><label for="hit-strength">Hit strength <output id="hit-strength-value">100%</output></label><input id="hit-strength" type="range" min="1" max="100" step="1" value="100"><small>Applies to pads, Play sound, waveform & WAV export.</small></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export WAV</button><button id="preset">↓ Save preset</button></div></section>
-<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><button id="clear">Clear</button><button id="restore">Starter beat</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">Click a step to cycle: off → soft · (35%) → normal •• (65%) → accent ! (100%) → off. Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p></section></div>
-<footer><span>DRUM FORGE JS <b>v0.1.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
-</main><script type="module">/** Drum Forge JS — deterministic percussion synthesis. MIT License. */
+<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><label><input id="use-intensity" type="checkbox"> Use intensity</label><button id="clear">Clear</button><button id="restore">Starter beat</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint"><span id="intensity-hint">Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.</span> Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p></section></div>
+<footer><span>DRUM SYNTH JS <b>v1.0.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
+</main><script type="module">/** Drum Synth JS — deterministic percussion synthesis. MIT License. */
+export const TRANSIENT_TYPES = Object.freeze(['noise', 'tonal', 'blend']);
+export const RESONANCE_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
+export const FM_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
+export const BODY_WAVEFORMS = Object.freeze(['sine', 'triangle', 'square', 'saw']);
+export const BODY_WAVEFORM_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
 export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
@@ -28,13 +37,21 @@ export const PARAMS = Object.freeze({
   noiseHighpass: [0, 18000, 10], noiseLowpass: [20, 20000, 10], noiseResonance: [0, 1, .01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
+  bodyPulseWidth: [.05, .95, .01], bodyWaveformMix: [0, 1, .01],
   noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
+  transientTone: [0, 1, .01], transientFrequency: [40, 12000, 10], transientMix: [0, 1, .01],
   transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
   burstCount: [1, 8, 1], burstSpacing: [.002, .06, .001], burstDecay: [.003, .12, .001],
   tailLevel: [0, 1, .01], tailDecay: [.03, 3, .01], burstVariation: [0, 1, .01],
   metalMix: [0, 1, .01], metalDetune: [0, 100, 1], metalDamping: [0, 1, .01],
   metalHighpass: [0, 18000, 10], metalLowpass: [20, 20000, 10],
+  noiseFilterEnvAmount: [-4, 4, .05], noiseFilterEnvDecay: [.005, 3, .005],
+  metalFilterEnvAmount: [-4, 4, .05], metalFilterEnvDecay: [.005, 3, .005],
   velocityToBrightness: [0, 1, .01], velocityToTransient: [0, 1, .01],
+  ...Object.fromEntries([1, 2, 3].flatMap(n => [
+    [`resonance${n}Ratio`, [.5, 8, .01]], [`resonance${n}Level`, [0, 1, .01]], [`resonance${n}Decay`, [.01, 3, .01]]
+  ])),
+  fmDepth: [0, 4, .01], fmRatio: [.25, 8, .01], fmDecay: [.005, 3, .005],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -79,19 +96,38 @@ function mergeParams(base, overrides) {
   layer('tailDecay', 'noiseDecay', p.noiseDecay);
   if (legacy('decay') && !legacy('noiseDecay') && !legacy('tailDecay')) p.tailDecay = p.noiseDecay;
   p.burstCount ??= 3; p.burstSpacing ??= .012; p.burstDecay ??= .012;
+  p.noiseFilterEnvAmount ??= 0; p.noiseFilterEnvDecay ??= .15;
+  p.metalFilterEnvAmount ??= 0; p.metalFilterEnvDecay ??= .15;
   p.velocityToBrightness ??= 0; p.velocityToTransient ??= 0;
+  if (p.fmDepth === undefined) p.fmDepth = 0;
+  if (p.fmRatio === undefined) p.fmRatio = 2;
+  if (p.fmDecay === undefined) p.fmDecay = .08;
+  if (p.bodyWaveform === undefined) p.bodyWaveform = 'sine';
+  if (p.bodyPulseWidth === undefined) p.bodyPulseWidth = .5;
+  if (p.bodyWaveformMix === undefined) p.bodyWaveformMix = 1;
   p.metalMix ??= .5; p.metalDetune ??= 12; p.metalDamping ??= .3;
   p.metalHighpass ??= 1800; p.metalLowpass ??= 14500;
   p.tailLevel ??= .55; p.burstVariation ??= 0;
+  if (p.transientType === undefined) p.transientType = 'noise'; p.transientTone ??= 1; p.transientFrequency ??= 1600; p.transientMix ??= .5;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
+  for (const [index, ratio] of [1.5, 2.37, 3.1].entries()) {
+    const n=index+1;
+    if (p[`resonance${n}Ratio`] === undefined) p[`resonance${n}Ratio`] = ratio;
+    if (p[`resonance${n}Level`] === undefined) p[`resonance${n}Level`] = 0;
+    if (p[`resonance${n}Decay`] === undefined) p[`resonance${n}Decay`] = .2;
+  }
   return p;
 }
 export function resolveParams(voice, overrides = {}) {
   if (!Object.hasOwn(PRESETS, voice)) throw new TypeError(`Unknown voice: ${voice}`);
-  object(overrides, 'parameters'); keys(overrides, Object.keys(PARAMS));
+  object(overrides, 'parameters'); keys(overrides, [...Object.keys(PARAMS), 'transientType', 'bodyWaveform']);
+  if (Object.hasOwn(overrides, 'transientType') && !TRANSIENT_TYPES.includes(overrides.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
+  if (Object.hasOwn(overrides, 'bodyWaveform') && !BODY_WAVEFORMS.includes(overrides.bodyWaveform)) throw new TypeError('bodyWaveform must be sine, triangle, square, or saw');
   const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
+  if (!TRANSIENT_TYPES.includes(params.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
+  if (!BODY_WAVEFORMS.includes(params.bodyWaveform)) throw new TypeError('bodyWaveform must be sine, triangle, square, or saw');
   if (!Number.isInteger(params.burstCount)) throw new RangeError('burstCount must be an integer');
   if (!Number.isInteger(params.seed)) throw new RangeError('seed must be an integer');
   return params;
@@ -119,6 +155,10 @@ export function render(voice, overrides = {}, options = {}) {
   const metalGain = isHat ? 2 * p.metalMix : 1;
   const noiseGain = isHat ? 2 * (1 - p.metalMix) : 1;
   const isClap = voice === 'clap';
+  const resonances = RESONANCE_VOICES.includes(voice) ? [1,2,3].map(n => ({
+    ratio:p[`resonance${n}Ratio`], level:p[`resonance${n}Level`], decay:p[`resonance${n}Decay`]
+  })).filter(r => r.level > 0) : [];
+  const bodyEnd = p.attack + Math.max(p.bodyDecay, ...resonances.map(r => r.decay));
   // Separate random stream: changing burst structure never shifts the noise sequence.
   let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
   const randomBurst = () => {
@@ -133,21 +173,21 @@ export function render(voice, overrides = {}, options = {}) {
   const tailStart = isClap ? onset + p.burstSpacing : 0;
   const noiseEnd = isClap ? Math.max(onset + p.noiseAttack + p.burstDecay,
     p.tailLevel > 0 ? tailStart + p.noiseAttack + p.tailDecay : 0) : p.noiseAttack + p.noiseDecay;
-  const duration = Math.max(p.bodyLevel * metalGain > 0 ? p.attack + p.bodyDecay : 0,
+  const duration = Math.max(p.bodyLevel * metalGain > 0 ? bodyEnd : 0,
     p.noiseLevel * noiseGain > 0 ? noiseEnd : 0,
     p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
   const cutoff = Math.min(sampleRate * 0.4, p.noiseLowpass);
-  const alpha = 1 - Math.exp(-TAU * cutoff / sampleRate);
+  let alpha = 1 - Math.exp(-TAU * cutoff / sampleRate);
   const hpAlpha = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.noiseHighpass) / sampleRate);
   // Parallel resonant low-pass, blended with the original one-pole at zero resonance.
   const w = TAU * cutoff / sampleRate, c = Math.cos(w), q = .70710678 + 7.3 * p.noiseResonance;
   const a = Math.sin(w) / (2 * q), a0 = 1 + a;
-  const b0 = (1 - c) / 2 / a0, b1 = (1 - c) / a0, b2 = b0;
-  const a1 = -2 * c / a0, a2 = (1 - a) / a0;
+  let b0 = (1 - c) / 2 / a0, b1 = (1 - c) / a0, b2 = b0;
+  let a1 = -2 * c / a0, a2 = (1 - a) / a0;
   let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
-  const metalLP = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.metalLowpass) / sampleRate);
+  let metalLP = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.metalLowpass) / sampleRate);
   const metalHP = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.metalHighpass) / sampleRate);
   let metalLow = 0, metalBass = 0;
   // Odd-harmonic oscillator bank: six inharmonic ratios with symmetric fixed detuning.
@@ -157,13 +197,65 @@ export function render(voice, overrides = {}, options = {}) {
     ratio:ratio * 2 ** (offsets[index] * p.metalDetune / 1200) * harmonic,
     amplitude:1 / harmonic
   }))) : [];
+  const transientCutoff = Math.min(sampleRate * .4, 200 * 100 ** p.transientTone);
+  const transientAlpha = 1 - Math.exp(-TAU * transientCutoff / sampleRate);
+  const transientBypass = p.transientTone ** 8;
+  const transientHz = Math.min(sampleRate * .4, p.transientFrequency);
+  let transientLow = 0;
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
-  const sine = (mult) => Math.sin(phase * mult);
+  const fmEnabled = FM_VOICES.includes(voice) && p.fmDepth > 0;
+  let fmPhase = 0, modulatorPhase = 0;
+  const sine = (mult) => Math.sin((fmEnabled ? fmPhase : phase) * mult);
+  const shapeEnabled = BODY_WAVEFORM_VOICES.includes(voice) && p.bodyLevel > 0
+    && p.bodyWaveform !== 'sine' && p.bodyWaveformMix > 0;
+  // Finite Fourier series, with no DC term. Square duty cycle is centered on the
+  // sine peak, so a 50% square and the sine blend share fundamental phase.
+  const harmonics = shapeEnabled ? Array.from({length:32}, (_,i) => {
+    const n = i + 1;
+    if (p.bodyWaveform === 'triangle') return [n % 2 ? 8 / (Math.PI ** 2) * (-1) ** ((n - 1) / 2) / n ** 2 : 0, 0];
+    if (p.bodyWaveform === 'saw') return [2 / Math.PI * (-1) ** (n + 1) / n, 0];
+    const a = 4 * Math.sin(Math.PI * n * p.bodyPulseWidth) / (Math.PI * n)
+      / (2 * Math.max(p.bodyPulseWidth, 1 - p.bodyPulseWidth));
+    return [a * Math.sin(n * Math.PI / 2), a * Math.cos(n * Math.PI / 2)];
+  }) : [];
+  let bodyBandwidth = 0, fmMargin = 0;
+  const oscillator = shapeEnabled ? mult => {
+    const angle = (fmEnabled ? fmPhase : phase) * mult;
+    const fundamental = Math.sin(angle), cosine = Math.cos(angle);
+    let sn = fundamental, cs = cosine, shaped = 0;
+    for (let i = 0; i < harmonics.length; i++) {
+      // Leave room for FM sidebands as well as each harmonic's carrier. This is
+      // a conservative bandwidth estimate, not an alias-free guarantee for FM.
+      const edge = (i + 1) * bodyBandwidth * mult + fmMargin;
+      if (edge >= sampleRate * .45) break;
+      const fade = Math.min(1, (sampleRate * .45 - edge) / (sampleRate * .1));
+      const taper = fade * fade * (3 - 2 * fade);
+      shaped += (harmonics[i][0] * sn + harmonics[i][1] * cs) * taper;
+      const nextSin = sn * cosine + cs * fundamental;
+      cs = cs * cosine - sn * fundamental; sn = nextSin;
+    }
+    return fundamental * (1 - p.bodyWaveformMix) + shaped * p.bodyWaveformMix;
+  } : sine;
   const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
   const clapNoiseEnv = t => bursts.reduce((sum, burst) => sum + burst.gain * env(t - burst.time, p.noiseAttack, p.burstDecay), 0)
     + p.tailLevel * env(t - tailStart, p.noiseAttack, p.tailDecay);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
+    // Octave offsets decay toward zero; the base cutoff is already velocity-adjusted.
+    if (p.noiseFilterEnvAmount !== 0) {
+      const movingCutoff = Math.max(20, Math.min(sampleRate * .4,
+        p.noiseLowpass * 2 ** (p.noiseFilterEnvAmount * Math.exp(-6.907755 * t / p.noiseFilterEnvDecay))));
+      alpha = 1 - Math.exp(-TAU * movingCutoff / sampleRate);
+      const angle = TAU * movingCutoff / sampleRate, cosine = Math.cos(angle);
+      const resonanceAlpha = Math.sin(angle) / (2 * q), divisor = 1 + resonanceAlpha;
+      b0 = (1 - cosine) / 2 / divisor; b1 = (1 - cosine) / divisor; b2 = b0;
+      a1 = -2 * cosine / divisor; a2 = (1 - resonanceAlpha) / divisor;
+    }
+    if (isHat && p.metalFilterEnvAmount !== 0) {
+      const movingCutoff = Math.max(20, Math.min(sampleRate * .4,
+        p.metalLowpass * 2 ** (p.metalFilterEnvAmount * Math.exp(-6.907755 * t / p.metalFilterEnvDecay))));
+      metalLP = 1 - Math.exp(-TAU * movingCutoff / sampleRate);
+    }
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
     const white = (seed >>> 0) / 2147483648 - 1;
     low += alpha * (white - low);
@@ -174,16 +266,28 @@ export function render(voice, overrides = {}, options = {}) {
     const brightNoise = filtered - bodyLow;
     const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))));
     phase += TAU * f / sampleRate;
+    bodyBandwidth = f; fmMargin = 0;
+    if (fmEnabled) {
+      const modulatorHz = Math.min(sampleRate * .2, f * p.fmRatio);
+      modulatorPhase += TAU * modulatorHz / sampleRate;
+      const index = p.fmDepth * Math.exp(-6.907755 * t / p.fmDecay);
+      // Limit fundamental deviation near the sample-rate ceiling; negative instantaneous
+      // frequencies are valid through-zero FM and do not require rectification.
+      const deviation = Math.min(index * modulatorHz, Math.max(0, sampleRate * .4 - f));
+      fmPhase += TAU * (f + deviation * Math.sin(modulatorPhase)) / sampleRate;
+      bodyBandwidth += deviation;
+      fmMargin = Math.min(1, index) * modulatorHz * 2;
+    }
     let body, noise = brightNoise;
     switch (voice) {
-      case 'kick': body = sine(1) + p.tone * 0.18 * sine(2); break;
-      case 'tom': body = 0.8 * sine(1) + 0.2 * sine(1.5); break;
-      case 'snare': body = 0.65 * sine(1) + 0.35 * sine(1.47); break;
+      case 'kick': body = oscillator(1) + p.tone * 0.18 * oscillator(2); break;
+      case 'tom': body = 0.8 * oscillator(1) + 0.2 * oscillator(1.5); break;
+      case 'snare': body = 0.65 * oscillator(1) + 0.35 * oscillator(1.47); break;
       case 'clap':
         body = 0.25 * sine(1);
         break;
-      case 'rim': body = (sine(1) + sine(2.37) * 0.7 + sine(3.1) * 0.3) / 2; break;
-      case 'cowbell': body = (sine(1) + sine(1.48) + p.tone * 0.3 * (sine(3) + sine(4.44))) / 2.6; break;
+      case 'rim': body = (oscillator(1) + oscillator(2.37) * 0.7 + oscillator(3.1) * 0.3) / 2; break;
+      case 'cowbell': body = (oscillator(1) + oscillator(1.48) + p.tone * 0.3 * (oscillator(3) + oscillator(4.44))) / 2.6; break;
       default: {
         let metal = 0;
         for (const partial of partials) {
@@ -197,8 +301,18 @@ export function render(voice, overrides = {}, options = {}) {
         body = metalLow - metalBass;
       }
     }
-    const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let value = metalGain * p.bodyLevel * body * env(t, p.attack, p.bodyDecay) + noiseGain * p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
+    transientLow += transientAlpha * (white - transientLow);
+    const clickNoise = p.transientTone === 1 ? white : transientLow + (white - transientLow) * transientBypass;
+    const knock = Math.sin(TAU * transientHz * t);
+    const impact = p.transientType === 'noise' ? clickNoise : p.transientType === 'tonal' ? knock
+      : clickNoise * (1 - p.transientMix) + knock * p.transientMix;
+    const transient = impact * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
+    let bodySignal = body * env(t, p.attack, p.bodyDecay);
+    for (const resonance of resonances) {
+      const taper = Math.max(0, Math.min(1, (sampleRate * .45 - f * resonance.ratio) / (sampleRate * .05)));
+      bodySignal += Math.sin(phase * resonance.ratio) * resonance.level * taper * env(t, p.attack, resonance.decay);
+    }
+    let value = metalGain * p.bodyLevel * bodySignal + noiseGain * p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);
@@ -231,7 +345,7 @@ export function encodeWav(audio) {
   return buffer;
 }
 
-export class DrumForge {
+export class DrumSynth {
   constructor(options = {}) {
     object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade']);
     const volume = number(options.volume ?? 0.7, 0, 1, 'volume');
@@ -251,7 +365,7 @@ export class DrumForge {
     this.kit = Object.fromEntries(Object.entries(PRESETS).map(([k, v]) => [k, { ...v }]));
     this.cache = new Map();
   }
-  _assert() { if (this.disposed) throw new Error('DrumForge has been disposed'); }
+  _assert() { if (this.disposed) throw new Error('DrumSynth has been disposed'); }
   async resume() { this._assert(); if (this.context.state === 'suspended') await this.context.resume(); }
   setVolume(value) {
     this._assert(); number(value, 0, 1, 'volume');
@@ -340,9 +454,9 @@ export class DrumForge {
   }
 }
 function resolveOverride(params = {}) { object(params, 'params'); return params; }
-export default DrumForge;
+export default DrumSynth;
 
-/** Sound packs built from Drum Forge voices. 808-inspired, not hardware emulation. */
+/** Sound packs built from Drum Synth voices. 808-inspired, not hardware emulation. */
 
 const patches = {
   kick: { frequency: 48, decay: 1.4, pitchDrop: 1.65, pitchDecay: .018, tone: .08, noise: 0, snap: .055, drive: .15, volume: .86 },
@@ -358,26 +472,104 @@ export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).
 // Current sound packs with voice-specific envelope designs.
 const refine = (base, changes) => Object.freeze(Object.fromEntries(Object.entries(base).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, {...params, ...changes[voice]}))])));
 export const KIT_ORIGINAL_REFINED = refine(PRESETS, {
-  kick: {velocityToBrightness:0.2, velocityToTransient:0.65, pitchSweepSemitones:22, pitchCurve:1.25, noiseHighpass:80, noiseLowpass:2600, noiseResonance:0.05, bodyLevel:.98, bodyDecay:.65, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.22, transientDecay:.01},
-  snare: {velocityToBrightness:0.6, velocityToTransient:0.65, pitchSweepSemitones:4, pitchCurve:1.2, noiseHighpass:1050, noiseLowpass:9800, noiseResonance:0.16, bodyLevel:.34, bodyDecay:.13, noiseLevel:.7, noiseAttack:.002, noiseDecay:.32, transientLevel:.25, transientDecay:.011},
-  clap: {velocityToBrightness:0.5, velocityToTransient:0.5, burstCount:4, burstSpacing:.01, burstDecay:.017, tailLevel:.42, tailDecay:.26, burstVariation:.28, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1100, noiseLowpass:7600, noiseResonance:0.2, bodyLevel:.025, bodyDecay:.075, noiseLevel:.93, noiseAttack:.0015, noiseDecay:.29, transientLevel:.25, transientDecay:.008},
-  closedHat: {velocityToBrightness:0.65, velocityToTransient:0.45, metalMix:0.48, metalDetune:28, metalDamping:0.65, metalHighpass:3200, metalLowpass:12500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:6200, noiseLowpass:14500, noiseResonance:0.08, bodyLevel:.4, bodyDecay:.045, noiseLevel:.58, noiseAttack:.0005, noiseDecay:.09, transientLevel:.045, transientDecay:.005},
-  openHat: {velocityToBrightness:0.55, velocityToTransient:0.35, metalMix:0.52, metalDetune:35, metalDamping:0.42, metalHighpass:2200, metalLowpass:14500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:4500, noiseLowpass:13000, noiseResonance:0.1, bodyLevel:.4, bodyDecay:.38, noiseLevel:.58, noiseAttack:.002, noiseDecay:.78, transientLevel:.045, transientDecay:.008},
-  tom: {velocityToBrightness:0.25, velocityToTransient:0.55, pitchSweepSemitones:9, pitchCurve:1.15, noiseHighpass:500, noiseLowpass:4500, noiseResonance:0.06, bodyLevel:.96, bodyDecay:.56, noiseLevel:.075, noiseAttack:.0005, noiseDecay:.065, transientLevel:.1, transientDecay:.009},
-  rim: {velocityToBrightness:0.25, velocityToTransient:0.65, pitchSweepSemitones:1.2, pitchCurve:1.5, noiseHighpass:1700, noiseLowpass:8200, noiseResonance:0.12, bodyLevel:.9, bodyDecay:.085, noiseLevel:.12, noiseAttack:.0005, noiseDecay:.035, transientLevel:.4, transientDecay:.005},
-  cowbell: {velocityToBrightness:0.15, velocityToTransient:0.45, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2400, noiseLowpass:10000, noiseResonance:0.04, bodyLevel:.98, bodyDecay:.32, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.09, transientDecay:.007}
+  kick: {fmDepth:0.16, fmRatio:1, fmDecay:0.025, resonance1Ratio:2, resonance1Level:0.09, resonance1Decay:0.13, resonance2Ratio:3, resonance2Level:0.025, resonance2Decay:0.045, transientType:'blend', transientTone:0.65, transientFrequency:850, transientMix:0.6, noiseFilterEnvAmount:0.7, noiseFilterEnvDecay:0.035, velocityToBrightness:0.2, velocityToTransient:0.65, pitchSweepSemitones:22, pitchCurve:1.25, noiseHighpass:80, noiseLowpass:1900, noiseResonance:0.05, bodyLevel:.98, bodyDecay:.65, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.22, transientDecay:.01},
+  snare: {fmDepth:0.25, fmRatio:1.7, fmDecay:0.04, resonance1Ratio:1.82, resonance1Level:0.18, resonance1Decay:0.09, resonance2Ratio:2.61, resonance2Level:0.09, resonance2Decay:0.045, transientType:'blend', transientTone:0.9, transientFrequency:2200, transientMix:0.15, noiseFilterEnvAmount:1.2, noiseFilterEnvDecay:0.2, velocityToBrightness:0.6, velocityToTransient:0.65, pitchSweepSemitones:4, pitchCurve:1.2, noiseHighpass:1050, noiseLowpass:4600, noiseResonance:0.16, bodyLevel:.34, bodyDecay:.13, noiseLevel:.7, noiseAttack:.002, noiseDecay:.32, transientLevel:.25, transientDecay:.011},
+  clap: {transientType:'noise', transientTone:0.8, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:1.15, noiseFilterEnvDecay:0.25, velocityToBrightness:0.5, velocityToTransient:0.5, burstCount:4, burstSpacing:.01, burstDecay:.017, tailLevel:.42, tailDecay:.26, burstVariation:.28, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1100, noiseLowpass:4000, noiseResonance:0.2, bodyLevel:.025, bodyDecay:.075, noiseLevel:.93, noiseAttack:.0015, noiseDecay:.29, transientLevel:.25, transientDecay:.008},
+  closedHat: {transientType:'noise', transientTone:0.95, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:0.6, noiseFilterEnvDecay:0.055, metalFilterEnvAmount:0.8, metalFilterEnvDecay:0.065, velocityToBrightness:0.65, velocityToTransient:0.45, metalMix:0.48, metalDetune:28, metalDamping:0.65, metalHighpass:3200, metalLowpass:8500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:6200, noiseLowpass:9500, noiseResonance:0.08, bodyLevel:.4, bodyDecay:.045, noiseLevel:.58, noiseAttack:.0005, noiseDecay:.09, transientLevel:.045, transientDecay:.005},
+  openHat: {transientType:'noise', transientTone:0.9, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:0.75, noiseFilterEnvDecay:0.35, metalFilterEnvAmount:0.95, metalFilterEnvDecay:0.42, velocityToBrightness:0.55, velocityToTransient:0.35, metalMix:0.52, metalDetune:35, metalDamping:0.42, metalHighpass:2200, metalLowpass:7500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:4500, noiseLowpass:8200, noiseResonance:0.1, bodyLevel:.4, bodyDecay:.38, noiseLevel:.58, noiseAttack:.002, noiseDecay:.78, transientLevel:.045, transientDecay:.008},
+  tom: {fmDepth:0.65, fmRatio:1.4, fmDecay:0.1, resonance1Ratio:1.59, resonance1Level:0.16, resonance1Decay:0.27, resonance2Ratio:2.14, resonance2Level:0.08, resonance2Decay:0.12, resonance3Ratio:2.92, resonance3Level:0.035, resonance3Decay:0.055, transientType:'blend', transientTone:0.5, transientFrequency:420, transientMix:0.75, noiseFilterEnvAmount:0.65, noiseFilterEnvDecay:0.065, velocityToBrightness:0.25, velocityToTransient:0.55, pitchSweepSemitones:9, pitchCurve:1.15, noiseHighpass:500, noiseLowpass:3000, noiseResonance:0.06, bodyLevel:.96, bodyDecay:.56, noiseLevel:.075, noiseAttack:.0005, noiseDecay:.065, transientLevel:.1, transientDecay:.009},
+  rim: {fmDepth:0.45, fmRatio:2.3, fmDecay:0.025, resonance1Ratio:1.73, resonance1Level:0.18, resonance1Decay:0.045, resonance2Ratio:3.83, resonance2Level:0.11, resonance2Decay:0.025, transientType:'tonal', transientTone:1, transientFrequency:1700, transientMix:0.5, noiseFilterEnvAmount:0.6, noiseFilterEnvDecay:0.04, velocityToBrightness:0.25, velocityToTransient:0.65, pitchSweepSemitones:1.2, pitchCurve:1.5, noiseHighpass:1700, noiseLowpass:5500, noiseResonance:0.12, bodyLevel:.9, bodyDecay:.085, noiseLevel:.12, noiseAttack:.0005, noiseDecay:.035, transientLevel:.4, transientDecay:.005},
+  cowbell: {fmDepth:0.7, fmRatio:1.48, fmDecay:0.14, resonance1Ratio:2.08, resonance1Level:0.14, resonance1Decay:0.19, resonance2Ratio:3.37, resonance2Level:0.08, resonance2Decay:0.08, resonance3Ratio:4.73, resonance3Level:0.035, resonance3Decay:0.04, transientType:'blend', transientTone:0.75, transientFrequency:2400, transientMix:0.6, noiseFilterEnvAmount:0.5, noiseFilterEnvDecay:0.06, velocityToBrightness:0.15, velocityToTransient:0.45, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2400, noiseLowpass:7000, noiseResonance:0.04, bodyLevel:.98, bodyDecay:.32, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.09, transientDecay:.007}
 });
 export const KIT_808_REFINED = refine(KIT_808, {
-  kick: {velocityToBrightness:0.2, velocityToTransient:0.65, pitchSweepSemitones:15, pitchCurve:1.35, noiseHighpass:0, noiseLowpass:1800, noiseResonance:0, bodyLevel:1, bodyDecay:1.65, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.045, transientDecay:.008},
-  snare: {velocityToBrightness:0.6, velocityToTransient:0.65, pitchSweepSemitones:2, pitchCurve:1.25, noiseHighpass:1300, noiseLowpass:8500, noiseResonance:0.18, bodyLevel:.44, bodyDecay:.14, noiseLevel:.6, noiseAttack:.0015, noiseDecay:.37, transientLevel:.16, transientDecay:.009},
-  clap: {velocityToBrightness:0.5, velocityToTransient:0.5, burstCount:3, burstSpacing:.012, burstDecay:.009, tailLevel:.6, tailDecay:.34, burstVariation:.06, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1200, noiseLowpass:6800, noiseResonance:0.22, bodyLevel:0, bodyDecay:.06, noiseLevel:1, noiseAttack:.001, noiseDecay:.32, transientLevel:.07, transientDecay:.006},
-  closedHat: {velocityToBrightness:0.65, velocityToTransient:0.45, metalMix:0.62, metalDetune:9, metalDamping:0.72, metalHighpass:5400, metalLowpass:15500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:7200, noiseLowpass:15000, noiseResonance:0.08, bodyLevel:.72, bodyDecay:.04, noiseLevel:.28, noiseAttack:.0005, noiseDecay:.075, transientLevel:.018, transientDecay:.004},
-  openHat: {velocityToBrightness:0.55, velocityToTransient:0.35, metalMix:0.6, metalDetune:12, metalDamping:0.45, metalHighpass:4200, metalLowpass:16000, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:5800, noiseLowpass:13500, noiseResonance:0.12, bodyLevel:.67, bodyDecay:.48, noiseLevel:.33, noiseAttack:.0015, noiseDecay:.9, transientLevel:.018, transientDecay:.006},
-  tom: {velocityToBrightness:0.25, velocityToTransient:0.55, pitchSweepSemitones:5, pitchCurve:1.15, noiseHighpass:650, noiseLowpass:4200, noiseResonance:0.05, bodyLevel:.985, bodyDecay:.64, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.045, transientLevel:.045, transientDecay:.007},
-  rim: {velocityToBrightness:0.25, velocityToTransient:0.65, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2100, noiseLowpass:8500, noiseResonance:0.08, bodyLevel:.96, bodyDecay:.06, noiseLevel:.04, noiseAttack:.0005, noiseDecay:.03, transientLevel:.1, transientDecay:.004},
-  cowbell: {velocityToBrightness:0.15, velocityToTransient:0.45, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2000, noiseLowpass:9000, noiseResonance:0.04, bodyLevel:1, bodyDecay:.41, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.018, transientDecay:.005}
+  kick: {fmDepth:0.06, fmRatio:1, fmDecay:0.015, resonance1Ratio:2, resonance1Level:0.045, resonance1Decay:0.075, transientType:'tonal', transientTone:1, transientFrequency:480, transientMix:0.5, noiseFilterEnvAmount:0, noiseFilterEnvDecay:0.04, velocityToBrightness:0.2, velocityToTransient:0.65, pitchSweepSemitones:15, pitchCurve:1.35, noiseHighpass:0, noiseLowpass:1800, noiseResonance:0, bodyLevel:1, bodyDecay:1.65, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.045, transientDecay:.008},
+  snare: {fmDepth:0.16, fmRatio:1.5, fmDecay:0.03, resonance1Ratio:1.71, resonance1Level:0.14, resonance1Decay:0.075, resonance2Ratio:2.43, resonance2Level:0.055, resonance2Decay:0.035, transientType:'blend', transientTone:0.82, transientFrequency:1900, transientMix:0.2, noiseFilterEnvAmount:1.15, noiseFilterEnvDecay:0.17, velocityToBrightness:0.6, velocityToTransient:0.65, pitchSweepSemitones:2, pitchCurve:1.25, noiseHighpass:1300, noiseLowpass:4000, noiseResonance:0.18, bodyLevel:.44, bodyDecay:.14, noiseLevel:.6, noiseAttack:.0015, noiseDecay:.37, transientLevel:.16, transientDecay:.009},
+  clap: {transientType:'noise', transientTone:0.75, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:1.1, noiseFilterEnvDecay:0.23, velocityToBrightness:0.5, velocityToTransient:0.5, burstCount:3, burstSpacing:.012, burstDecay:.009, tailLevel:.6, tailDecay:.34, burstVariation:.06, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1200, noiseLowpass:3600, noiseResonance:0.22, bodyLevel:0, bodyDecay:.06, noiseLevel:1, noiseAttack:.001, noiseDecay:.32, transientLevel:.07, transientDecay:.006},
+  closedHat: {transientType:'noise', transientTone:1, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:0.55, noiseFilterEnvDecay:0.045, metalFilterEnvAmount:0.7, metalFilterEnvDecay:0.055, velocityToBrightness:0.65, velocityToTransient:0.45, metalMix:0.62, metalDetune:9, metalDamping:0.72, metalHighpass:5400, metalLowpass:9500, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:7200, noiseLowpass:10500, noiseResonance:0.08, bodyLevel:.72, bodyDecay:.04, noiseLevel:.28, noiseAttack:.0005, noiseDecay:.075, transientLevel:.018, transientDecay:.004},
+  openHat: {transientType:'noise', transientTone:0.94, transientFrequency:1600, transientMix:0.5, noiseFilterEnvAmount:0.65, noiseFilterEnvDecay:0.32, metalFilterEnvAmount:0.85, metalFilterEnvDecay:0.38, velocityToBrightness:0.55, velocityToTransient:0.35, metalMix:0.6, metalDetune:12, metalDamping:0.45, metalHighpass:4200, metalLowpass:8800, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:5800, noiseLowpass:9000, noiseResonance:0.12, bodyLevel:.67, bodyDecay:.48, noiseLevel:.33, noiseAttack:.0015, noiseDecay:.9, transientLevel:.018, transientDecay:.006},
+  tom: {fmDepth:0.45, fmRatio:1.5, fmDecay:0.08, resonance1Ratio:1.48, resonance1Level:0.12, resonance1Decay:0.22, resonance2Ratio:2.05, resonance2Level:0.055, resonance2Decay:0.095, transientType:'tonal', transientTone:1, transientFrequency:330, transientMix:0.5, noiseFilterEnvAmount:0.6, noiseFilterEnvDecay:0.05, velocityToBrightness:0.25, velocityToTransient:0.55, pitchSweepSemitones:5, pitchCurve:1.15, noiseHighpass:650, noiseLowpass:2800, noiseResonance:0.05, bodyLevel:.985, bodyDecay:.64, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.045, transientLevel:.045, transientDecay:.007},
+  rim: {fmDepth:0.3, fmRatio:2.1, fmDecay:0.02, resonance1Ratio:2.13, resonance1Level:0.13, resonance1Decay:0.035, resonance2Ratio:3.71, resonance2Level:0.075, resonance2Decay:0.02, transientType:'blend', transientTone:0.7, transientFrequency:2100, transientMix:0.8, noiseFilterEnvAmount:0.55, noiseFilterEnvDecay:0.035, velocityToBrightness:0.25, velocityToTransient:0.65, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2100, noiseLowpass:5800, noiseResonance:0.08, bodyLevel:.96, bodyDecay:.06, noiseLevel:.04, noiseAttack:.0005, noiseDecay:.03, transientLevel:.1, transientDecay:.004},
+  cowbell: {fmDepth:0.4, fmRatio:1.5, fmDecay:0.1, resonance1Ratio:2.96, resonance1Level:0.12, resonance1Decay:0.17, resonance2Ratio:4.18, resonance2Level:0.06, resonance2Decay:0.065, transientType:'tonal', transientTone:1, transientFrequency:2600, transientMix:0.5, noiseFilterEnvAmount:0, noiseFilterEnvDecay:0.08, velocityToBrightness:0.15, velocityToTransient:0.45, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:2000, noiseLowpass:9000, noiseResonance:0.04, bodyLevel:1, bodyDecay:.41, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.018, transientDecay:.005}
 });
-export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED });
+// Additional sound packs use independent layer settings, with all eight voice slots.
+export const KIT_ELECTRO_FM = refine(PRESETS, {
+  kick: {bodyWaveform:'triangle', bodyWaveformMix:0.3, velocityToBrightness:0.45, velocityToTransient:0.55, frequency:55, bodyLevel:.95, bodyDecay:.48, noiseLevel:.015, noiseDecay:.03, pitchSweepSemitones:27, pitchDecay:.025, pitchCurve:1.4, fmDepth:.85, fmRatio:1.5, fmDecay:.07, transientType:'blend', transientFrequency:1250, transientTone:.8, transientMix:.6, transientLevel:.2, transientDecay:.006, drive:.35, volume:.77, resonance1Ratio:2, resonance1Level:.08, resonance1Decay:.08},
+  snare: {bodyWaveform:'square', bodyPulseWidth:0.42, bodyWaveformMix:0.35, velocityToBrightness:0.45, velocityToTransient:0.55, frequency:205, bodyLevel:0.53, bodyDecay:.19, noiseLevel:.48, noiseAttack:.001, noiseDecay:.23, noiseHighpass:1400, noiseLowpass:4300, noiseResonance:.25, noiseFilterEnvAmount:1.3, noiseFilterEnvDecay:.17, pitchSweepSemitones:7, pitchDecay:.035, fmDepth:1.1, fmRatio:2.4, fmDecay:.12, transientType:'blend', transientFrequency:2600, transientMix:.35, transientLevel:.22, transientDecay:.008, drive:.35, volume:.64, resonance1Ratio:2.71, resonance1Level:.14, resonance1Decay:.11},
+  clap: {velocityToBrightness:0.45, velocityToTransient:0.55, bodyLevel:0, noiseLevel:.9, noiseAttack:.0005, burstCount:3, burstSpacing:.009, burstDecay:.012, tailLevel:.4, tailDecay:.2, burstVariation:.03, noiseHighpass:1800, noiseLowpass:4900, noiseResonance:.28, noiseFilterEnvAmount:1.1, noiseFilterEnvDecay:.12, transientLevel:.1, transientTone:.9, transientDecay:.005, drive:.45, volume:.61},
+  closedHat: {velocityToBrightness:0.45, velocityToTransient:0.55, frequency:720, bodyLevel:.65, bodyDecay:.055, noiseLevel:.42, noiseAttack:.0005, noiseDecay:.06, metalMix:.58, metalDetune:22, metalDamping:.72, metalHighpass:4200, metalLowpass:9500, metalFilterEnvAmount:.7, metalFilterEnvDecay:.04, noiseHighpass:5000, noiseLowpass:11000, noiseFilterEnvAmount:.5, noiseFilterEnvDecay:.04, transientLevel:.025, transientDecay:.004, drive:.25, volume:.42},
+  openHat: {velocityToBrightness:0.45, velocityToTransient:0.55, frequency:720, bodyLevel:.62, bodyDecay:.38, noiseLevel:.33, noiseAttack:.001, noiseDecay:.6, metalMix:.64, metalDetune:26, metalDamping:.32, metalHighpass:4200, metalLowpass:8500, metalFilterEnvAmount:1, metalFilterEnvDecay:.3, noiseHighpass:5200, noiseLowpass:9200, noiseFilterEnvAmount:.8, noiseFilterEnvDecay:.35, transientLevel:.025, transientDecay:.005, drive:.25, volume:.36},
+  tom: {bodyWaveform:'saw', bodyWaveformMix:0.28, velocityToBrightness:0.45, velocityToTransient:0.55, frequency:145, bodyLevel:0.87, bodyDecay:.62, noiseLevel:.025, noiseDecay:.035, pitchSweepSemitones:19, pitchDecay:.08, pitchCurve:.8, fmDepth:1.4, fmRatio:1.4, fmDecay:.24, transientType:'tonal', transientFrequency:650, transientLevel:.14, transientDecay:.012, resonance1Ratio:2.41, resonance1Level:.16, resonance1Decay:.32, resonance2Ratio:3.17, resonance2Level:.06, resonance2Decay:.16, drive:0.18, volume:.63},
+  rim: {bodyWaveform:'square', bodyPulseWidth:0.32, bodyWaveformMix:0.5, velocityToBrightness:0.45, velocityToTransient:0.55, frequency:870, bodyLevel:0.82, bodyDecay:.13, noiseLevel:.05, noiseDecay:.03, pitchSweepSemitones:3, pitchDecay:.01, fmDepth:0.9, fmRatio:3.1, fmDecay:.055, transientType:'tonal', transientFrequency:2900, transientLevel:.23, transientDecay:.005, resonance1Ratio:1.73, resonance1Level:.17, resonance1Decay:.09, drive:.3, volume:.5},
+  cowbell: {bodyWaveform:'square', bodyPulseWidth:0.5, bodyWaveformMix:0.48, tone:0.45, velocityToBrightness:0.45, velocityToTransient:0.55, frequency:410, bodyLevel:0.86, bodyDecay:.66, noiseLevel:0, pitchSweepSemitones:0, fmDepth:1.65, fmRatio:1.41, fmDecay:.42, transientType:'tonal', transientFrequency:2150, transientLevel:.09, transientDecay:.007, resonance1Ratio:2.76, resonance1Level:.22, resonance1Decay:.48, resonance2Ratio:4.12, resonance2Level:.09, resonance2Decay:.18, drive:0.1, volume:.51}
+});
+export const KIT_MINIMAL = refine(PRESETS, {
+  kick: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:61, bodyLevel:.96, bodyDecay:.22, noiseLevel:0, pitchSweepSemitones:9, pitchDecay:.012, pitchCurve:1.5, fmDepth:0, tone:.05, transientType:'tonal', transientFrequency:380, transientLevel:.045, transientDecay:.004, drive:0, volume:.78},
+  snare: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:235, bodyLevel:.38, bodyDecay:.055, noiseLevel:.48, noiseAttack:.0005, noiseDecay:.085, noiseHighpass:1300, noiseLowpass:3500, noiseFilterEnvAmount:.6, noiseFilterEnvDecay:.035, pitchSweepSemitones:1, pitchDecay:.01, fmDepth:.08, fmRatio:2, fmDecay:.012, transientType:'blend', transientTone:.55, transientFrequency:1500, transientMix:.35, transientLevel:.12, transientDecay:.004, drive:0, volume:.65},
+  clap: {velocityToBrightness:0.3, velocityToTransient:0.4, bodyLevel:0, noiseLevel:.82, noiseAttack:.0005, burstCount:2, burstSpacing:.005, burstDecay:.006, tailLevel:.13, tailDecay:.065, burstVariation:0, noiseHighpass:1700, noiseLowpass:4300, noiseResonance:.08, noiseFilterEnvAmount:.4, noiseFilterEnvDecay:.025, transientLevel:.035, transientTone:.65, transientDecay:.003, drive:0, volume:.62},
+  closedHat: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:480, bodyLevel:.24, bodyDecay:.03, noiseLevel:.6, noiseAttack:.0005, noiseDecay:.035, metalMix:.4, metalDetune:7, metalDamping:.95, metalHighpass:6200, metalLowpass:10000, noiseHighpass:6500, noiseLowpass:11000, transientLevel:.01, transientDecay:.002, drive:0, volume:.36},
+  openHat: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:480, bodyLevel:.25, bodyDecay:.12, noiseLevel:.6, noiseAttack:.001, noiseDecay:.22, metalMix:.42, metalDetune:9, metalDamping:.8, metalHighpass:5600, metalLowpass:8500, metalFilterEnvAmount:.4, metalFilterEnvDecay:.09, noiseHighpass:5600, noiseLowpass:9000, noiseFilterEnvAmount:.35, noiseFilterEnvDecay:.12, transientLevel:.01, transientDecay:.003, drive:0, volume:.36},
+  tom: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:175, bodyLevel:.9, bodyDecay:.17, noiseLevel:0, pitchSweepSemitones:3, pitchDecay:.015, fmDepth:0, transientType:'tonal', transientFrequency:410, transientLevel:.065, transientDecay:.006, resonance1Ratio:1.59, resonance1Level:.07, resonance1Decay:.08, drive:0, volume:.67},
+  rim: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:1100, bodyLevel:.56, bodyDecay:.035, noiseLevel:0, pitchSweepSemitones:0, fmDepth:0, transientType:'tonal', transientFrequency:2050, transientLevel:.18, transientDecay:.003, drive:0, volume:.61},
+  cowbell: {velocityToBrightness:0.3, velocityToTransient:0.4, frequency:690, bodyLevel:.8, bodyDecay:.12, noiseLevel:0, pitchSweepSemitones:0, tone:.15, fmDepth:.1, fmRatio:2, fmDecay:.02, transientType:'tonal', transientFrequency:1800, transientLevel:.045, transientDecay:.004, resonance1Ratio:2, resonance1Level:.045, resonance1Decay:.06, drive:0, volume:.55}
+});
+export const KIT_INDUSTRIAL = refine(PRESETS, {
+  kick: {bodyWaveform:'saw', bodyWaveformMix:0.32, velocityToBrightness:0.25, velocityToTransient:0.35, frequency:43, bodyLevel:.94, bodyDecay:.85, noiseLevel:.12, noiseAttack:.0005, noiseDecay:.065, noiseHighpass:100, noiseLowpass:1800, noiseFilterEnvAmount:1.6, noiseFilterEnvDecay:.05, pitchSweepSemitones:31, pitchDecay:.04, pitchCurve:1.2, fmDepth:1.3, fmRatio:1.7, fmDecay:.11, transientType:'blend', transientTone:.95, transientFrequency:1400, transientMix:.35, transientLevel:.32, transientDecay:.01, drive:2.7, volume:.62, resonance1Ratio:2.13, resonance1Level:.13, resonance1Decay:.2},
+  snare: {bodyWaveform:'saw', bodyWaveformMix:0.5, velocityToBrightness:0.25, velocityToTransient:0.35, frequency:155, bodyLevel:0.56, bodyDecay:.24, noiseLevel:.83, noiseAttack:.0005, noiseDecay:.5, noiseHighpass:650, noiseLowpass:3800, noiseResonance:.4, noiseFilterEnvAmount:1.6, noiseFilterEnvDecay:.35, pitchSweepSemitones:5, pitchDecay:.03, fmDepth:1.8, fmRatio:2.71, fmDecay:.2, transientType:'blend', transientTone:1, transientFrequency:2400, transientMix:.25, transientLevel:.3, transientDecay:.012, drive:2, volume:.51, resonance1Ratio:1.83, resonance1Level:.25, resonance1Decay:.18},
+  clap: {velocityToBrightness:0.25, velocityToTransient:0.35, bodyLevel:.04, bodyDecay:.08, noiseLevel:1, noiseAttack:.001, burstCount:5, burstSpacing:.017, burstDecay:.022, tailLevel:.67, tailDecay:.48, burstVariation:.45, noiseHighpass:800, noiseLowpass:3200, noiseResonance:.38, noiseFilterEnvAmount:1.9, noiseFilterEnvDecay:.3, transientLevel:.19, transientTone:.9, transientDecay:.009, drive:2, volume:.47},
+  closedHat: {velocityToBrightness:0.25, velocityToTransient:0.35, frequency:580, bodyLevel:.75, bodyDecay:.085, noiseLevel:.43, noiseAttack:.0005, noiseDecay:.11, metalMix:.66, metalDetune:85, metalDamping:.55, metalHighpass:2600, metalLowpass:8500, metalFilterEnvAmount:1.1, metalFilterEnvDecay:.07, noiseHighpass:3600, noiseLowpass:7600, noiseResonance:.2, noiseFilterEnvAmount:.9, noiseFilterEnvDecay:.08, transientLevel:.07, transientDecay:.004, drive:1.8, volume:.29},
+  openHat: {velocityToBrightness:0.25, velocityToTransient:0.35, frequency:580, bodyLevel:.8, bodyDecay:.72, noiseLevel:.45, noiseAttack:.002, noiseDecay:1.05, metalMix:.68, metalDetune:95, metalDamping:.18, metalHighpass:2200, metalLowpass:6500, metalFilterEnvAmount:1.3, metalFilterEnvDecay:.6, noiseHighpass:2700, noiseLowpass:6700, noiseResonance:.2, noiseFilterEnvAmount:1, noiseFilterEnvDecay:.65, transientLevel:.06, transientDecay:.007, drive:1.6, volume:.3},
+  tom: {bodyWaveform:'saw', bodyWaveformMix:0.4, velocityToBrightness:0.25, velocityToTransient:0.35, frequency:105, bodyLevel:.94, bodyDecay:.82, noiseLevel:.12, noiseDecay:.15, noiseHighpass:700, noiseLowpass:3400, pitchSweepSemitones:15, pitchDecay:.095, pitchCurve:.75, fmDepth:2.1, fmRatio:1.73, fmDecay:.4, transientType:'blend', transientTone:.8, transientFrequency:570, transientMix:.6, transientLevel:.22, transientDecay:.012, resonance1Ratio:1.87, resonance1Level:.23, resonance1Decay:.6, resonance2Ratio:3.43, resonance2Level:.13, resonance2Decay:.32, drive:1.9, volume:.51},
+  rim: {bodyWaveform:'square', bodyPulseWidth:0.28, bodyWaveformMix:0.6, velocityToBrightness:0.25, velocityToTransient:0.35, frequency:530, bodyLevel:.95, bodyDecay:.25, noiseLevel:.16, noiseDecay:.075, noiseHighpass:1800, noiseLowpass:6000, pitchSweepSemitones:0, fmDepth:2.1, fmRatio:3.17, fmDecay:.14, transientType:'blend', transientTone:1, transientFrequency:3100, transientMix:.7, transientLevel:.27, transientDecay:.007, resonance1Ratio:2.41, resonance1Level:.26, resonance1Decay:.21, resonance2Ratio:4.37, resonance2Level:.11, resonance2Decay:.1, drive:1.8, volume:.44},
+  cowbell: {bodyWaveform:'square', bodyPulseWidth:0.4, bodyWaveformMix:0.7, tone:0.4, velocityToBrightness:0.25, velocityToTransient:0.35, frequency:325, bodyLevel:.95, bodyDecay:1.1, noiseLevel:.06, noiseDecay:.2, pitchSweepSemitones:0, fmDepth:2.4, fmRatio:2.37, fmDecay:.7, transientType:'blend', transientTone:.9, transientFrequency:1950, transientMix:.65, transientLevel:.15, transientDecay:.009, resonance1Ratio:1.91, resonance1Level:.28, resonance1Decay:.9, resonance2Ratio:3.79, resonance2Level:.17, resonance2Decay:.5, resonance3Ratio:5.13, resonance3Level:.08, resonance3Decay:.22, drive:1.3, volume:.43}
+});
+
+// Shared settings establish each palette; every slot then receives its own voice design.
+const palette = (shared, voices) => refine(PRESETS, Object.fromEntries(
+  Object.keys(PRESETS).map(voice => [voice, {...shared, ...voices[voice]}])
+));
+export const KIT_DEEP_DUB = palette({
+  drive:.08, pitchSweepSemitones:0, fmDepth:0, tone:.2,
+  transientType:'tonal', transientLevel:.035, transientDecay:.008,
+  velocityToBrightness:.55, velocityToTransient:.6
+}, {
+  kick: {frequency:42, bodyLevel:1, bodyDecay:1.35, noiseLevel:0, pitchSweepSemitones:10, pitchDecay:.035, pitchCurve:1.4, transientFrequency:220, transientLevel:.025, fmDepth:.04, fmRatio:1, fmDecay:.025, volume:.84},
+  snare: {frequency:165, bodyLevel:.5, bodyDecay:.2, noiseLevel:.54, noiseAttack:.004, noiseDecay:.34, noiseHighpass:550, noiseLowpass:2200, noiseResonance:.1, noiseFilterEnvAmount:.55, noiseFilterEnvDecay:.15, transientType:'blend', transientTone:.25, transientFrequency:850, transientMix:.6, transientLevel:.065, resonance1Ratio:1.72, resonance1Level:.1, resonance1Decay:.12, volume:.68},
+  clap: {bodyLevel:0, noiseLevel:.88, noiseAttack:.003, burstCount:3, burstSpacing:.015, burstDecay:.018, tailLevel:.5, tailDecay:.4, burstVariation:.18, noiseHighpass:600, noiseLowpass:2400, noiseResonance:.14, noiseFilterEnvAmount:.55, noiseFilterEnvDecay:.25, transientType:'noise', transientTone:.3, transientLevel:.025, volume:.66},
+  closedHat: {frequency:360, bodyLevel:.38, bodyDecay:.06, noiseLevel:.55, noiseAttack:.0015, noiseDecay:.1, metalMix:.4, metalDetune:14, metalDamping:.9, metalHighpass:2400, metalLowpass:5200, noiseHighpass:2500, noiseLowpass:5600, noiseFilterEnvAmount:.3, noiseFilterEnvDecay:.045, transientType:'noise', transientTone:.35, transientLevel:.01, transientDecay:.003, volume:.46},
+  openHat: {frequency:360, bodyLevel:.4, bodyDecay:.48, noiseLevel:.54, noiseAttack:.004, noiseDecay:.85, metalMix:.43, metalDetune:18, metalDamping:.62, metalHighpass:1900, metalLowpass:4500, metalFilterEnvAmount:.45, metalFilterEnvDecay:.4, noiseHighpass:2000, noiseLowpass:4800, noiseFilterEnvAmount:.4, noiseFilterEnvDecay:.5, transientType:'noise', transientTone:.35, transientLevel:.012, transientDecay:.005, volume:.42},
+  tom: {bodyWaveform:'triangle', bodyWaveformMix:0.25, frequency:82, bodyLevel:.96, bodyDecay:.95, noiseLevel:.025, noiseAttack:.002, noiseDecay:.065, noiseHighpass:350, noiseLowpass:1600, pitchSweepSemitones:4, pitchDecay:.07, transientFrequency:240, transientLevel:.05, resonance1Ratio:1.53, resonance1Level:.13, resonance1Decay:.55, resonance2Ratio:2.09, resonance2Level:.04, resonance2Decay:.18, fmDepth:.1, fmRatio:1.5, fmDecay:.06, volume:.71},
+  rim: {frequency:440, bodyLevel:.85, bodyDecay:.15, noiseLevel:.025, noiseDecay:.04, noiseHighpass:600, noiseLowpass:2400, transientFrequency:780, transientLevel:.12, transientDecay:.006, resonance1Ratio:1.61, resonance1Level:.14, resonance1Decay:.22, volume:.57},
+  cowbell: {bodyWaveform:'triangle', bodyWaveformMix:0.3, frequency:280, bodyLevel:.94, bodyDecay:.95, noiseLevel:0, transientFrequency:620, transientLevel:.04, fmDepth:.16, fmRatio:1.5, fmDecay:.14, resonance1Ratio:2, resonance1Level:.12, resonance1Decay:.7, resonance2Ratio:2.83, resonance2Level:.04, resonance2Decay:.25, volume:.57}
+});
+export const KIT_RETRO_ARCADE = palette({
+  drive:.3, noiseAttack:.0005, attack:.0005, transientType:'tonal', transientLevel:.1,
+  transientDecay:.004, velocityToBrightness:.3, velocityToTransient:.35
+}, {
+  kick: {bodyWaveform:'triangle', bodyWaveformMix:0.85, frequency:67, bodyLevel:.94, bodyDecay:.27, noiseLevel:0, tone:0.25, pitchSweepSemitones:36, pitchDecay:.025, pitchCurve:.8, fmDepth:0.3, fmRatio:2, fmDecay:.04, transientFrequency:1900, transientLevel:.08, volume:.74},
+  snare: {bodyWaveform:'square', bodyPulseWidth:0.25, bodyWaveformMix:0.6, frequency:320, bodyLevel:.55, bodyDecay:.095, noiseLevel:.6, noiseDecay:.125, noiseHighpass:1800, noiseLowpass:7600, noiseResonance:.3, noiseFilterEnvAmount:1.1, noiseFilterEnvDecay:.075, pitchSweepSemitones:16, pitchDecay:.025, fmDepth:0.8, fmRatio:3, fmDecay:.065, transientType:'blend', transientTone:1, transientFrequency:3500, transientMix:.45, transientLevel:.18, volume:.59},
+  clap: {bodyLevel:0, noiseLevel:.9, burstCount:4, burstSpacing:.006, burstDecay:.006, tailLevel:.23, tailDecay:.11, burstVariation:0, noiseHighpass:2300, noiseLowpass:6400, noiseResonance:.3, noiseFilterEnvAmount:-1.4, noiseFilterEnvDecay:.07, transientType:'noise', transientTone:1, transientLevel:.12, volume:.64},
+  closedHat: {frequency:1050, bodyLevel:.65, bodyDecay:.035, noiseLevel:.38, noiseDecay:.04, pitchSweepSemitones:0, metalMix:.62, metalDetune:0, metalDamping:.82, metalHighpass:5000, metalLowpass:13000, noiseHighpass:6500, noiseLowpass:15000, transientType:'noise', transientTone:1, transientLevel:.035, transientDecay:.002, volume:.43},
+  openHat: {frequency:1050, bodyLevel:.64, bodyDecay:.22, noiseLevel:.36, noiseDecay:.34, pitchSweepSemitones:0, metalMix:.64, metalDetune:3, metalDamping:.45, metalHighpass:3800, metalLowpass:9500, metalFilterEnvAmount:1.3, metalFilterEnvDecay:.16, noiseHighpass:4600, noiseLowpass:11500, noiseFilterEnvAmount:.6, noiseFilterEnvDecay:.2, transientType:'noise', transientTone:1, transientLevel:.03, volume:.39},
+  tom: {bodyWaveform:'square', bodyPulseWidth:0.5, bodyWaveformMix:1, drive:0.1, frequency:235, bodyLevel:0.8, bodyDecay:.42, noiseLevel:0, pitchSweepSemitones:-19, pitchDecay:.065, pitchCurve:.8, fmDepth:0.28, fmRatio:2, fmDecay:.12, transientFrequency:1150, transientLevel:.075, resonance1Ratio:2, resonance1Level:.1, resonance1Decay:.14, volume:.63},
+  rim: {bodyWaveform:'square', bodyPulseWidth:0.15, bodyWaveformMix:0.9, drive:0.08, frequency:1500, bodyLevel:.9, bodyDecay:.055, noiseLevel:0, pitchSweepSemitones:12, pitchDecay:.008, pitchCurve:1.7, fmDepth:0.1, fmRatio:2.5, fmDecay:.018, transientFrequency:3900, transientLevel:.17, volume:.68},
+  cowbell: {bodyWaveform:'square', bodyPulseWidth:0.25, bodyWaveformMix:0.9, drive:0.1, frequency:780, bodyLevel:.9, bodyDecay:.39, noiseLevel:0, tone:0.3, pitchSweepSemitones:7, pitchDecay:.055, fmDepth:0.4, fmRatio:2, fmDecay:.22, transientFrequency:3100, transientLevel:.065, resonance1Ratio:2, resonance1Level:.15, resonance1Decay:.28, resonance2Ratio:3, resonance2Level:.055, resonance2Decay:.12, volume:.51}
+});
+export const KIT_SOFT_DUSTY = palette({
+  drive:.18, attack:.003, pitchSweepSemitones:0, tone:.12, fmDepth:0,
+  transientType:'noise', transientTone:.22, transientLevel:.035, transientDecay:.006,
+  velocityToBrightness:.65, velocityToTransient:.75
+}, {
+  kick: {bodyWaveform:'triangle', bodyWaveformMix:0.35, frequency:57, attack:.004, bodyLevel:.95, bodyDecay:.38, noiseLevel:.012, noiseAttack:.002, noiseDecay:.06, noiseHighpass:0, noiseLowpass:750, pitchSweepSemitones:7, pitchDecay:.022, pitchCurve:1.4, transientType:'blend', transientFrequency:270, transientMix:.8, transientLevel:.028, volume:.82},
+  snare: {frequency:180, bodyLevel:.42, bodyDecay:.1, noiseLevel:.64, noiseAttack:.006, noiseDecay:.19, noiseHighpass:550, noiseLowpass:1900, noiseResonance:.08, noiseFilterEnvAmount:.35, noiseFilterEnvDecay:.075, transientType:'blend', transientFrequency:950, transientMix:.25, transientLevel:.055, resonance1Ratio:1.62, resonance1Level:.07, resonance1Decay:.07, volume:.74},
+  clap: {bodyLevel:0, noiseLevel:.85, noiseAttack:.004, burstCount:3, burstSpacing:.012, burstDecay:.014, tailLevel:.32, tailDecay:.18, burstVariation:.35, noiseHighpass:750, noiseLowpass:2300, noiseResonance:.07, transientLevel:.018, volume:.73},
+  closedHat: {frequency:430, bodyLevel:.24, bodyDecay:.04, noiseLevel:.65, noiseAttack:.002, noiseDecay:.065, metalMix:.32, metalDetune:35, metalDamping:.95, metalHighpass:2600, metalLowpass:4400, noiseHighpass:2900, noiseLowpass:5200, transientLevel:.007, transientDecay:.003, drive:.08, volume:.55},
+  openHat: {frequency:430, bodyLevel:.25, bodyDecay:.19, noiseLevel:.64, noiseAttack:.005, noiseDecay:.34, metalMix:.34, metalDetune:42, metalDamping:.82, metalHighpass:2200, metalLowpass:3800, metalFilterEnvAmount:.3, metalFilterEnvDecay:.12, noiseHighpass:2400, noiseLowpass:4500, noiseFilterEnvAmount:.25, noiseFilterEnvDecay:.17, transientLevel:.009, drive:.08, volume:.51},
+  tom: {bodyWaveform:'triangle', bodyWaveformMix:0.5, frequency:135, bodyLevel:.91, bodyDecay:.29, noiseLevel:.035, noiseAttack:.003, noiseDecay:.055, noiseHighpass:450, noiseLowpass:1400, pitchSweepSemitones:3, pitchDecay:.035, transientType:'tonal', transientFrequency:340, transientLevel:.035, resonance1Ratio:1.55, resonance1Level:.07, resonance1Decay:.12, volume:.72},
+  rim: {frequency:660, bodyLevel:.77, bodyDecay:.055, noiseLevel:.025, noiseAttack:.002, noiseDecay:.035, noiseHighpass:850, noiseLowpass:2500, transientType:'blend', transientFrequency:1200, transientMix:.8, transientLevel:.075, transientDecay:.005, volume:.67},
+  cowbell: {frequency:465, bodyLevel:.85, bodyDecay:.21, noiseLevel:.01, noiseAttack:.003, noiseDecay:.04, noiseHighpass:1400, noiseLowpass:3100, transientType:'tonal', transientFrequency:950, transientLevel:.028, resonance1Ratio:2.04, resonance1Level:.05, resonance1Decay:.1, volume:.61}
+});
+
+export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
 export const REFINEMENT_NOTES = Object.freeze({
   kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
   snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',
@@ -394,8 +586,18 @@ export const REFINEMENT_NOTES = Object.freeze({
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const demoKits = {'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED};
-let activeKit = '808-refined';
+const demoKits = {'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const kitInfo = {
+  'original-refined':['Drum Synth','Shaped pitch sweeps, independent layers, and focused noise filters.'],
+  '808-refined':['808-inspired','Deep bass drums, crisp claps, and tightly tuned metallic hats.'],
+  'electro-fm':['Electro / FM','Triangle-weighted kicks, pulse snares, and FM percussion with sharper waveforms.'],
+  minimal:['Minimal','Short thumps, dry claps, delicate hats, and tiny tonal clicks.'],
+  'deep-dub':['Deep / Dub','Rounded low drums, dark hats, muted claps, and lingering percussion.'],
+  'retro-arcade':['Retro Arcade','Square-wave bleeps, narrow pulse tones, and triangle kicks with game-inspired pitch sweeps.'],
+  'soft-dusty':['Soft / Dusty','Gentle attacks, dark rattles, damped hats, and soft tonal knocks.'],
+  industrial:['Industrial','Saw-driven kicks and snares, pulse-metal clangs, and detuned hats.']
+};
+let activeKit = 'deep-dub';
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
@@ -408,7 +610,7 @@ function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => 
 
 function status(message) { $('status').textContent = message; }
 async function enable() {
-  if (!synth) synth = new DrumForge({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
+  if (!synth) synth = new DrumSynth({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
   await synth.resume(); status('Audio ready'); $('enable').textContent = 'Audio enabled';
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
@@ -423,28 +625,65 @@ voices.forEach((voice,i) => {
 });
 const groups = [
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
+  ['Body oscillator', {bodyWaveform:'Waveform (raw tonal character)',bodyWaveformMix:'Shape blend (original → selected wave)',bodyPulseWidth:'Pulse width (square shape / hollow tone)'}],
+  ['FM synthesis', {fmDepth:'FM depth (0 = off)',fmRatio:'FM ratio (× body frequency)',fmDecay:'FM decay (attack complexity)'}],
   ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
+  ...[1,2,3].map(n=>[`Body resonance ${n}`, {[`resonance${n}Ratio`]:'Pitch ratio (× body frequency)',[`resonance${n}Level`]:'Added resonance level', [`resonance${n}Decay`]:'Ring decay'}]),
   ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
   ['Clap structure', {burstCount:'Burst count',burstSpacing:'Burst spacing',burstDecay:'Burst decay',tailLevel:'Tail level',tailDecay:'Tail decay',burstVariation:'Burst variation'}],
-  ['Metallic source', {metalMix:'Metal / noise balance',metalDetune:'Detune',metalDamping:'Damping',metalHighpass:'Metal high-pass',metalLowpass:'Metal low-pass'}],
-  ['Noise filter', {noiseHighpass:'High-pass',noiseLowpass:'Low-pass',noiseResonance:'Resonance'}],
-  ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
-  ['Velocity response', {velocityToBrightness:'Brightness response',velocityToTransient:'Transient response'}],
+  ['Metallic source', {metalMix:'Metal / noise balance',metalDetune:'Detune',metalDamping:'Damping',metalHighpass:'Metal high-pass',metalLowpass:'Metal low-pass',metalFilterEnvAmount:'Metal sweep (+ bright / − dark start)',metalFilterEnvDecay:'Metal sweep decay'}],
+  ['Noise filter', {noiseHighpass:'High-pass',noiseLowpass:'Low-pass',noiseResonance:'Resonance',noiseFilterEnvAmount:'Noise sweep (+ bright / − dark start)',noiseFilterEnvDecay:'Noise sweep decay'}],
+  ['Transient', {transientType:'Impact type',transientTone:'Noise tone (dark → bright)',transientFrequency:'Knock frequency',transientMix:'Blend (noise → tonal)',transientLevel:'Transient level',transientDecay:'Transient decay'}],
+  ['Velocity response', {velocityToBrightness:'Brightness response (darker on softer hits)',velocityToTransient:'Transient response (gentler click on softer hits)'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   for(const [group, labels] of groups) {
+    if(group==='Body oscillator' && !BODY_WAVEFORM_VOICES.includes(voice)) continue;
+    if(group==='FM synthesis' && !FM_VOICES.includes(voice)) continue;
+    if(group.startsWith('Body resonance') && !RESONANCE_VOICES.includes(voice)) continue;
     if(group==='Metallic source' && !voice.includes('Hat')) continue;
     if(group==='Clap structure' && voice!=='clap') continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
+    if(group==='Noise filter' || group==='Metallic source') {
+      const note=document.createElement('p');note.className='control-note';note.textContent='Sweep starts brighter (+) or darker (−), then returns to the low-pass setting. Amount 0 disables it. Works at 100% hit strength too.';$('controls').append(note);
+    }
+    if(group==='FM synthesis') {const note=document.createElement('p');note.className='control-note';note.textContent='Adds a complex or metallic attack to the original tonal body. Depth 0 is off; larger depth adds more modulation. Ratio changes character; decay sets how quickly it settles. Try Tom: depth 1, ratio 1.4, decay 120 ms. Works at 100% intensity.';$('controls').append(note);}
+    if(group==='Body resonance 1') {const note=document.createElement('p');note.className='control-note';note.textContent='Add up to three ringing tones to the existing body. Ratio follows body pitch; each tone has its own decay. Level 0 disables a tone. Body level controls them all.';$('controls').append(note);}
+    if(group==='Transient') {const note=document.createElement('p');note.className='control-note';note.textContent='Shapes the initial impact, even at 100% strength. Raise Transient level to hear it clearly; it does not change the drum body.';$('controls').append(note);}
+    if(group==='Velocity response') {
+      const note=document.createElement('p');note.className='control-note';note.id='velocity-help';
+      note.textContent='Only affects hits below 100% strength. Higher values soften quiet hits more. Try 35% Hit strength and compare 0 with 1. In the sequencer, each step uses its own strength.';
+      $('controls').append(note);
+    }
     for(const [key,label] of Object.entries(labels)) {
     if(voice==='clap' && key==='noiseDecay') continue;
+    if(key==='bodyWaveform') {
+      const wrapper=document.createElement('div');wrapper.className='control';
+      wrapper.innerHTML='<label for="param-bodyWaveform">Waveform (raw tonal character)</label><select id="param-bodyWaveform" aria-describedby="oscillator-help"><option value="sine">Sine (round)</option><option value="triangle">Triangle (gentle edges)</option><option value="square">Square / pulse (hollow)</option><option value="saw">Saw (buzzy)</option></select>';
+      const input=wrapper.querySelector('select');input.value=kit[voice].bodyWaveform;
+      input.onchange=()=>{kit[voice].bodyWaveform=input.value;select(voice);};$('controls').append(wrapper);continue;
+    }
+    if(key==='bodyWaveformMix' && kit[voice].bodyWaveform==='sine') continue;
+    if(key==='bodyPulseWidth' && kit[voice].bodyWaveform!=='square') continue;
+    if(key==='transientType') {
+      const wrapper=document.createElement('div');wrapper.className='control';
+      wrapper.innerHTML='<label for="param-transientType">Impact type</label><select id="param-transientType"><option value="noise">Noise click</option><option value="tonal">Tonal knock</option><option value="blend">Noise + tonal blend</option></select>';
+      const input=wrapper.querySelector('select');input.value=kit[voice].transientType;
+      input.onchange=()=>{kit[voice].transientType=input.value;select(voice);};$('controls').append(wrapper);continue;
+    }
+    if(key==='transientTone' && kit[voice].transientType==='tonal') continue;
+    if(key==='transientFrequency' && kit[voice].transientType==='noise') continue;
+    if(key==='transientMix' && kit[voice].transientType!=='blend') continue;
     const [min,max,increment]=PARAMS[key], wrapper=document.createElement('div'); wrapper.className='control';
-    wrapper.innerHTML=`<label for="param-${key}">${label}<output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
+    wrapper.innerHTML=`<label for="param-${key}"><span>${label}</span><output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
+    if(group==='Velocity response') wrapper.querySelector('input').setAttribute('aria-describedby','velocity-help');
+    if(group==='Body oscillator') wrapper.querySelector('input').setAttribute('aria-describedby','oscillator-help');
     wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};
     $('controls').append(wrapper);
   }
@@ -461,17 +700,24 @@ function draw() {
   for(let x=0;x<width;x++){let min=0,max=0;const a=Math.floor(x*samples.length/width),b=Math.floor((x+1)*samples.length/width);for(let i=a;i<b;i++){min=Math.min(min,samples[i]);max=Math.max(max,samples[i]);}ctx.moveTo(x,height/2+min*35);ctx.lineTo(x,height/2+max*35);}ctx.stroke();
 }
 function buildGrid() {
+  $('intensity-hint').textContent=$('use-intensity').checked
+    ? 'Click a step to cycle: off → soft · (35%) → normal •• (65%) → accent ! (100%) → off.'
+    : 'Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.';
   $('grid').replaceChildren(); const numbers=document.createElement('div');numbers.className='row numbers';numbers.innerHTML='<span></span>'+Array.from({length:16},(_,i)=>`<span>${i+1}</span>`).join('');$('grid').append(numbers);
   voices.forEach((voice,i)=>{const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.className='row-label';label.textContent=names[i];row.append(label);
     pattern[i].forEach((velocity,s)=>{
       const button=document.createElement('button');button.className=`step ${s%4===0?'beat':''}`;button.dataset.step=s;
       const update=()=>{
-        const v=pattern[i][s];button.classList.toggle('on',v>0);
+        const v=pattern[i][s] ? ($('use-intensity').checked ? pattern[i][s] : 1) : 0;button.classList.toggle('on',v>0);
         button.dataset.velocity=String(v);button.textContent=v===0?'':v===.35?'·':v===.65?'••':'!';
         const label=`${names[i]} step ${s+1}: ${v===0?'off':Math.round(v*100)+'% strength'}`;
         button.setAttribute('aria-label',label);button.setAttribute('aria-pressed',String(v>0));button.title=label;
       };
-      button.onclick=()=>{const levels=[0,.35,.65,1];pattern[i][s]=levels[(levels.indexOf(pattern[i][s])+1)%levels.length];update();};
+      button.onclick=()=>{
+        if($('use-intensity').checked){const levels=[0,.35,.65,1];pattern[i][s]=levels[(levels.indexOf(pattern[i][s])+1)%levels.length];}
+        else pattern[i][s]=pattern[i][s] ? 0 : 1;
+        update();
+      };
       update();row.append(button);
     });$('grid').append(row);
   });
@@ -481,7 +727,7 @@ function schedule() {
   // If the tab was throttled, restart from now instead of emitting a burst of old hits.
   if(nextTime<synth.context.currentTime)nextTime=synth.context.currentTime+.02;
   while(nextTime<synth.context.currentTime+.1){
-    voices.forEach((voice,i)=>{if(pattern[i][step])synth.trigger(voice,{when:nextTime,params:kit[voice],velocity:pattern[i][step]});});
+    voices.forEach((voice,i)=>{if(pattern[i][step])synth.trigger(voice,{when:nextTime,params:kit[voice],velocity:$('use-intensity').checked ? pattern[i][step] : 1});});
     queue.push({time:nextTime,step});step=(step+1)%16;nextTime+=60/bpm/4;
   }
 }
@@ -499,14 +745,15 @@ $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(
 async function changeKit(id) {
   const resume = running; stop(); activeKit=id; kit=edits[activeKit]; $('kit').value=id;
   select(selected);
-  const name=id.startsWith('808') ? '808-inspired' : 'Drum Forge';
-  $('pack-description').textContent = `${name} kit · shaped pitch sweeps, independent layers, and focused noise filters.`;
+  const [name,description]=kitInfo[id];
+  $('pack-description').textContent = description;
   if(resume) await toggle();
   status(`${name} kit loaded`);
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
+$('use-intensity').onchange=buildGrid;
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-forge-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('WAV exported');});
+$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('WAV exported');});
 $('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});

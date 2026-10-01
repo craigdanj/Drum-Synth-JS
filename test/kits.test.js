@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PRESETS, render } from '../src/drum-forge.js';
+import { PRESETS, render } from '../src/drum-synth.js';
 import { KIT_808 } from '../src/kits.js';
 test('808 pack renders eight distinct, deterministic, finite, tapered sounds', () => {
   assert.deepEqual(Object.keys(KIT_808), Object.keys(PRESETS));

@@ -1,4 +1,6 @@
-# Drum Forge JS
+# Drum Synth JS
+
+Version **1.0.0**.
 
 A small, dependency-free JavaScript drum synthesizer. Design percussion, play it with Web Audio, and export the same sound as a WAV file. No recordings, audio assets, build step, or runtime dependencies required.
 
@@ -28,13 +30,13 @@ Serve the repository root, not just the demo folder. ES modules require HTTP; do
 
 ## Browser usage
 
-Copy `src/drum-forge.js` into your project, or install a local checkout with `npm install /path/to/drum-forge-js`. The package name is a proposed name; this project has not been published to npm.
+Copy `src/drum-synth.js` into your project, or install a local checkout with `npm install /path/to/drum-synth-js`. The package name is a proposed name; this project has not been published to npm.
 
 ```html
 <button id="kick">Play kick</button>
 <script type="module">
-  import { DrumForge } from './src/drum-forge.js';
-  const drums = new DrumForge({ volume: 0.65 });
+  import { DrumSynth } from './src/drum-synth.js';
+  const drums = new DrumSynth({ volume: 0.65 });
   drums.configure('kick', {
     frequency: 48, decay: 0.7, pitchDrop: 3.5, drive: 1.2
   });
@@ -45,7 +47,7 @@ Copy `src/drum-forge.js` into your project, or install a local checkout with `np
 </script>
 ```
 
-For bundlers, use `import { DrumForge } from 'drum-forge-js'` after installing the local package. The package is ESM-only; there is no CommonJS or global script build.
+For bundlers, use `import { DrumSynth } from 'drum-synth-js'` after installing the local package. The package is ESM-only; there is no CommonJS or global script build.
 
 ### Scheduling and routing
 
@@ -54,7 +56,7 @@ const context = new AudioContext();
 const bus = context.createGain();
 bus.gain.value = 0.6;
 bus.connect(context.destination);
-const drums = new DrumForge({ context, destination: bus, maxVoices: 32 });
+const drums = new DrumSynth({ context, destination: bus, maxVoices: 32 });
 await drums.resume(); // Call from a user gesture.
 const start = context.currentTime + 0.1;
 drums.trigger('kick', { when: start });
@@ -73,7 +75,7 @@ const handle = drums.trigger('snare', {
 
 ```js
 import { writeFile } from 'node:fs/promises';
-import { render, encodeWav } from './src/drum-forge.js';
+import { render, encodeWav } from './src/drum-synth.js';
 const audio = render('snare', { decay: 0.32, noise: 0.85, seed: 123 }, {
   sampleRate: 48000, velocity: 0.9
 });
@@ -110,7 +112,7 @@ The transient has its own short envelope, so it remains audible with a long body
 
 | Method / option | Behavior |
 |---|---|
-| `new DrumForge({ context?, destination?, volume?, maxVoices? })` | Creates playback engine. Master volume defaults to 0.7; maxVoices to 32 (integer 1–128). Destination must belong to the context. |
+| `new DrumSynth({ context?, destination?, volume?, maxVoices? })` | Creates playback engine. Master volume defaults to 0.7; maxVoices to 32 (integer 1–128). Destination must belong to the context. |
 | `resume()` | Unlock/resume the context; call within a user gesture. |
 | `configure(voice, partialParams)` | Merge changes into a voice; returns the engine. |
 | `getParams(voice)` | Return a copy of the current voice parameters. |
@@ -158,7 +160,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **808-inspired** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose **808-inspired** or **Drum Forge** from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **Deep / Dub** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the eight kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -198,7 +200,7 @@ The demo exposes the independent controls in place of Noise mix, shared Decay, a
 
 ## Demo sound packs
 
-The demo offers two kits: **808-inspired** and **Drum Forge**, both using the refined layer presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
+The demo offers eight kits: **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
 
 `KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. Their WAVs are in `samples/original-refined/` and `samples/808-refined/`. Earlier presets remain available in the plugin API for compatibility but are no longer offered in the demo.
 
@@ -224,7 +226,7 @@ These filters affect only the noise layer, not the body or the separate transien
 
 ### Updated demo kits
 
-Both current kits use explicit pitch and noise-filter settings: kicks use shaped pitch settling, snares and claps use focused noise bands with modest resonance, hats use higher noise high-pass cutoffs, and toms use defined semitone bends. Some noise-free voices retain their sound because noise-filter settings do not affect them. The demo still offers only **808-inspired** and **Drum Forge**; no old/new comparison controls were added. Regenerated WAVs are included in each refined sample folder.
+Both current kits use explicit pitch and noise-filter settings: kicks use shaped pitch settling, snares and claps use focused noise bands with modest resonance, hats use higher noise high-pass cutoffs, and toms use defined semitone bends. Some noise-free voices retain their sound because noise-filter settings do not affect them. The demo still offers only **808-inspired** and **Drum Synth**; no old/new comparison controls were added. Regenerated WAVs are included in each refined sample folder.
 
 ### Legacy mapping
 
@@ -261,7 +263,7 @@ For clap, `noiseDecay` remains an API alias for `tailDecay`; `decay` also update
 
 ### Retuned claps
 
-- **Drum Forge:** four bursts, 10 ms spacing, 17 ms burst decay, 28% variation, 42% wash level, 260 ms wash decay.
+- **Drum Synth:** four bursts, 10 ms spacing, 17 ms burst decay, 28% variation, 42% wash level, 260 ms wash decay.
 - **808-inspired:** three bursts, 12 ms spacing, 9 ms burst decay, 6% variation, 60% wash level, 340 ms wash decay.
 
 These are synthesis interpretations, not circuit-accurate emulations. Updated WAVs are included in both refined kit folders.
@@ -289,7 +291,7 @@ The balance applies `2 * metalMix` to Body level and `2 * (1 - metalMix)` to Noi
 
 Metal filters are one-pole low-pass then high-pass, independent of the noise filters, with effective cutoffs capped at 0.4 times sample rate. A high-pass above the low-pass is allowed and strongly attenuates the metallic layer. Damping adds frequency-dependent exponential decay scaled by Body decay, so higher partials fade faster without lengthening the tail. Fixed detuning preserves deterministic rendering and does not vary from hit to hit.
 
-Both demo kits' open and closed hats have been retuned. Drum Forge uses a wider detune spread; the 808-inspired kit favors a tighter, more metallic balance and higher metal high-pass cutoffs. Closed hats use more damping than open hats. This intentionally changes hat rendering for existing presets while preserving the parameter API. Other voices ignore these five settings. Hi-hat choking is available as a playback feature, described below.
+Both demo kits' open and closed hats have been retuned. Drum Synth uses a wider detune spread; the 808-inspired kit favors a tighter, more metallic balance and higher metal high-pass cutoffs. Closed hats use more damping than open hats. This intentionally changes hat rendering for existing presets while preserving the parameter API. Other voices ignore these five settings. Hi-hat choking is available as a playback feature, described below.
 
 ```js
 drums.trigger('openHat', {params: {
@@ -303,7 +305,7 @@ drums.trigger('openHat', {params: {
 Choking is enabled by default: a closed hat fades any overlapping open hats to silence. The demo includes a **Hi-hat choking** toggle and **Fade** slider (1–100 ms, default 5 ms), applying to pads and the sequencer. To hear the effect clearly, play an open hat, then a closed hat before its tail finishes; repeat with choking disabled.
 
 ```js
-const drums = new DrumForge({chokeEnabled: true, chokeFade: 0.005});
+const drums = new DrumSynth({chokeEnabled: true, chokeFade: 0.005});
 drums.setChoke({chokeEnabled: false});
 drums.setChoke({chokeEnabled: true, chokeFade: 0.012});
 ```
@@ -327,7 +329,7 @@ Full velocity (1) preserves the preset sound. Zero response preserves volume-onl
 
 Use **Hit strength** to audition pads or Play sound at 1–100%. The waveform and exported WAV follow this setting; WAV filenames include the strength. It does not set sequencer velocity, and preset JSON stores response parameters rather than audition strength.
 
-Each sequencer step cycles through **off → soft (35%) → normal (65%) → accent (100%) → off** when clicked or keyboard-activated. Symbols, colors, and accessible labels indicate its strength. Starter beat includes quieter offbeats and a ghost snare. Clear and Starter beat reset velocities; kit switching preserves the sequence. Set both response controls to zero to hear volume-only differences.
+The sequencer’s **Use intensity** checkbox is unchecked by default. In this mode, clicks toggle off / 100%, and every enabled step plays at 100%. When checked, each step cycles through **off → soft (35%) → normal (65%) → accent (100%) → off** when clicked or keyboard-activated. Existing per-step strengths are retained while intensity is disabled and restored when re-enabled, unless you edit those steps. Symbols and labels show the currently effective strength. Changes apply to subsequently scheduled hits. Symbols, colors, and accessible labels indicate its strength. Starter beat includes quieter offbeats and a ghost snare. Clear and Starter beat reset velocities; kit switching preserves the sequence. Set both response controls to zero to hear volume-only differences.
 
 ```js
 drums.configure('snare', {velocityToBrightness: 0.6, velocityToTransient: 0.65});
@@ -336,3 +338,254 @@ const softSample = render('snare', {
   velocityToBrightness: 0.6, velocityToTransient: 0.65
 }, {velocity: 0.35});
 ```
+
+## Filter envelopes: brightness changes within a hit
+
+These controls move a layer's low-pass cutoff during each hit, including at **100% Hit strength**. They differ from Velocity response, which changes the sound according to how softly the hit is played.
+
+| Parameter | Range | Meaning |
+|---|---|---|
+| `noiseFilterEnvAmount` | -4 to +4 octaves | Noise low-pass starting offset; + starts brighter, − starts darker, 0 disables the sweep |
+| `noiseFilterEnvDecay` | 0.005–3 seconds | Time for the noise cutoff offset to fall to 0.1% of its initial octave amount |
+| `metalFilterEnvAmount` | -4 to +4 octaves | Metallic low-pass starting offset; applies only to hats |
+| `metalFilterEnvDecay` | 0.005–3 seconds | Time for the metallic cutoff offset to fall to 0.1% of its initial octave amount |
+
+For either layer, the moving cutoff is:
+
+`baseLowpass * 2 ** (amount * exp(-6.907755 * time / decay))`
+
+The result is limited to 20 Hz–0.4 times the render sample rate. For example, a 4000 Hz base and +1 octave start at 8000 Hz, then settle toward 4000 Hz. A -1 octave start is 2000 Hz. The sweep is continuous from hit onset; clap bursts do not retrigger it. Both one-pole and resonant noise-filter paths follow the same moving cutoff. The metallic envelope moves only the metallic low-pass; high-pass settings remain fixed. These controls do not extend the amplitude envelope or exported sample duration.
+
+Velocity brightness response adjusts the base low-pass first, then the filter envelope sweeps around that adjusted base. Amount 0 preserves the existing static path exactly, regardless of envelope decay. The engine's base presets default to 0; current demo kits deliberately use nonzero envelopes where useful.
+
+### Hearing and tuning the effect
+
+Select Snare, leave Hit strength at 100%, and try Noise low-pass at 4000 Hz, Noise sweep at +2 octaves, and Noise sweep decay at 300 ms. Compare with amount 0. For an open hat, try the same with Metal low-pass and Metal sweep. Positive amounts give a bright opening that darkens; negative amounts create a darker opening that brightens.
+
+A sweep can be subtle if its layer is quiet, its cutoff is already capped, or the high-pass removes most of that frequency region. Noise envelopes do nothing when Noise level is 0; metallic envelopes do nothing when the hat's metallic layer is muted. They do not alter a kick's tonal body or the separate transient click.
+
+### Retuned kits
+
+Snares and claps now start with brighter noise and settle into darker tails. Closed hats use brief noise/metal sweeps; open hats use longer independent sweeps. Audible noise layers in kicks, toms, rims, and cowbells receive smaller sweeps. The noise-free 808-inspired kick and cowbell retain neutral noise-envelope amounts. Both kits' WAV sample folders have been regenerated. All four parameters are stored in preset JSON and covered by the TypeScript declarations.
+
+```js
+drums.trigger('openHat', {params: {
+  noiseLowpass: 9000, noiseFilterEnvAmount: 0.65, noiseFilterEnvDecay: 0.32,
+  metalLowpass: 8800, metalFilterEnvAmount: 0.85, metalFilterEnvDecay: 0.38
+}});
+```
+
+## Transient character: shape the initial impact
+
+The **Transient** section now offers **Noise click**, **Tonal knock**, and **Noise + tonal blend**. These change the brief initial impact at every intensity, including 100%. They do not replace the drum body, snare rattle, or clap burst cluster.
+
+| Parameter | Values / range | Purpose |
+|---|---|---|
+| `transientType` | `'noise'`, `'tonal'`, `'blend'` | Choose the impact source |
+| `transientTone` | 0–1 | Dark-to-bright tone of the noise portion |
+| `transientFrequency` | 40–12000 Hz | Frequency of the separate sine-wave knock |
+| `transientMix` | 0–1 | Blend only: 0 is noise, 1 is tonal, 0.5 mixes both equally |
+
+Existing Transient level and Transient decay shape all three types. The 0.5 ms onset ramp is retained. Knock frequency is independent of the main Frequency and Pitch sweep controls and is capped at 0.4 times the render sample rate. Noise tone uses a low-pass cutoff from 200 to 20000 Hz (also sample-rate capped), with progressively more unfiltered noise as tone approaches 1. Tone 1 preserves the original white-noise click exactly. The blend is linear, so perceived loudness can vary between modes.
+
+The demo hides Knock frequency for noise-only impacts, Noise tone for tonal-only impacts, and Blend outside blend mode. Transient velocity response softens whichever impact type is selected; the Noise and Metal filter envelopes do not process this separate layer.
+
+To hear the difference clearly, set Hit strength to 100%, raise Transient level to around 0.6, and compare the types. Try a 400 Hz knock for a low impact or 2000 Hz for a sharper one. If the transient is hard to distinguish, temporarily lower Body level and Noise level. Level 0 mutes every transient type.
+
+Current kits use blended or tonal kicks and toms, tonal/blended rims and cowbells, mostly noise snares with a small tonal component, and noise claps/hats. Their WAVs have been regenerated. Base API defaults remain noise / tone 1 for backward-compatible sound. Preset JSON includes the new settings. `PARAMS` remains numeric-range metadata; the exported `TRANSIENT_TYPES` array provides the enum choices for custom interfaces. TypeScript declarations include `TransientType`.
+
+```js
+drums.trigger('tom', {params: {
+  transientType: 'blend', transientTone: 0.5,
+  transientFrequency: 420, transientMix: 0.75,
+  transientLevel: 0.3, transientDecay: 0.012
+}});
+```
+
+## Adjustable body resonances
+
+Kicks, snares, toms, rims, and cowbells now have **three additional ringing tones** mixed with the existing body. These are synthesized tonal components, not a resonant effect applied to external audio. The original body structure stays intact; the extra tones let you add shell-like ring, harmonics, or less harmonic metallic character.
+
+Each slot (`1`, `2`, or `3`) provides:
+
+| Parameter | Range | Purpose |
+|---|---|---|
+| `resonance1Ratio` | 0.5–8 | Frequency multiplier relative to the body's instantaneous pitch |
+| `resonance1Level` | 0–1 | Added tone level; 0 disables this slot |
+| `resonance1Decay` | 0.01–3 seconds | Independent ring decay to approximately -60 dB after attack |
+
+The same names with `2` or `3` select the other slots. A ratio of 2 is one octave above the body; 0.5 is one octave below. Non-integer ratios such as 1.59 or 2.37 create less harmonic ringing. The extra tones follow Frequency and Pitch sweep; their attack uses Body attack. Body level controls the original body and every added resonance together. Body decay only sets the original body's decay; each added resonance has its own decay, so it can ring after the original body has faded.
+
+The enabled tones extend rendering to include the longest ring, with the existing end fade. Muted slots do not lengthen exports. Frequency components taper out between 0.40 and 0.45 times the sample rate to reduce folding at extreme ratios and pitches; this does not make the existing saturation or original body fully anti-aliased. Added tones are not automatically normalized, so raising several levels increases loudness and drives the shared saturation harder.
+
+The demo shows **Body resonance 1–3** only for the five supported voices. Clap and hats ignore these controls; hats retain their separate Metallic source controls. All base engine presets default to zero added resonance levels, preserving their earlier sound. Both current demo kits are retuned with moderate levels: subtle kick harmonics, short snare/rim rings, and more pronounced tom/cowbell resonances. Preset exports, WAV rendering, cache keys, and TypeScript declarations include all nine parameters. `RESONANCE_VOICES` exports the supported voice names for custom interfaces.
+
+### Try it
+
+Select Tom, lower Noise level and Transient level temporarily, and set Body decay to 100 ms. Set resonance 1 level to 0.3, ratio to 1.59, and ring decay to 600 ms. The additional tone should ring after the main body fades. Change the ratio to hear its pitch move, or set its level to 0 to remove it. This works at 100% intensity.
+
+```js
+drums.trigger('tom', {params: {
+  bodyDecay: 0.1,
+  resonance1Ratio: 1.59, resonance1Level: 0.3, resonance1Decay: 0.6,
+  resonance2Ratio: 2.14, resonance2Level: 0.12, resonance2Decay: 0.2,
+  resonance3Level: 0
+}});
+```
+
+## FM synthesis
+
+**FM synthesis** is available on kick, snare, tom, rim, and cowbell. A sine modulator varies the instantaneous frequency of the original tonal body, adding sidebands and a more complex attack. The modulation fades so the body settles back toward its base pitch. Clap and hats ignore these controls.
+
+| Parameter | Range | Purpose |
+|---|---|---|
+| `fmDepth` | 0–4 | Initial modulation index; 0 bypasses FM exactly |
+| `fmRatio` | 0.25–8 | Modulator frequency divided by the instantaneous body frequency |
+| `fmDecay` | 0.005–3 seconds | Time for the modulation index to drop to 0.1% of its initial amount |
+
+The modulator tracks the body's pitch sweep. Its frequency is `bodyFrequency * fmRatio`; frequency deviation is `fmDepth * modulatorFrequency` times an exponential envelope. Positive and negative deviations are integrated into the body oscillator phase, allowing through-zero FM. Each existing body partial follows the modulated body phase. Added Body resonances, Noise, and the separate Transient remain unmodulated; they still share the final output processing. FM decay does not extend the amplitude envelope or exported sample length.
+
+The modulator frequency is capped at 0.2 times the render sample rate, and fundamental deviation is limited to the available headroom below 0.4 times sample rate. These limits keep extreme modulation manageable, but this is not an oversampled or fully band-limited FM engine: high pitches, high ratios, and large depth can still produce aliasing from sidebands or harmonics. Moderate settings are a good starting point.
+
+### Hear the effect
+
+Select **Tom**, use Hit strength 100%, and set **FM depth 1**, **FM ratio 1.4**, **FM decay 120 ms**. Compare depth 0 and 1. Integer ratios tend toward harmonic textures; fractional ratios often give less pitched, metallic results. Short decay emphasizes the attack; longer decay makes the complex tone linger. Keep Body level audible—FM cannot be heard when Body level is 0. Lower Noise and Transient levels temporarily if they mask it.
+
+The Drum Synth and 808-inspired demo kits use FM on their five tonal voices as listed below. Reset voice restores those tuned FM values. Set FM depth to 0 to hear the same preset without modulation. Base engine presets still default to FM off. FM is included in saved preset JSON, WAV exports, cache keys, velocity-aware playback, and TypeScript declarations. `FM_VOICES` exports the supported voice list.
+
+```js
+drums.trigger('tom', {params: {
+  fmDepth: 1, fmRatio: 1.4, fmDecay: 0.12
+}});
+```
+
+### FM-tuned demo instruments
+
+Both kits use short modulation envelopes to add attack character while retaining a simpler decaying body. The 808-inspired kit uses smaller depths to keep its character restrained. These are sound-design choices for auditioning, not listening-verified hardware emulations.
+
+| Voice | Drum Synth: depth / ratio / decay | 808-inspired: depth / ratio / decay | Intended character |
+|---|---|---|---|
+| Kick | 0.16 / 1 / 25 ms | 0.06 / 1 / 15 ms | Subtle attack edge, quickly settling low body |
+| Snare | 0.25 / 1.7 / 40 ms | 0.16 / 1.5 / 30 ms | More complex tonal attack beneath the noise |
+| Tom | 0.65 / 1.4 / 100 ms | 0.45 / 1.5 / 80 ms | More pronounced electronic, ringing attack |
+| Rim | 0.45 / 2.3 / 25 ms | 0.30 / 2.1 / 20 ms | Brief metallic knock |
+| Cowbell | 0.70 / 1.48 / 140 ms | 0.40 / 1.5 / 100 ms | Richer clang that settles into the existing ring |
+
+Claps and hats retain their existing sounds. Only the three FM settings changed in the retuned voices; all existing gain, pitch, resonance, and envelope settings were retained. Updated WAVs are included in both refined sample folders. To compare manually, play a voice, set FM depth to 0, then use Reset voice to restore its tuned setting.
+
+## Electro / FM, Minimal, and Industrial sound packs
+
+All three new packs contain eight editable voices: kick, snare, clap, closed hat, open hat, tom, rim, and cowbell. The voice slots remain consistent across kits, so you can switch packs while keeping your sequence and tempo. Current edits are retained independently for each pack during the session; Reset voice restores the selected pack’s factory sound.
+
+| Pack | Character | Useful sounds to audition |
+|---|---|---|
+| Electro / FM | Stronger decaying FM, pitch sweeps, resonant noise, bright metallic hats | Tom for laser-like pitch movement, cowbell for synthetic bell tones, snare for a metallic body |
+| Minimal | Short envelopes, restrained modulation, dry claps, small tonal clicks | Kick, rim, and clap for compact percussion; open hat for a short hiss |
+| Industrial | Driven low drums, detuned hats, longer resonances and stronger FM | Kick and snare for driven attacks; rim and cowbell for metallic clangs |
+
+These are synthesized sound-design presets, not recordings or hardware emulations. Industrial uses the existing saturation, not a new bitcrusher or effect. The packs use velocity brightness/transient response, which is audible below full strength. Enable Use intensity for sequencer dynamics. Hi-hat choking works in every kit. Kit switching does not change BPM or your pattern.
+
+The demo now starts on Deep / Dub. All kit options remain available, including the unchanged Drum Synth and 808-inspired packs. The 24 additional 44.1 kHz mono WAVs are in `samples/electro-fm/`, `samples/minimal/`, and `samples/industrial/`. Run `npm run samples` to regenerate them. WAV export from the demo uses the active voice edits and Hit strength.
+
+```js
+import { DrumSynth } from './src/drum-synth.js';
+import { KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL } from './src/kits.js';
+
+const drums = new DrumSynth();
+// Call resume() within a user gesture before playback.
+await drums.resume();
+drums.trigger('tom', {params: KIT_ELECTRO_FM.tom, velocity: 0.8});
+
+// Or configure an entire pack once:
+for (const [voice, params] of Object.entries(KIT_INDUSTRIAL)) {
+  drums.configure(voice, params);
+}
+drums.trigger('kick');
+```
+
+All pack objects are immutable; clone a voice or pass a spread object to customize it. `KITS` also exposes the IDs `electro-fm`, `minimal`, and `industrial`. The `src/kits.d.ts` declarations describe all pack exports.
+
+Validation covers all 24 sounds: parameter resolution, deterministic output, finite bounded samples, WAV encoding, distinctness from other kits, and rendering at 8/44.1/96 kHz. Browser playback and subjective listening have not been verified in this environment.
+
+## Deep / Dub, Retro Arcade, and Soft / Dusty sound packs
+
+Each pack adds eight editable voices in the same slots as the existing kits. Select a pack to audition its sounds or play your current sequence. Deep / Dub is selected when the demo opens. Switching packs preserves the pattern, tempo, and each pack’s session edits; Reset voice restores that pack’s preset.
+
+| Pack | Character | Useful sounds to audition |
+|---|---|---|
+| Deep / Dub | Low rounded kicks, dark snares and hats, muted claps, long tonal tails | Kick for sub weight, tom for low resonances, cowbell for a lingering ring |
+| Retro Arcade | Fast pitch sweeps, bright noise bursts, tonal clicks, and FM bleeps | Tom for an upward pitch sweep, rim for a short blip, cowbell for a game-inspired ring |
+| Soft / Dusty | Softer attacks, filtered noise, damped hats, and muted tonal percussion | Snare and clap for dark rattles, rim for a small knock, hats for soft texture |
+
+These palettes use the existing synthesis controls. Deep / Dub does not add delay or reverb; Soft / Dusty does not add vinyl crackle; Retro Arcade is game-inspired rather than an exact sound-chip emulation. Use Hit strength or enable Use intensity in the sequencer to hear each preset’s velocity response. Hat choking is supported across all packs.
+
+The 24 additional 44.1 kHz mono WAVs are in `samples/deep-dub/`, `samples/retro-arcade/`, and `samples/soft-dusty/`. Regenerate them with `npm run samples`, or export an edited voice from the demo.
+
+```js
+import { KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KITS } from './src/kits.js';
+
+// With an initialized DrumSynth instance:
+drums.trigger('kick', {params: KIT_DEEP_DUB.kick});
+drums.trigger('tom', {params: KIT_RETRO_ARCADE.tom, velocity: 0.8});
+drums.configure('snare', KIT_SOFT_DUSTY.snare);
+
+// Registry IDs: 'deep-dub', 'retro-arcade', and 'soft-dusty'.
+const editableKick = {...KITS['deep-dub'].kick, bodyDecay: 0.8};
+```
+
+The kit exports are immutable and have TypeScript declarations. Automated checks cover all new voices for parameter resolution, determinism, finite bounded output, audible signal, WAV encoding, and rendering at 8/44.1/96 kHz. Browser playback and subjective listening remain unverified in this environment.
+
+## Body oscillator shape
+
+`bodyWaveform`, `bodyPulseWidth`, and `bodyWaveformMix` change the tonal sources in **kick, snare, tom, rim, and cowbell**. Each voice keeps its existing oscillator pitch ratios and body envelope. FM modulates the selected shape. The extra body resonances remain sine tones with their own envelopes. Clap and hat sources ignore these three controls; they keep their dedicated noise/metal synthesis.
+
+| Parameter | Values / range | Default | Meaning |
+|---|---|---|---|
+| `bodyWaveform` | `sine`, `triangle`, `square`, `saw` | `sine` | Sine is round, triangle has gentle edges, square is hollow, and saw is buzzy |
+| `bodyPulseWidth` | 0.05–0.95 | 0.5 | Square/pulse duty cycle; 0.5 is symmetric. Moving away from 0.5 changes the harmonic balance and gives a more nasal tone. Ignored by other waveforms |
+| `bodyWaveformMix` | 0–1 | 1 | Blends the original sine-based body with the selected waveform: 0 keeps the original body, 1 uses the selected shape throughout |
+
+Sine remains the API default and preserves the previous engine output exactly. The blend defaults to 1 so selecting another waveform immediately changes the source. With sine selected, pulse width and blend have no effect. Blend 0 exactly bypasses waveform shaping, including when FM is enabled. This restores the sine-based source for the **current** parameter settings; it does not undo other preset retuning.
+
+In the demo, look under **Body oscillator**. The blend appears for triangle, square, and saw; Pulse width appears only for square. These controls work at 100% Hit strength. Body level must be above zero; a loud noise layer can mask the change. For a clear audition, select **Retro Arcade → Tom**, compare Shape blend at 0% and 100%, then compare Pulse width at 50% and 25%. With the waveform set to sine, the controls that have no effect are hidden. Labels and these explanations are included here for the detailed usage notes.
+
+```js
+// Use the same settings with render(), configure(), or trigger() parameters.
+const params = {
+  bodyWaveform: 'square',
+  bodyPulseWidth: 0.25,
+  bodyWaveformMix: 0.65,
+  bodyLevel: 0.8,
+  noiseLevel: 0,
+  transientLevel: 0.08,
+  fmDepth: 0.3
+};
+drums.trigger('tom', {params});
+const wav = encodeWav(render('tom', params));
+```
+
+`BODY_WAVEFORMS` exposes the enum choices and `BODY_WAVEFORM_VOICES` lists supported voices. Numeric ranges remain in `PARAMS`; TypeScript exposes `BodyWaveform` and all three fields on `Params`. Configuration, per-hit overrides, cached playback, WAV export, and preset JSON all include the new settings. Invalid enum values and out-of-range numeric values are rejected.
+
+### Preset retuning
+
+19 voices across five kits now use oscillator shapes. Their WAV samples have been regenerated. Levels, FM depth, and drive were adjusted where useful alongside the new shape settings.
+
+| Kit | Updated voices | Approach |
+|---|---|---|
+| Electro / FM | Kick, snare, tom, rim, cowbell | A mild triangle kick, pulse snares/rims/bells, and a little saw in the tom; reduced FM in several voices leaves room for the waveform harmonics |
+| Retro Arcade | Kick, snare, tom, rim, cowbell | Triangle kick, strongly square/pulse percussion, and lower FM so the pulse character is more exposed |
+| Industrial | Kick, snare, tom, rim, cowbell | Saw blends in the low drums, pulse rims/bells, with reduced drive to balance the richer source |
+| Deep / Dub | Tom, cowbell | Subtle triangle blends retain a rounded low-frequency character |
+| Soft / Dusty | Kick, tom | Gentle triangle blends add a little edge without switching to a bright pulse or saw |
+
+Drum Synth, 808-inspired, and Minimal presets retain their previous audio. All claps and hats are unchanged. Each edited voice can still be reset to its retuned factory preset.
+
+### Oscillator implementation and limits
+
+The new shapes use a finite Fourier series of up to 32 harmonics, with no DC term. A smooth taper removes upper harmonics between 35% and 45% of the sample rate, recalculated during pitch sweeps. A conservative FM bandwidth estimate also reduces the available harmonics during strong modulation. Pulse wave amplitude is scaled to avoid a large peak increase at narrow widths; perceived loudness can still change with shape and width. Low-note shapes are intentionally rounded by the 32-harmonic limit.
+
+This reduces oscillator aliasing; it does not make the whole instrument alias-free. Strong FM and the existing output saturation can still generate additional high-frequency content. Sine mode and blend 0 follow the unchanged legacy source path. The extra resonances retain their existing bandwidth protection.
+
+Background on harmonic-sum synthesis: [Julius O. Smith, Additive Synthesis](https://www.dsprelated.com/freebooks/sasp/Additive_Synthesis.html).
+
+Automated checks cover bypass compatibility, waveform and width differences, layer isolation, spectral suppression of folded harmonics, validation, extreme FM/pitch at 8/44.1/96 kHz, configuration, caching, and JSON round trips. Browser playback and subjective listening remain unverified in this environment.

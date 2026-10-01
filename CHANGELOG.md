@@ -1,4 +1,32 @@
-## Unreleased
+# Changelog
+
+## 1.0.0 — 2026-10-01
+
+- Released as Drum Synth JS, with the `drum-synth-js` package, `DrumSynth` class, and `drum-synth.js` entry point.
+
+- Added bodyWaveform (sine/triangle/square/saw), bodyPulseWidth, and bodyWaveformMix for tonal voices, with harmonic limiting and exact sine/bypass compatibility.
+- Added demo explanations, conditional waveform controls, TypeScript declarations, and usage notes.
+- Retuned 19 voices across Electro / FM, Retro Arcade, Industrial, Deep / Dub, and Soft / Dusty, and regenerated WAVs.
+
+- Added Deep / Dub, Retro Arcade, and Soft / Dusty kits with 24 new WAV samples and typed preset exports.
+- Expanded the demo to eight kits, opening on Deep / Dub, with existing editing, intensity, choking, and export controls.
+
+- Added Electro / FM, Minimal, and Industrial kits with 24 new WAV samples and TypeScript declarations for kit exports.
+- Expanded demo to five kits with independent editing, reset, descriptions, and existing export/sequencer controls.
+
+- Enabled tuned FM on kick, snare, tom, rim, and cowbell in both current kits and regenerated those samples.
+
+- Added decaying FM depth, ratio, and decay for tonal drum bodies, with demo controls and usage notes.
+- FM defaults to off and preserves current kit audio exactly.
+
+- Added three independently tuned and enveloped body resonances for kicks, snares, toms, rims, and cowbells.
+- Retuned those voices in both current kits, regenerated samples, and added explanations in the demo and README.
+
+- Added noise/tonal/blended transient character with independent noise tone, knock frequency, and blend amount.
+- Retuned current kit impacts and added conditional demo controls and usage explanations.
+
+- Added independent noise and metallic low-pass envelopes with signed octave amounts and decay controls.
+- Retuned current kits for evolving brightness and regenerated WAV examples.
 
 - Added brightness/transient velocity response and enabled it in current demo kits.
 - Added Hit strength audition/export control and per-step soft/normal/accent velocities. Full-strength samples remain unchanged.
@@ -25,9 +53,7 @@
 - Added an 808-inspired preset pack and demo kit selector, with independent edits and pack-aware reset/export.
 - Added a portable standalone demo and eight 808-inspired WAV examples.
 
-# Changelog
-
-## 0.1.0 — 2026-09-30
+### Initial implementation
 
 - Initial eight-voice percussion synthesizer and deterministic PCM renderer.
 - Configurable envelopes, pitch, noise, brightness, transient and saturation.
