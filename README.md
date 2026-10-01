@@ -155,3 +155,11 @@ Before publishing to npm, check name availability and add your GitHub repository
 ## License
 
 MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings are included.
+
+## 808-inspired sound pack
+
+The demo opens with **808-inspired · Vol. 01** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Select **Original · Drum Forge** to compare the same sequence; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+
+This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
+
+Import `KIT_808` from `./src/kits.js` and use `drums.trigger('kick', { params: KIT_808.kick })`. Run `npm run samples` to render both packs. Run `node scripts/build-demo.mjs` to create `demo/standalone.html`, which you can open directly in a browser without a server.

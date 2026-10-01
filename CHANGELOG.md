@@ -1,3 +1,8 @@
+## Unreleased
+
+- Added an 808-inspired preset pack and demo kit selector, with independent edits and pack-aware reset/export.
+- Added a portable standalone demo and eight 808-inspired WAV examples.
+
 # Changelog
 
 ## 0.1.0 — 2026-09-30

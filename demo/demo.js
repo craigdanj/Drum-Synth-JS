@@ -1,9 +1,12 @@
 import { DrumForge, PRESETS, PARAMS, render, encodeWav } from '../src/drum-forge.js';
+import { KITS } from '../src/kits.js';
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const kit = structuredClone(PRESETS);
-let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 110;
+let activeKit = '808';
+const edits = Object.fromEntries(Object.entries(KITS).map(([id, presets]) => [id, structuredClone(presets)]));
+let kit = edits[activeKit];
+let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
 let pattern = starter();
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => (i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15))); }
 function status(message) { $('status').textContent = message; }
@@ -66,10 +69,16 @@ function download(data,type,name){const url=URL.createObjectURL(new Blob([data],
 $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(selected));$('play').onclick=guarded(toggle);
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
-$('reset').onclick=()=>{kit[selected]={...PRESETS[selected]};select(selected);};
+$('reset').onclick=()=>{kit[selected]={...KITS[activeKit][selected]};select(selected);};
+$('kit').onchange=guarded(async()=>{
+  const resume = running; stop(); activeKit=$('kit').value; kit=edits[activeKit];
+  select(selected); $('pack-description').textContent=activeKit==='808' ? 'Deep kick · crisp snare · metallic hats. An 808-inspired preset pack, not a hardware emulation.' : 'The original Drum Forge sounds. Your edits are kept separately for each kit.';
+  status(`${activeKit==='808'?'808-inspired':'Original'} kit loaded`);
+  if(resume) await toggle();
+});
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(false));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected])),'audio/wav',`drum-forge-${selected}.wav`);status('WAV exported');});
-$('preset').onclick=()=>download(JSON.stringify({voice:selected,params:kit[selected]},null,2),'application/json',`${selected}-preset.json`);
+$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected])),'audio/wav',`drum-forge-${activeKit}-${selected}.wav`);status('WAV exported');});
+$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('resize',draw);window.addEventListener('pagehide',()=>{stop();synth?.dispose();synth=undefined;});
