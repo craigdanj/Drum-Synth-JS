@@ -9,11 +9,14 @@ export function resolveParams(voice: Voice, overrides?: Partial<Params>): Params
 export function render(voice: Voice, overrides?: Partial<Params>, options?: { sampleRate?: number; velocity?: number }): RenderedAudio;
 export function encodeWav(audio: { samples: Float32Array; sampleRate: number }): ArrayBuffer;
 export class DrumForge {
-  constructor(options?: { context?: AudioContext; destination?: AudioNode; volume?: number; maxVoices?: number });
+  constructor(options?: { context?: AudioContext; destination?: AudioNode; volume?: number; maxVoices?: number; chokeEnabled?: boolean; chokeFade?: number });
   readonly context: AudioContext;
   readonly output: GainNode;
   resume(): Promise<void>;
   setVolume(volume: number): this;
+  setChoke(options?: { chokeEnabled?: boolean; chokeFade?: number }): this;
+  readonly chokeEnabled: boolean;
+  readonly chokeFade: number;
   configure(voice: Voice, params: Partial<Params>): this;
   getParams(voice: Voice): Params;
   trigger(voice: Voice, options?: TriggerOptions): VoiceHandle;

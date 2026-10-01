@@ -289,7 +289,7 @@ The balance applies `2 * metalMix` to Body level and `2 * (1 - metalMix)` to Noi
 
 Metal filters are one-pole low-pass then high-pass, independent of the noise filters, with effective cutoffs capped at 0.4 times sample rate. A high-pass above the low-pass is allowed and strongly attenuates the metallic layer. Damping adds frequency-dependent exponential decay scaled by Body decay, so higher partials fade faster without lengthening the tail. Fixed detuning preserves deterministic rendering and does not vary from hit to hit.
 
-Both demo kits' open and closed hats have been retuned. Drum Forge uses a wider detune spread; the 808-inspired kit favors a tighter, more metallic balance and higher metal high-pass cutoffs. Closed hats use more damping than open hats. This intentionally changes hat rendering for existing presets while preserving the parameter API. Other voices ignore these five settings. Hi-hat choking remains a separate future playback feature.
+Both demo kits' open and closed hats have been retuned. Drum Forge uses a wider detune spread; the 808-inspired kit favors a tighter, more metallic balance and higher metal high-pass cutoffs. Closed hats use more damping than open hats. This intentionally changes hat rendering for existing presets while preserving the parameter API. Other voices ignore these five settings. Hi-hat choking is available as a playback feature, described below.
 
 ```js
 drums.trigger('openHat', {params: {
@@ -297,3 +297,21 @@ drums.trigger('openHat', {params: {
   metalHighpass: 4200, metalLowpass: 16000
 }});
 ```
+
+## Hi-hat choking
+
+Choking is enabled by default: a closed hat fades any overlapping open hats to silence. The demo includes a **Hi-hat choking** toggle and **Fade** slider (1–100 ms, default 5 ms), applying to pads and the sequencer. To hear the effect clearly, play an open hat, then a closed hat before its tail finishes; repeat with choking disabled.
+
+```js
+const drums = new DrumForge({chokeEnabled: true, chokeFade: 0.005});
+drums.setChoke({chokeEnabled: false});
+drums.setChoke({chokeEnabled: true, chokeFade: 0.012});
+```
+
+These are playback settings, not synthesis parameters: they do not belong in `params`, affect `render()`, or alter exported single-hit WAVs. Fade is specified in seconds in the API. The toggle and fade setting are not included in per-voice preset exports.
+
+Closures use the audio clock at the closed hit’s scheduled time, not the time `trigger()` is called. Future open hats starting after that closed hit remain unaffected. A closed and open hat at the same timestamp give the closed hat priority, regardless of scheduling order. Scheduling a closed hit before its corresponding open hit in code is supported; the earliest eligible overlapping closure wins. A zero-velocity closed trigger still counts as a closure gesture.
+
+Cancelling a future closed hit with its handle’s `stop()` restores the affected open hat or selects the next scheduled closure. Changing fade or disabling choking updates pending closures; a fade that has already begun is not reversed. Enabling choking does not replay past closed-hit events. `stopAll()`, individual stops, voice stealing, and disposal still cancel sources, including those with a future choke scheduled. Fading voices remain tracked until they end or are explicitly stopped.
+
+Automated tests cover scheduling, out-of-order and simultaneous hits, cancellation, disabled mode, live pads, cleanup, and option validation using an instrumented Web Audio mock. Browser playback and listening checks remain unverified in this environment.

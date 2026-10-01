@@ -199,10 +199,15 @@ export function encodeWav(audio) {
 
 export class DrumForge {
   constructor(options = {}) {
-    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices']);
+    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade']);
     const volume = number(options.volume ?? 0.7, 0, 1, 'volume');
     this.maxVoices = number(options.maxVoices ?? 32, 1, 128, 'maxVoices');
     if (!Number.isInteger(this.maxVoices)) throw new RangeError('maxVoices must be an integer');
+    const chokeEnabled = options.chokeEnabled ?? true;
+    if (typeof chokeEnabled !== 'boolean') throw new TypeError('chokeEnabled must be boolean');
+    this.chokeEnabled = chokeEnabled;
+    this.chokeFade = number(options.chokeFade ?? .005, .001, .1, 'chokeFade');
+    this._playbacks = new Map();
     const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!options.context && !AudioContext) throw new Error('Web Audio is unavailable; use render() in Node.js');
     this.context = options.context ?? new AudioContext();
@@ -217,6 +222,37 @@ export class DrumForge {
   setVolume(value) {
     this._assert(); number(value, 0, 1, 'volume');
     this.output.gain.setTargetAtTime(value, this.context.currentTime, 0.01); return this;
+  }
+  setChoke(options = {}) {
+    this._assert(); object(options, 'choke options'); keys(options, ['chokeEnabled', 'chokeFade']);
+    const enabled = options.chokeEnabled ?? this.chokeEnabled;
+    if (typeof enabled !== 'boolean') throw new TypeError('chokeEnabled must be boolean');
+    const fade = number(options.chokeFade ?? this.chokeFade, .001, .1, 'chokeFade');
+    this.chokeEnabled = enabled; this.chokeFade = fade; this._refreshChokes(); return this;
+  }
+  _refreshChokes() {
+    const now = this.context.currentTime;
+    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat');
+    for (const r of this._playbacks.values()) {
+      if (r.voice !== 'openHat' || r.chokeAt <= now) continue; // A started closure is irreversible.
+      let at = Infinity;
+      if (this.chokeEnabled) for (const c of closed) {
+        if (c.when >= now && c.when >= r.when && c.when < r.end) at = Math.min(at, c.when);
+      }
+      const end = Math.min(r.end, at + this.chokeFade);
+      if (at === r.chokeAt && end === r.chokeEnd) continue;
+      r.gain.gain.cancelScheduledValues(now);
+      r.gain.gain.setValueAtTime(r.velocity, now);
+      if (Number.isFinite(at)) {
+        r.gain.gain.setValueAtTime(r.velocity, Math.max(now, at));
+        r.gain.gain.linearRampToValueAtTime(0, end);
+        r.source.stop(end);
+      } else if (Number.isFinite(r.chokeAt)) {
+        // Replacing a future stop restores a cancelled pending closure.
+        r.source.stop(r.end);
+      }
+      r.chokeAt = at; r.chokeEnd = end;
+    }
   }
   configure(voice, params) {
     this._assert(); resolveParams(voice, params);
@@ -244,15 +280,21 @@ export class DrumForge {
     source.buffer = buffer; gain.gain.value = velocity; panner.pan.value = pan;
     source.connect(gain); gain.connect(panner); panner.connect(this.output);
     let stopped = false;
-    const cleanup = () => { source.disconnect(); gain.disconnect(); panner.disconnect(); this.active.delete(handle); };
+    const record = {voice, when, velocity, source, gain, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const cleanup = () => {
+      stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
+      this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
+    };
     const handle = { voice, when, stop: () => {
       if (stopped) return; stopped = true;
       const now = this.context.currentTime;
-      gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(gain.gain.value, now);
+      const current = now < record.chokeAt ? velocity : velocity * Math.max(0, (record.chokeEnd - now) / Math.max(.000001, record.chokeEnd - record.chokeAt));
+      gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(current, now);
       gain.gain.linearRampToValueAtTime(0, now + 0.005); source.stop(now + 0.006);
-      this.active.delete(handle);
+      this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
     } };
-    source.onended = cleanup; this.active.add(handle); source.start(when);
+    source.onended = cleanup; this.active.add(handle); this._playbacks.set(handle, record);
+    source.start(when); this._refreshChokes();
     return handle;
   }
   stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); }

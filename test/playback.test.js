@@ -4,7 +4,7 @@ import { DrumForge } from '../src/drum-forge.js';
 function context(){
   const nodes=[],param=()=>({value:1,setTargetAtTime(v){this.value=v;},setValueAtTime(v){this.value=v;},cancelScheduledValues(){},linearRampToValueAtTime(){}});
   const node=()=>{const n={gain:param(),pan:param(),connect(){},disconnect(){this.disconnected=true;},start(t){this.startTime=t;},stop(t){this.stopTime=t;}};nodes.push(n);return n;};
-  return {nodes,currentTime:5,sampleRate:44100,state:'suspended',destination:{},createGain:node,createBufferSource:node,createStereoPanner:node,createBuffer(c,n,r){return {copyToChannel(s){assert.equal(s.length,n);},sampleRate:r};},async resume(){this.state='running';},async close(){this.state='closed';}};
+  return {nodes,currentTime:5,sampleRate:44100,state:'suspended',destination:{},createGain:node,createBufferSource:node,createStereoPanner:node,createBuffer(c,n,r){return {duration:n/r,copyToChannel(s){assert.equal(s.length,n);},sampleRate:r};},async resume(){this.state='running';},async close(){this.state='closed';}};
 }
 test('scheduling, cancellation, cache, polyphony and disposal',async()=>{
   const ctx=context(),s=new DrumForge({context:ctx,maxVoices:2});await s.resume();assert.equal(ctx.state,'running');

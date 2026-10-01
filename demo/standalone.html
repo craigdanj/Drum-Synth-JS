@@ -5,12 +5,15 @@
 
 .control-group{grid-column:1 / -1;margin:10px 0 0;color:var(--accent);font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:8px}
 
+
+.choke-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px;font-size:12px;color:var(--muted)}.choke-controls label{display:flex;align-items:center;gap:8px}.choke-controls input[type=range]{width:140px}.choke-controls input[type=checkbox]{accent-color:var(--accent)}.choke-controls output{color:var(--text);min-width:44px}
 </style></head>
 <body><main>
 <header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM FORGE <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
 <section class="intro"><div class="eyebrow">YOUR BROWSER IS A DRUM MACHINE</div><h1>Shape your next <em>beat.</em></h1><p>Eight voices. Endless character. Sculpt a sound, build a groove, take it with you.</p></section>
 <div class="toolbar"><button id="enable" class="primary">Enable audio</button><span id="status" role="status">Audio is off</span><label class="master">Master <input id="master" type="range" min="0" max="1" step=".01" value=".7"></label></div>
 <section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="808-refined" selected>808-inspired</option><option value="original-refined">Drum Forge</option></select></div><p id="pack-description">808-inspired kit · shaped pitch sweeps, independent layers, and focused noise filters.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
+<div class="choke-controls"><label><input id="choke-enabled" type="checkbox" checked> Hi-hat choking</label><label for="choke-fade">Fade <output id="choke-value">5 ms</output></label><input id="choke-fade" type="range" min="1" max="100" step="1" value="5"><span>Closed hats cut off ringing open hats.</span></div>
 <section aria-label="Drum pads" id="pads" class="pads"></section>
 <div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export WAV</button><button id="preset">↓ Save preset</button></div></section>
 <section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><button id="clear">Clear</button><button id="restore">Starter beat</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">Click a step to toggle it. Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p></section></div>
@@ -216,10 +219,15 @@ export function encodeWav(audio) {
 
 export class DrumForge {
   constructor(options = {}) {
-    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices']);
+    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade']);
     const volume = number(options.volume ?? 0.7, 0, 1, 'volume');
     this.maxVoices = number(options.maxVoices ?? 32, 1, 128, 'maxVoices');
     if (!Number.isInteger(this.maxVoices)) throw new RangeError('maxVoices must be an integer');
+    const chokeEnabled = options.chokeEnabled ?? true;
+    if (typeof chokeEnabled !== 'boolean') throw new TypeError('chokeEnabled must be boolean');
+    this.chokeEnabled = chokeEnabled;
+    this.chokeFade = number(options.chokeFade ?? .005, .001, .1, 'chokeFade');
+    this._playbacks = new Map();
     const AudioContext = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!options.context && !AudioContext) throw new Error('Web Audio is unavailable; use render() in Node.js');
     this.context = options.context ?? new AudioContext();
@@ -234,6 +242,37 @@ export class DrumForge {
   setVolume(value) {
     this._assert(); number(value, 0, 1, 'volume');
     this.output.gain.setTargetAtTime(value, this.context.currentTime, 0.01); return this;
+  }
+  setChoke(options = {}) {
+    this._assert(); object(options, 'choke options'); keys(options, ['chokeEnabled', 'chokeFade']);
+    const enabled = options.chokeEnabled ?? this.chokeEnabled;
+    if (typeof enabled !== 'boolean') throw new TypeError('chokeEnabled must be boolean');
+    const fade = number(options.chokeFade ?? this.chokeFade, .001, .1, 'chokeFade');
+    this.chokeEnabled = enabled; this.chokeFade = fade; this._refreshChokes(); return this;
+  }
+  _refreshChokes() {
+    const now = this.context.currentTime;
+    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat');
+    for (const r of this._playbacks.values()) {
+      if (r.voice !== 'openHat' || r.chokeAt <= now) continue; // A started closure is irreversible.
+      let at = Infinity;
+      if (this.chokeEnabled) for (const c of closed) {
+        if (c.when >= now && c.when >= r.when && c.when < r.end) at = Math.min(at, c.when);
+      }
+      const end = Math.min(r.end, at + this.chokeFade);
+      if (at === r.chokeAt && end === r.chokeEnd) continue;
+      r.gain.gain.cancelScheduledValues(now);
+      r.gain.gain.setValueAtTime(r.velocity, now);
+      if (Number.isFinite(at)) {
+        r.gain.gain.setValueAtTime(r.velocity, Math.max(now, at));
+        r.gain.gain.linearRampToValueAtTime(0, end);
+        r.source.stop(end);
+      } else if (Number.isFinite(r.chokeAt)) {
+        // Replacing a future stop restores a cancelled pending closure.
+        r.source.stop(r.end);
+      }
+      r.chokeAt = at; r.chokeEnd = end;
+    }
   }
   configure(voice, params) {
     this._assert(); resolveParams(voice, params);
@@ -261,15 +300,21 @@ export class DrumForge {
     source.buffer = buffer; gain.gain.value = velocity; panner.pan.value = pan;
     source.connect(gain); gain.connect(panner); panner.connect(this.output);
     let stopped = false;
-    const cleanup = () => { source.disconnect(); gain.disconnect(); panner.disconnect(); this.active.delete(handle); };
+    const record = {voice, when, velocity, source, gain, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const cleanup = () => {
+      stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
+      this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
+    };
     const handle = { voice, when, stop: () => {
       if (stopped) return; stopped = true;
       const now = this.context.currentTime;
-      gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(gain.gain.value, now);
+      const current = now < record.chokeAt ? velocity : velocity * Math.max(0, (record.chokeEnd - now) / Math.max(.000001, record.chokeEnd - record.chokeAt));
+      gain.gain.cancelScheduledValues(now); gain.gain.setValueAtTime(current, now);
       gain.gain.linearRampToValueAtTime(0, now + 0.005); source.stop(now + 0.006);
-      this.active.delete(handle);
+      this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
     } };
-    source.onended = cleanup; this.active.add(handle); source.start(when);
+    source.onended = cleanup; this.active.add(handle); this._playbacks.set(handle, record);
+    source.start(when); this._refreshChokes();
     return handle;
   }
   stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); }
@@ -343,7 +388,7 @@ let pattern = starter();
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => (i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15))); }
 function status(message) { $('status').textContent = message; }
 async function enable() {
-  if (!synth) synth = new DrumForge({ volume: Number($('master').value) });
+  if (!synth) synth = new DrumForge({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
   await synth.resume(); status('Audio ready'); $('enable').textContent = 'Audio enabled';
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
@@ -414,6 +459,8 @@ async function toggle() {if(running){stop();return;}await enable();running=true;
 function animate(){if(running&&synth){while(queue.length&&queue[0].time<=synth.context.currentTime){const event=queue.shift();document.querySelectorAll('.step').forEach(e=>e.classList.toggle('current',Number(e.dataset.step)===event.step));}}requestAnimationFrame(animate);}
 function download(data,type,name){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(selected));$('play').onclick=guarded(toggle);
+$('choke-enabled').onchange=()=>synth?.setChoke({chokeEnabled:$('choke-enabled').checked});
+$('choke-fade').oninput=()=>{const ms=Number($('choke-fade').value);$('choke-value').value=`${ms} ms`;synth?.setChoke({chokeFade:ms/1000});};
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
 $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(selected);};

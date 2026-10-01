@@ -12,7 +12,7 @@ let pattern = starter();
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => (i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15))); }
 function status(message) { $('status').textContent = message; }
 async function enable() {
-  if (!synth) synth = new DrumForge({ volume: Number($('master').value) });
+  if (!synth) synth = new DrumForge({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
   await synth.resume(); status('Audio ready'); $('enable').textContent = 'Audio enabled';
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
@@ -83,6 +83,8 @@ async function toggle() {if(running){stop();return;}await enable();running=true;
 function animate(){if(running&&synth){while(queue.length&&queue[0].time<=synth.context.currentTime){const event=queue.shift();document.querySelectorAll('.step').forEach(e=>e.classList.toggle('current',Number(e.dataset.step)===event.step));}}requestAnimationFrame(animate);}
 function download(data,type,name){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
 $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(selected));$('play').onclick=guarded(toggle);
+$('choke-enabled').onchange=()=>synth?.setChoke({chokeEnabled:$('choke-enabled').checked});
+$('choke-fade').oninput=()=>{const ms=Number($('choke-fade').value);$('choke-value').value=`${ms} ms`;synth?.setChoke({chokeFade:ms/1000});};
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
 $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(selected);};

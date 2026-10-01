@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Added scheduled hi-hat choking, enabled by default with a configurable 5 ms fade, plus demo controls.
+- Added cancellation-aware handling for pending closures and out-of-order hits. Single-hit WAVs are unchanged.
+
 - Added richer odd-harmonic hat synthesis, metallic balance, detuning, damping, and independent metal filters.
 - Retuned both kits’ open and closed hats and added a hat-only Metallic source section.
 
