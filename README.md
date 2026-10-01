@@ -158,7 +158,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **808-inspired · Refined** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose a pack and use **A · Previous / B · Refined** to compare the same sequence; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **808-inspired** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose **808-inspired** or **Drum Forge** from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -196,12 +196,46 @@ Original and 808-inspired defaults preserve their previous rendered PCM. Old par
 
 The demo exposes the independent controls in place of Noise mix, shared Decay, and Transient amount. Reset restores the active pack's voice. Exported JSON includes all seven new values.
 
-## Previous / Refined comparison
+## Demo sound packs
 
-Both Drum Forge and 808-inspired kits now have Previous and Refined versions. The previous presets and WAV samples are unchanged. Refined versions change only the seven layer controls; tuning, brightness, drive, body attack, and output gain are retained.
+The demo offers two kits: **808-inspired** and **Drum Forge**, both using the refined layer presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
 
-Select a drum pad, then press **A · Previous** or **B · Refined** to audition it. If the groove is playing, either button restarts the same pattern at step 1 using the chosen version. Tempo, pattern, and master gain stay fixed. Edits are retained separately; **Reset voice** restores the current version’s factory preset. Comparisons use your current edits, so reset each version if you want a factory comparison. Output gain is unchanged, but envelope changes can alter perceived loudness; this is not a loudness-normalized comparison.
+`KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. Their WAVs are in `samples/original-refined/` and `samples/808-refined/`. Earlier presets remain available in the plugin API for compatibility but are no longer offered in the demo.
 
-The refined sounds target longer kick and tom bodies, snare bodies that finish before the rattle, more diffuse claps, metallic hat rings that fade before their noise tails, and shorter clicks. These are sound-design alternatives for auditioning, not verified hardware emulations.
+## Pitch shaping and independent noise filters
 
-`KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. `npm run samples` writes the new WAVs to `samples/original-refined/` and `samples/808-refined/`, alongside the old samples.
+| Parameter | Range | Meaning |
+|---|---|---|
+| `pitchSweepSemitones` | -48 to +48 st | Starting pitch offset from `frequency`; positive falls, negative rises, zero stays fixed |
+| `pitchCurve` | 0.25–4 | Shape of pitch settling; 1 retains the original exponential shape |
+| `noiseHighpass` | 0–18000 Hz | Noise high-pass cutoff; 0 bypasses this stage |
+| `noiseLowpass` | 20–20000 Hz | Noise low-pass cutoff |
+| `noiseResonance` | 0–1 | Adds emphasis around the **low-pass** cutoff, independent of the high-pass |
+
+The pitch envelope is defined in frequency-ratio space:
+
+`frequencyAtTime = frequency * (1 + (2 ** (pitchSweepSemitones / 12) - 1) * exp(-(time / pitchDecay) ** pitchCurve))`
+
+`pitchDecay` is the time at which the frequency offset reaches 1/e of its starting value. Curves above 1 hold the offset more initially and settle faster after that point; curves below 1 start moving faster but settle more gradually. Frequency is capped at 0.18 times the sample rate, as before; extreme sweeps may hit that ceiling. This is not an anti-aliased oscillator redesign.
+
+Noise passes through a low-pass stage then the high-pass stage before its amplitude envelope. Resonance smoothly blends the original one-pole low-pass into a two-pole resonant low-pass whose Q increases from approximately 0.707 to 8.007. At zero resonance, the original low-pass behavior is retained. Cutoffs are internally capped at 0.4 times the render sample rate for stable low-rate rendering. High-pass can exceed low-pass; this heavily attenuates the noise rather than throwing an error. Resonance can increase perceived loudness.
+
+These filters affect only the noise layer, not the body or the separate transient. If `noiseLevel` is zero, noise-filter changes are inaudible. Likewise, `pitchCurve` has no audible effect when the pitch sweep is zero.
+
+### Updated demo kits
+
+Both current kits use explicit pitch and noise-filter settings: kicks use shaped pitch settling, snares and claps use focused noise bands with modest resonance, hats use higher noise high-pass cutoffs, and toms use defined semitone bends. Some noise-free voices retain their sound because noise-filter settings do not affect them. The demo still offers only **808-inspired** and **Drum Forge**; no old/new comparison controls were added. Regenerated WAVs are included in each refined sample folder.
+
+### Legacy mapping
+
+`pitchDrop` remains supported and maps to `pitchSweepSemitones = 12 * log2(1 + pitchDrop)`. The legacy `tone` macro still maps noise low-pass to `500 + tone * 14500` Hz. Explicit new parameters in the same call win. These mappings also apply to partial `configure()` and per-hit `trigger()` overrides. The demo edits complete resolved presets, so its **Body tone** slider and **Noise filter** section operate independently. Earlier API presets retain their previous default sound; the current demo kits are intentionally retuned.
+
+```js
+drums.trigger('snare', {params: {
+  pitchSweepSemitones: 2,
+  pitchCurve: 1.25,
+  noiseHighpass: 1300,
+  noiseLowpass: 8500,
+  noiseResonance: 0.18
+}});
+```

@@ -2,6 +2,8 @@
 export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
+  pitchSweepSemitones: [-48, 48, .1], pitchCurve: [.25, 4, .05],
+  noiseHighpass: [0, 18000, 10], noiseLowpass: [20, 20000, 10], noiseResonance: [0, 1, .01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
   noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
@@ -20,7 +22,7 @@ export const PRESETS = Object.freeze(Object.fromEntries(Object.entries({
   tom: { frequency: 115, decay: 0.45, pitchDrop: 0.8, noise: 0.06, tone: 0.4 },
   rim: { frequency: 720, decay: 0.065, pitchDrop: 0.1, noise: 0.15, snap: 0.7 },
   cowbell: { frequency: 560, decay: 0.25, pitchDrop: 0, noise: 0.02, tone: 0.75, snap: 0.2 }
-}).map(([key, value]) => [key, Object.freeze(mergeParams(common, value))])));
+}).map(([key, value]) => [key, Object.freeze(mergeParams({...common, noiseHighpass: key === 'kick' ? 0 : key.includes('Hat') ? 2500 : 700}, value))])));
 const TAU = Math.PI * 2;
 function object(value, name) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(`${name} must be an object`);
@@ -39,6 +41,9 @@ function mergeParams(base, overrides) {
   const layer = (key, macro, value) => {
     if (!Object.hasOwn(overrides, key) && (legacy(macro) || p[key] === undefined)) p[key] = value;
   };
+  layer('pitchSweepSemitones', 'pitchDrop', 12 * Math.log2(1 + p.pitchDrop));
+  layer('noiseLowpass', 'tone', 500 + p.tone * 14500);
+  p.pitchCurve ??= 1; p.noiseResonance ??= 0;
   layer('bodyLevel', 'noise', 1 - p.noise);
   layer('noiseLevel', 'noise', p.noise);
   layer('bodyDecay', 'decay', p.decay);
@@ -70,9 +75,16 @@ export function render(voice, overrides = {}, options = {}) {
     p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
-  const cutoff = Math.min(sampleRate * 0.4, 500 + p.tone * 14500);
+  const cutoff = Math.min(sampleRate * 0.4, p.noiseLowpass);
   const alpha = 1 - Math.exp(-TAU * cutoff / sampleRate);
-  const hpAlpha = 1 - Math.exp(-TAU * (voice.includes('Hat') ? 2500 : 700) / sampleRate);
+  const hpAlpha = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.noiseHighpass) / sampleRate);
+  // Parallel resonant low-pass, blended with the original one-pole at zero resonance.
+  const w = TAU * cutoff / sampleRate, c = Math.cos(w), q = .70710678 + 7.3 * p.noiseResonance;
+  const a = Math.sin(w) / (2 * q), a0 = 1 + a;
+  const b0 = (1 - c) / 2 / a0, b1 = (1 - c) / a0, b2 = b0;
+  const a1 = -2 * c / a0, a2 = (1 - a) / a0;
+  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
   const sine = (mult) => Math.sin(phase * mult);
   const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
   const layerEnv = (t, attack, decay) => voice === 'clap'
@@ -82,13 +94,17 @@ export function render(voice, overrides = {}, options = {}) {
     const t = i / sampleRate;
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
     const white = (seed >>> 0) / 2147483648 - 1;
-    low += alpha * (white - low); bodyLow += hpAlpha * (low - bodyLow);
-    const brightNoise = low - bodyLow;
-    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + p.pitchDrop * Math.exp(-t / p.pitchDecay)));
+    low += alpha * (white - low);
+    const resonant = b0 * white + b1 * x1 + b2 * x2 - a1 * y1 - a2 * y2;
+    x2 = x1; x1 = white; y2 = y1; y1 = resonant;
+    const filtered = low * (1 - p.noiseResonance) + resonant * p.noiseResonance;
+    bodyLow += hpAlpha * (filtered - bodyLow);
+    const brightNoise = filtered - bodyLow;
+    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))));
     phase += TAU * f / sampleRate;
     let body, noise = brightNoise;
     switch (voice) {
-      case 'kick': body = sine(1) + p.tone * 0.18 * sine(2); noise = low; break;
+      case 'kick': body = sine(1) + p.tone * 0.18 * sine(2); break;
       case 'tom': body = 0.8 * sine(1) + 0.2 * sine(1.5); break;
       case 'snare': body = 0.65 * sine(1) + 0.35 * sine(1.47); break;
       case 'clap':

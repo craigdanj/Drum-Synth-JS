@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Added semitone pitch sweeps, pitch curves, independent noise high/low-pass filters, and low-pass resonance.
+- Retuned current demo kits and regenerated their WAV samples; preserved legacy parameter mappings.
+
+- Simplified demo to the two refined kits; removed previous-kit options, A/B controls, and comparison notes.
+
 - Added refined versions of both kits, 16 additional WAV samples, A/B audition controls, and per-voice refinement notes. Previous kits remain unchanged.
 
 - Added seven independent body, noise, and transient controls, typed API support, grouped demo controls, and legacy macro compatibility.
