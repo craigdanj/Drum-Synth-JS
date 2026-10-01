@@ -178,7 +178,7 @@ The demo groups the new controls under Body, Noise, and Transient. Each level ra
 | `transientLevel` | 0–1 | Initial noise-click level |
 | `transientDecay` | 0.001–0.3 seconds | Transient exponential decay time to approximately -60 dB from onset |
 
-`attack` remains the body attack. The transient retains its original 0.5 ms onset ramp. Clap body and noise retain their four-burst structure, now with separate envelopes. Render duration follows the longest enabled layer, including clap bursts and the final fade; muted layers do not lengthen the sample.
+`attack` remains the body attack. The transient retains its original 0.5 ms onset ramp. Claps use the dedicated burst-and-tail noise design described below; the tonal body has its own single envelope. Render duration follows the longest enabled layer, including clap bursts and the final fade; muted layers do not lengthen the sample.
 
 Example: short snare body with a longer rattle:
 
@@ -192,7 +192,7 @@ drums.trigger('snare', { params: {
 
 ### Compatibility
 
-Original and 808-inspired defaults preserve their previous rendered PCM. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
+Earlier layer and pitch/filter updates preserved default PCM; the clap redesign intentionally changes clap rendering. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
 
 The demo exposes the independent controls in place of Noise mix, shared Decay, and Transient amount. Reset restores the active pack's voice. Exported JSON includes all seven new values.
 
@@ -237,5 +237,38 @@ drums.trigger('snare', {params: {
   noiseHighpass: 1300,
   noiseLowpass: 8500,
   noiseResonance: 0.18
+}});
+```
+
+## Clap structure
+
+Select **Clap** in the demo to show the six clap-only controls. Other voices ignore these controls. Noise level controls the complete burst-and-tail layer; set it to zero to mute both. The filtered noise source is shared, with separate amplitude envelopes for the burst cluster and wash.
+
+| Parameter | Range | Meaning |
+|---|---|---|
+| `burstCount` | 1–8, integer | Number of initial noise bursts |
+| `burstSpacing` | 0.002–0.06 seconds | Nominal time between bursts |
+| `burstDecay` | 0.003–0.12 seconds | Each burst's decay to approximately -60 dB after attack |
+| `tailLevel` | 0–1 | Trailing wash level relative to noise level; zero disables it |
+| `tailDecay` | 0.03–3 seconds | Wash decay to approximately -60 dB after attack |
+| `burstVariation` | 0–1 | Seeded timing and strength variation |
+
+Each burst uses `noiseAttack`, with successively reduced strength (0.85 raised to the burst index). The wash starts one nominal spacing interval after the final burst. At maximum variation, inter-burst intervals vary by up to ±35% and burst strengths by up to ±20%. The first burst starts at zero. A separate seeded random stream keeps the burst design from shifting the underlying noise sequence. Repeated hits with the same seed remain identical; changing the seed changes the realization.
+
+The tonal body uses one body envelope, and the transient remains an independent initial click. Export length includes the last varied burst, the enabled wash, and the final fade. The six controls do not affect other voices.
+
+For clap, `noiseDecay` remains an API alias for `tailDecay`; `decay` also updates it via the legacy mapping unless an explicit `tailDecay` is supplied. Explicit fields win in resolved preset objects. The demo hides Noise decay for Clap and exposes Burst decay and Tail decay instead. Existing presets still load, but clap audio intentionally changes from the previous fixed four-envelope design.
+
+### Retuned claps
+
+- **Drum Forge:** four bursts, 10 ms spacing, 17 ms burst decay, 28% variation, 42% wash level, 260 ms wash decay.
+- **808-inspired:** three bursts, 12 ms spacing, 9 ms burst decay, 6% variation, 60% wash level, 340 ms wash decay.
+
+These are synthesis interpretations, not circuit-accurate emulations. Updated WAVs are included in both refined kit folders.
+
+```js
+drums.trigger('clap', {params: {
+  burstCount: 3, burstSpacing: 0.012, burstDecay: 0.009,
+  tailLevel: 0.6, tailDecay: 0.34, burstVariation: 0.06
 }});
 ```

@@ -29,18 +29,21 @@ const groups = [
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
   ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
+  ['Clap structure', {burstCount:'Burst count',burstSpacing:'Burst spacing',burstDecay:'Burst decay',tailLevel:'Tail level',tailDecay:'Tail decay',burstVariation:'Burst variation'}],
   ['Noise filter', {noiseHighpass:'High-pass',noiseLowpass:'Low-pass',noiseResonance:'Resonance'}],
   ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='burstCount') return String(value); return ['burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   for(const [group, labels] of groups) {
+    if(group==='Clap structure' && voice!=='clap') continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
     for(const [key,label] of Object.entries(labels)) {
+    if(voice==='clap' && key==='noiseDecay') continue;
     const [min,max,increment]=PARAMS[key], wrapper=document.createElement('div'); wrapper.className='control';
     wrapper.innerHTML=`<label for="param-${key}">${label}<output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};

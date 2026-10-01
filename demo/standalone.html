@@ -25,6 +25,8 @@ export const PARAMS = Object.freeze({
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
   noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
   transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
+  burstCount: [1, 8, 1], burstSpacing: [.002, .06, .001], burstDecay: [.003, .12, .001],
+  tailLevel: [0, 1, .01], tailDecay: [.03, 3, .01], burstVariation: [0, 1, .01],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -66,6 +68,10 @@ function mergeParams(base, overrides) {
   layer('bodyDecay', 'decay', p.decay);
   layer('noiseDecay', 'decay', p.decay);
   layer('noiseAttack', 'attack', p.attack);
+  layer('tailDecay', 'noiseDecay', p.noiseDecay);
+  if (legacy('decay') && !legacy('noiseDecay') && !legacy('tailDecay')) p.tailDecay = p.noiseDecay;
+  p.burstCount ??= 3; p.burstSpacing ??= .012; p.burstDecay ??= .012;
+  p.tailLevel ??= .55; p.burstVariation ??= 0;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
   return p;
@@ -75,6 +81,7 @@ export function resolveParams(voice, overrides = {}) {
   object(overrides, 'parameters'); keys(overrides, Object.keys(PARAMS));
   const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
+  if (!Number.isInteger(params.burstCount)) throw new RangeError('burstCount must be an integer');
   if (!Number.isInteger(params.seed)) throw new RangeError('seed must be an integer');
   return params;
 }
@@ -86,9 +93,23 @@ export function render(voice, overrides = {}, options = {}) {
   const sampleRate = number(options.sampleRate ?? 44100, 8000, 96000, 'sampleRate');
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
-  const burstTail = voice === 'clap' ? 0.036 : 0;
-  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay + burstTail : 0,
-    p.noiseLevel > 0 ? p.noiseAttack + p.noiseDecay + burstTail : 0,
+  const isClap = voice === 'clap';
+  // Separate random stream: changing burst structure never shifts the noise sequence.
+  let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
+  const randomBurst = () => {
+    burstSeed ^= burstSeed << 13; burstSeed ^= burstSeed >>> 17; burstSeed ^= burstSeed << 5;
+    return (burstSeed >>> 0) / 4294967296;
+  };
+  let onset = 0;
+  const bursts = isClap ? Array.from({length:p.burstCount}, (_,i) => {
+    if (i) onset += p.burstSpacing * (1 + (randomBurst() * 2 - 1) * .35 * p.burstVariation);
+    return {time:onset, gain:(.85 ** i) * (1 + (randomBurst() * 2 - 1) * .2 * p.burstVariation)};
+  }) : [];
+  const tailStart = isClap ? onset + p.burstSpacing : 0;
+  const noiseEnd = isClap ? Math.max(onset + p.noiseAttack + p.burstDecay,
+    p.tailLevel > 0 ? tailStart + p.noiseAttack + p.tailDecay : 0) : p.noiseAttack + p.noiseDecay;
+  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay : 0,
+    p.noiseLevel > 0 ? noiseEnd : 0,
     p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
@@ -104,9 +125,8 @@ export function render(voice, overrides = {}, options = {}) {
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
   const sine = (mult) => Math.sin(phase * mult);
   const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
-  const layerEnv = (t, attack, decay) => voice === 'clap'
-    ? (env(t, attack, decay) + .8 * env(t - .012, attack, decay) + .65 * env(t - .024, attack, decay) + env(t - .036, attack, decay)) / 2
-    : env(t, attack, decay);
+  const clapNoiseEnv = t => bursts.reduce((sum, burst) => sum + burst.gain * env(t - burst.time, p.noiseAttack, p.burstDecay), 0)
+    + p.tailLevel * env(t - tailStart, p.noiseAttack, p.tailDecay);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
@@ -132,7 +152,7 @@ export function render(voice, overrides = {}, options = {}) {
       default: body = [1, 1.342, 1.79, 2.13, 2.67, 3.17].reduce((sum, m) => sum + sine(m), 0) / 3;
     }
     const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let value = p.bodyLevel * body * layerEnv(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * layerEnv(t, p.noiseAttack, p.noiseDecay) + transient;
+    let value = p.bodyLevel * body * env(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);
@@ -246,12 +266,12 @@ const patches = {
   cowbell: { frequency: 540, decay: .34, pitchDrop: 0, tone: .95, noise: 0, snap: .025, drive: .6, volume: .48 }
 };
 export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, patches[voice]))])));
-// Independent envelope designs; keep the two previous kits intact for comparison.
+// Current sound packs with voice-specific envelope designs.
 const refine = (base, changes) => Object.freeze(Object.fromEntries(Object.entries(base).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, {...params, ...changes[voice]}))])));
 export const KIT_ORIGINAL_REFINED = refine(PRESETS, {
   kick: {pitchSweepSemitones:22, pitchCurve:1.25, noiseHighpass:80, noiseLowpass:2600, noiseResonance:0.05, bodyLevel:.98, bodyDecay:.65, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04, transientLevel:.22, transientDecay:.01},
   snare: {pitchSweepSemitones:4, pitchCurve:1.2, noiseHighpass:1050, noiseLowpass:9800, noiseResonance:0.16, bodyLevel:.34, bodyDecay:.13, noiseLevel:.7, noiseAttack:.002, noiseDecay:.32, transientLevel:.25, transientDecay:.011},
-  clap: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1100, noiseLowpass:7600, noiseResonance:0.2, bodyLevel:.025, bodyDecay:.075, noiseLevel:.93, noiseAttack:.0015, noiseDecay:.29, transientLevel:.25, transientDecay:.008},
+  clap: {burstCount:4, burstSpacing:.01, burstDecay:.017, tailLevel:.42, tailDecay:.26, burstVariation:.28, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1100, noiseLowpass:7600, noiseResonance:0.2, bodyLevel:.025, bodyDecay:.075, noiseLevel:.93, noiseAttack:.0015, noiseDecay:.29, transientLevel:.25, transientDecay:.008},
   closedHat: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:6200, noiseLowpass:14500, noiseResonance:0.08, bodyLevel:.4, bodyDecay:.045, noiseLevel:.58, noiseAttack:.0005, noiseDecay:.09, transientLevel:.045, transientDecay:.005},
   openHat: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:4500, noiseLowpass:13000, noiseResonance:0.1, bodyLevel:.4, bodyDecay:.38, noiseLevel:.58, noiseAttack:.002, noiseDecay:.78, transientLevel:.045, transientDecay:.008},
   tom: {pitchSweepSemitones:9, pitchCurve:1.15, noiseHighpass:500, noiseLowpass:4500, noiseResonance:0.06, bodyLevel:.96, bodyDecay:.56, noiseLevel:.075, noiseAttack:.0005, noiseDecay:.065, transientLevel:.1, transientDecay:.009},
@@ -261,7 +281,7 @@ export const KIT_ORIGINAL_REFINED = refine(PRESETS, {
 export const KIT_808_REFINED = refine(KIT_808, {
   kick: {pitchSweepSemitones:15, pitchCurve:1.35, noiseHighpass:0, noiseLowpass:1800, noiseResonance:0, bodyLevel:1, bodyDecay:1.65, noiseLevel:0, noiseAttack:.0005, noiseDecay:.03, transientLevel:.045, transientDecay:.008},
   snare: {pitchSweepSemitones:2, pitchCurve:1.25, noiseHighpass:1300, noiseLowpass:8500, noiseResonance:0.18, bodyLevel:.44, bodyDecay:.14, noiseLevel:.6, noiseAttack:.0015, noiseDecay:.37, transientLevel:.16, transientDecay:.009},
-  clap: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1200, noiseLowpass:6800, noiseResonance:0.22, bodyLevel:0, bodyDecay:.06, noiseLevel:1, noiseAttack:.001, noiseDecay:.32, transientLevel:.07, transientDecay:.006},
+  clap: {burstCount:3, burstSpacing:.012, burstDecay:.009, tailLevel:.6, tailDecay:.34, burstVariation:.06, pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:1200, noiseLowpass:6800, noiseResonance:0.22, bodyLevel:0, bodyDecay:.06, noiseLevel:1, noiseAttack:.001, noiseDecay:.32, transientLevel:.07, transientDecay:.006},
   closedHat: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:7200, noiseLowpass:15000, noiseResonance:0.08, bodyLevel:.72, bodyDecay:.04, noiseLevel:.28, noiseAttack:.0005, noiseDecay:.075, transientLevel:.018, transientDecay:.004},
   openHat: {pitchSweepSemitones:0, pitchCurve:1, noiseHighpass:5800, noiseLowpass:13500, noiseResonance:0.12, bodyLevel:.67, bodyDecay:.48, noiseLevel:.33, noiseAttack:.0015, noiseDecay:.9, transientLevel:.018, transientDecay:.006},
   tom: {pitchSweepSemitones:5, pitchCurve:1.15, noiseHighpass:650, noiseLowpass:4200, noiseResonance:0.05, bodyLevel:.985, bodyDecay:.64, noiseLevel:.025, noiseAttack:.0005, noiseDecay:.045, transientLevel:.045, transientDecay:.007},
@@ -272,7 +292,7 @@ export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original
 export const REFINEMENT_NOTES = Object.freeze({
   kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
   snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',
-  clap:'Longer noise wash with a gentler initial click; the original kit’s tonal component fades earlier.',
+  clap:'Independent short noise bursts and a trailing wash, with deterministic timing and strength variation.',
   closedHat:'Shorter metallic ring followed by a small noise tail, with less initial click.',
   openHat:'Metallic tone fades before the longer noise tail; the noise has a slightly softer onset.',
   tom:'Longer tonal body, brief impact noise, and a shorter click.',
@@ -311,18 +331,21 @@ const groups = [
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
   ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
+  ['Clap structure', {burstCount:'Burst count',burstSpacing:'Burst spacing',burstDecay:'Burst decay',tailLevel:'Tail level',tailDecay:'Tail decay',burstVariation:'Burst variation'}],
   ['Noise filter', {noiseHighpass:'High-pass',noiseLowpass:'Low-pass',noiseResonance:'Resonance'}],
   ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='burstCount') return String(value); return ['burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   for(const [group, labels] of groups) {
+    if(group==='Clap structure' && voice!=='clap') continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
     for(const [key,label] of Object.entries(labels)) {
+    if(voice==='clap' && key==='noiseDecay') continue;
     const [min,max,increment]=PARAMS[key], wrapper=document.createElement('div'); wrapper.className='control';
     wrapper.innerHTML=`<label for="param-${key}">${label}<output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};

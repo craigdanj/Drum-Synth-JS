@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Redesigned clap noise as independent bursts and wash, with six clap-only controls and seeded variation.
+- Retuned both current clap presets; regenerated samples and added clap structure UI.
+
 - Added semitone pitch sweeps, pitch curves, independent noise high/low-pass filters, and low-pass resonance.
 - Retuned current demo kits and regenerated their WAV samples; preserved legacy parameter mappings.
 

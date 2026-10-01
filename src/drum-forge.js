@@ -8,6 +8,8 @@ export const PARAMS = Object.freeze({
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
   noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
   transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
+  burstCount: [1, 8, 1], burstSpacing: [.002, .06, .001], burstDecay: [.003, .12, .001],
+  tailLevel: [0, 1, .01], tailDecay: [.03, 3, .01], burstVariation: [0, 1, .01],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -49,6 +51,10 @@ function mergeParams(base, overrides) {
   layer('bodyDecay', 'decay', p.decay);
   layer('noiseDecay', 'decay', p.decay);
   layer('noiseAttack', 'attack', p.attack);
+  layer('tailDecay', 'noiseDecay', p.noiseDecay);
+  if (legacy('decay') && !legacy('noiseDecay') && !legacy('tailDecay')) p.tailDecay = p.noiseDecay;
+  p.burstCount ??= 3; p.burstSpacing ??= .012; p.burstDecay ??= .012;
+  p.tailLevel ??= .55; p.burstVariation ??= 0;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
   return p;
@@ -58,6 +64,7 @@ export function resolveParams(voice, overrides = {}) {
   object(overrides, 'parameters'); keys(overrides, Object.keys(PARAMS));
   const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
+  if (!Number.isInteger(params.burstCount)) throw new RangeError('burstCount must be an integer');
   if (!Number.isInteger(params.seed)) throw new RangeError('seed must be an integer');
   return params;
 }
@@ -69,9 +76,23 @@ export function render(voice, overrides = {}, options = {}) {
   const sampleRate = number(options.sampleRate ?? 44100, 8000, 96000, 'sampleRate');
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
-  const burstTail = voice === 'clap' ? 0.036 : 0;
-  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay + burstTail : 0,
-    p.noiseLevel > 0 ? p.noiseAttack + p.noiseDecay + burstTail : 0,
+  const isClap = voice === 'clap';
+  // Separate random stream: changing burst structure never shifts the noise sequence.
+  let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
+  const randomBurst = () => {
+    burstSeed ^= burstSeed << 13; burstSeed ^= burstSeed >>> 17; burstSeed ^= burstSeed << 5;
+    return (burstSeed >>> 0) / 4294967296;
+  };
+  let onset = 0;
+  const bursts = isClap ? Array.from({length:p.burstCount}, (_,i) => {
+    if (i) onset += p.burstSpacing * (1 + (randomBurst() * 2 - 1) * .35 * p.burstVariation);
+    return {time:onset, gain:(.85 ** i) * (1 + (randomBurst() * 2 - 1) * .2 * p.burstVariation)};
+  }) : [];
+  const tailStart = isClap ? onset + p.burstSpacing : 0;
+  const noiseEnd = isClap ? Math.max(onset + p.noiseAttack + p.burstDecay,
+    p.tailLevel > 0 ? tailStart + p.noiseAttack + p.tailDecay : 0) : p.noiseAttack + p.noiseDecay;
+  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay : 0,
+    p.noiseLevel > 0 ? noiseEnd : 0,
     p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
@@ -87,9 +108,8 @@ export function render(voice, overrides = {}, options = {}) {
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
   const sine = (mult) => Math.sin(phase * mult);
   const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
-  const layerEnv = (t, attack, decay) => voice === 'clap'
-    ? (env(t, attack, decay) + .8 * env(t - .012, attack, decay) + .65 * env(t - .024, attack, decay) + env(t - .036, attack, decay)) / 2
-    : env(t, attack, decay);
+  const clapNoiseEnv = t => bursts.reduce((sum, burst) => sum + burst.gain * env(t - burst.time, p.noiseAttack, p.burstDecay), 0)
+    + p.tailLevel * env(t - tailStart, p.noiseAttack, p.tailDecay);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
@@ -115,7 +135,7 @@ export function render(voice, overrides = {}, options = {}) {
       default: body = [1, 1.342, 1.79, 2.13, 2.67, 3.17].reduce((sum, m) => sum + sine(m), 0) / 3;
     }
     const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let value = p.bodyLevel * body * layerEnv(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * layerEnv(t, p.noiseAttack, p.noiseDecay) + transient;
+    let value = p.bodyLevel * body * env(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);
