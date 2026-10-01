@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Added brightness/transient velocity response and enabled it in current demo kits.
+- Added Hit strength audition/export control and per-step soft/normal/accent velocities. Full-strength samples remain unchanged.
+
 - Added scheduled hi-hat choking, enabled by default with a configurable 5 ms fade, plus demo controls.
 - Added cancellation-aware handling for pending closures and out-of-order hits. Single-hit WAVs are unchanged.
 

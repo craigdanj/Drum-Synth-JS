@@ -315,3 +315,24 @@ Closures use the audio clock at the closed hit’s scheduled time, not the time 
 Cancelling a future closed hit with its handle’s `stop()` restores the affected open hat or selects the next scheduled closure. Changing fade or disabling choking updates pending closures; a fade that has already begun is not reversed. Enabling choking does not replay past closed-hit events. `stopAll()`, individual stops, voice stealing, and disposal still cancel sources, including those with a future choke scheduled. Fading voices remain tracked until they end or are explicitly stopped.
 
 Automated tests cover scheduling, out-of-order and simultaneous hits, cancellation, disabled mode, live pads, cleanup, and option validation using an instrumented Web Audio mock. Browser playback and listening checks remain unverified in this environment.
+
+## Velocity-sensitive sound and sequencer accents
+
+Two per-voice controls are available under **Velocity response**:
+
+- `velocityToBrightness` (0–1): soft hits lower noise and metallic low-pass cutoffs. The multiplier is `2 ** (-3 * amount * (1 - velocity))`, with a minimum cutoff of 20 Hz. This shapes noise and hats' metallic bodies; it does not change other tonal bodies or the transient filter.
+- `velocityToTransient` (0–1): soft hits reduce transient level by `1 - amount * (1 - velocity)` before shared saturation.
+
+Full velocity (1) preserves the preset sound. Zero response preserves volume-only velocity behavior; engine defaults use zero for compatibility. Both current demo kits have modest response amounts enabled. Velocity zero renders silence. Normal amplitude scaling still happens once, in addition to the timbre response. Live playback caches buffers by effective sound parameters, then applies velocity gain; WAV rendering uses the same response and gain. Pitch and decay response are not part of this update.
+
+Use **Hit strength** to audition pads or Play sound at 1–100%. The waveform and exported WAV follow this setting; WAV filenames include the strength. It does not set sequencer velocity, and preset JSON stores response parameters rather than audition strength.
+
+Each sequencer step cycles through **off → soft (35%) → normal (65%) → accent (100%) → off** when clicked or keyboard-activated. Symbols, colors, and accessible labels indicate its strength. Starter beat includes quieter offbeats and a ghost snare. Clear and Starter beat reset velocities; kit switching preserves the sequence. Set both response controls to zero to hear volume-only differences.
+
+```js
+drums.configure('snare', {velocityToBrightness: 0.6, velocityToTransient: 0.65});
+drums.trigger('snare', {velocity: 0.35});
+const softSample = render('snare', {
+  velocityToBrightness: 0.6, velocityToTransient: 0.65
+}, {velocity: 0.35});
+```

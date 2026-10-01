@@ -9,7 +9,12 @@ const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) =>
 let kit = edits[activeKit];
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
 let pattern = starter();
-function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => (i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15))); }
+const hitStrength = () => Number($('hit-strength').value) / 100;
+function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
+  const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
+  return on ? (s%4===0 ? 1 : .65) : (i===1&&s===11 ? .35 : 0);
+})); }
+
 function status(message) { $('status').textContent = message; }
 async function enable() {
   if (!synth) synth = new DrumForge({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
@@ -17,7 +22,7 @@ async function enable() {
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
 async function hit(voice) {
-  await enable(); synth.trigger(voice, { params: kit[voice] }); flash(voice);
+  await enable(); synth.trigger(voice, { params: kit[voice], velocity:hitStrength() }); flash(voice);
 }
 function flash(voice) { const pad = document.querySelector(`[data-voice="${voice}"]`); pad.classList.add('hit'); setTimeout(()=>pad.classList.remove('hit'),100); }
 voices.forEach((voice,i) => {
@@ -33,6 +38,7 @@ const groups = [
   ['Metallic source', {metalMix:'Metal / noise balance',metalDetune:'Detune',metalDamping:'Damping',metalHighpass:'Metal high-pass',metalLowpass:'Metal low-pass'}],
   ['Noise filter', {noiseHighpass:'High-pass',noiseLowpass:'Low-pass',noiseResonance:'Resonance'}],
   ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
+  ['Velocity response', {velocityToBrightness:'Brightness response',velocityToTransient:'Transient response'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
 function format(key,value) { if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
@@ -55,7 +61,7 @@ function select(voice) {
   draw();
 }
 function draw() {
-  const {samples}=render(selected,kit[selected]); const canvas=$('wave');
+  const {samples}=render(selected,kit[selected],{velocity:hitStrength()}); const canvas=$('wave');
   const width=canvas.clientWidth||450, height=82, dpr=devicePixelRatio||1;
   canvas.width=width*dpr;canvas.height=height*dpr;
   const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,width,height);
@@ -66,7 +72,17 @@ function draw() {
 function buildGrid() {
   $('grid').replaceChildren(); const numbers=document.createElement('div');numbers.className='row numbers';numbers.innerHTML='<span></span>'+Array.from({length:16},(_,i)=>`<span>${i+1}</span>`).join('');$('grid').append(numbers);
   voices.forEach((voice,i)=>{const row=document.createElement('div');row.className='row';const label=document.createElement('span');label.className='row-label';label.textContent=names[i];row.append(label);
-    pattern[i].forEach((enabled,s)=>{const button=document.createElement('button');button.className=`step ${s%4===0?'beat':''} ${enabled?'on':''}`;button.dataset.step=s;button.setAttribute('aria-label',`${names[i]} step ${s+1}`);button.setAttribute('aria-pressed',String(enabled));button.onclick=()=>{pattern[i][s]=!pattern[i][s];button.classList.toggle('on',pattern[i][s]);button.setAttribute('aria-pressed',String(pattern[i][s]));};row.append(button);});$('grid').append(row);
+    pattern[i].forEach((velocity,s)=>{
+      const button=document.createElement('button');button.className=`step ${s%4===0?'beat':''}`;button.dataset.step=s;
+      const update=()=>{
+        const v=pattern[i][s];button.classList.toggle('on',v>0);
+        button.dataset.velocity=String(v);button.textContent=v===0?'':v===.35?'·':v===.65?'••':'!';
+        const label=`${names[i]} step ${s+1}: ${v===0?'off':Math.round(v*100)+'% strength'}`;
+        button.setAttribute('aria-label',label);button.setAttribute('aria-pressed',String(v>0));button.title=label;
+      };
+      button.onclick=()=>{const levels=[0,.35,.65,1];pattern[i][s]=levels[(levels.indexOf(pattern[i][s])+1)%levels.length];update();};
+      update();row.append(button);
+    });$('grid').append(row);
   });
 }
 function schedule() {
@@ -74,7 +90,7 @@ function schedule() {
   // If the tab was throttled, restart from now instead of emitting a burst of old hits.
   if(nextTime<synth.context.currentTime)nextTime=synth.context.currentTime+.02;
   while(nextTime<synth.context.currentTime+.1){
-    voices.forEach((voice,i)=>{if(pattern[i][step])synth.trigger(voice,{when:nextTime,params:kit[voice],velocity:step%4===0?1:.82});});
+    voices.forEach((voice,i)=>{if(pattern[i][step])synth.trigger(voice,{when:nextTime,params:kit[voice],velocity:pattern[i][step]});});
     queue.push({time:nextTime,step});step=(step+1)%16;nextTime+=60/bpm/4;
   }
 }
@@ -85,6 +101,7 @@ function download(data,type,name){const url=URL.createObjectURL(new Blob([data],
 $('enable').onclick=guarded(enable);$('audition').onclick=guarded(()=>hit(selected));$('play').onclick=guarded(toggle);
 $('choke-enabled').onchange=()=>synth?.setChoke({chokeEnabled:$('choke-enabled').checked});
 $('choke-fade').oninput=()=>{const ms=Number($('choke-fade').value);$('choke-value').value=`${ms} ms`;synth?.setChoke({chokeFade:ms/1000});};
+$('hit-strength').oninput=()=>{$('hit-strength-value').value=`${$('hit-strength').value}%`;draw();};
 $('master').oninput=()=>synth?.setVolume(Number($('master').value));
 $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(value)?Math.max(40,Math.min(240,value)):110;$('bpm').value=bpm;};
 $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(selected);};
@@ -97,8 +114,8 @@ async function changeKit(id) {
   status(`${name} kit loaded`);
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
-$('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(false));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected])),'audio/wav',`drum-forge-${activeKit}-${selected}.wav`);status('WAV exported');});
+$('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
+$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-forge-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('WAV exported');});
 $('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});

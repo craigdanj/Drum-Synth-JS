@@ -6,3 +6,5 @@
 
 
 .choke-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 22px;font-size:12px;color:var(--muted)}.choke-controls label{display:flex;align-items:center;gap:8px}.choke-controls input[type=range]{width:140px}.choke-controls input[type=checkbox]{accent-color:var(--accent)}.choke-controls output{color:var(--text);min-width:44px}
+
+.hit-strength{margin-top:20px;padding:12px;background:#151813;border-radius:6px}.hit-strength label{display:flex;justify-content:space-between;font-size:12px}.hit-strength small{color:var(--muted);font-size:10px}.step.on{color:#17220b;font-size:11px}.step[data-velocity="0.35"]{background:#698442;border-color:#8ca855}.step[data-velocity="0.65"]{background:#a0c562;border-color:#b6d77b}
