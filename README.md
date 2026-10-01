@@ -192,7 +192,7 @@ drums.trigger('snare', { params: {
 
 ### Compatibility
 
-Earlier layer and pitch/filter updates preserved default PCM; the clap redesign intentionally changes clap rendering. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
+Earlier layer and pitch/filter updates preserved default PCM; the clap and metallic-source redesigns intentionally change clap and hi-hat rendering. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
 
 The demo exposes the independent controls in place of Noise mix, shared Decay, and Transient amount. Reset restores the active pack's voice. Exported JSON includes all seven new values.
 
@@ -270,5 +270,30 @@ These are synthesis interpretations, not circuit-accurate emulations. Updated WA
 drums.trigger('clap', {params: {
   burstCount: 3, burstSpacing: 0.012, burstDecay: 0.009,
   tailLevel: 0.6, tailDecay: 0.34, burstVariation: 0.06
+}});
+```
+
+## Metallic hi-hat source
+
+Select **Closed hat** or **Open hat** to show **Metallic source** controls. Six inharmonically related oscillators now contribute up to four odd harmonics each (1, 3, 5, 7), giving a richer metallic body than the earlier six-sine mixture. Harmonics fade out between 0.40 and 0.45 times the sample rate to reduce source aliasing, including during sweeps. Subsequent saturation is unchanged and is not oversampled.
+
+| Parameter | Range | Meaning |
+|---|---|---|
+| `metalMix` | 0–1 | Balance from noise toward metal; 0.5 preserves the independent layer gains |
+| `metalDetune` | 0–100 cents | Amount of fixed signed detuning across the six oscillators |
+| `metalDamping` | 0–1 | Additional decay of higher metallic partials; 0 leaves only the body envelope |
+| `metalHighpass` | 0–18000 Hz | Removes low metallic ringing; 0 bypasses the high-pass stage |
+| `metalLowpass` | 20–20000 Hz | Softens high metallic partials |
+
+The balance applies `2 * metalMix` to Body level and `2 * (1 - metalMix)` to Noise level. It does not change the stored levels or the transient. With equal body/noise levels, the sum of the nominal gains stays constant, but this is not loudness normalization; different sources and envelopes have different energy. With unequal layer levels, changing balance can also change the total gain. A layer whose own level is zero remains silent at every balance setting. Body level and decay shape the metallic layer; Noise level and decay shape the hiss.
+
+Metal filters are one-pole low-pass then high-pass, independent of the noise filters, with effective cutoffs capped at 0.4 times sample rate. A high-pass above the low-pass is allowed and strongly attenuates the metallic layer. Damping adds frequency-dependent exponential decay scaled by Body decay, so higher partials fade faster without lengthening the tail. Fixed detuning preserves deterministic rendering and does not vary from hit to hit.
+
+Both demo kits' open and closed hats have been retuned. Drum Forge uses a wider detune spread; the 808-inspired kit favors a tighter, more metallic balance and higher metal high-pass cutoffs. Closed hats use more damping than open hats. This intentionally changes hat rendering for existing presets while preserving the parameter API. Other voices ignore these five settings. Hi-hat choking remains a separate future playback feature.
+
+```js
+drums.trigger('openHat', {params: {
+  metalMix: 0.6, metalDetune: 12, metalDamping: 0.45,
+  metalHighpass: 4200, metalLowpass: 16000
 }});
 ```

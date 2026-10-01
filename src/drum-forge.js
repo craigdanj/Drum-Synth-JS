@@ -10,6 +10,8 @@ export const PARAMS = Object.freeze({
   transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
   burstCount: [1, 8, 1], burstSpacing: [.002, .06, .001], burstDecay: [.003, .12, .001],
   tailLevel: [0, 1, .01], tailDecay: [.03, 3, .01], burstVariation: [0, 1, .01],
+  metalMix: [0, 1, .01], metalDetune: [0, 100, 1], metalDamping: [0, 1, .01],
+  metalHighpass: [0, 18000, 10], metalLowpass: [20, 20000, 10],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -54,6 +56,8 @@ function mergeParams(base, overrides) {
   layer('tailDecay', 'noiseDecay', p.noiseDecay);
   if (legacy('decay') && !legacy('noiseDecay') && !legacy('tailDecay')) p.tailDecay = p.noiseDecay;
   p.burstCount ??= 3; p.burstSpacing ??= .012; p.burstDecay ??= .012;
+  p.metalMix ??= .5; p.metalDetune ??= 12; p.metalDamping ??= .3;
+  p.metalHighpass ??= 1800; p.metalLowpass ??= 14500;
   p.tailLevel ??= .55; p.burstVariation ??= 0;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
@@ -76,6 +80,10 @@ export function render(voice, overrides = {}, options = {}) {
   const sampleRate = number(options.sampleRate ?? 44100, 8000, 96000, 'sampleRate');
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
+  const isHat = voice === 'closedHat' || voice === 'openHat';
+  // Centered balance preserves the independent layer levels at 0.5.
+  const metalGain = isHat ? 2 * p.metalMix : 1;
+  const noiseGain = isHat ? 2 * (1 - p.metalMix) : 1;
   const isClap = voice === 'clap';
   // Separate random stream: changing burst structure never shifts the noise sequence.
   let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
@@ -91,8 +99,8 @@ export function render(voice, overrides = {}, options = {}) {
   const tailStart = isClap ? onset + p.burstSpacing : 0;
   const noiseEnd = isClap ? Math.max(onset + p.noiseAttack + p.burstDecay,
     p.tailLevel > 0 ? tailStart + p.noiseAttack + p.tailDecay : 0) : p.noiseAttack + p.noiseDecay;
-  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay : 0,
-    p.noiseLevel > 0 ? noiseEnd : 0,
+  const duration = Math.max(p.bodyLevel * metalGain > 0 ? p.attack + p.bodyDecay : 0,
+    p.noiseLevel * noiseGain > 0 ? noiseEnd : 0,
     p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
@@ -105,6 +113,16 @@ export function render(voice, overrides = {}, options = {}) {
   const b0 = (1 - c) / 2 / a0, b1 = (1 - c) / a0, b2 = b0;
   const a1 = -2 * c / a0, a2 = (1 - a) / a0;
   let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  const metalLP = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.metalLowpass) / sampleRate);
+  const metalHP = 1 - Math.exp(-TAU * Math.min(sampleRate * .4, p.metalHighpass) / sampleRate);
+  let metalLow = 0, metalBass = 0;
+  // Odd-harmonic oscillator bank: six inharmonic ratios with symmetric fixed detuning.
+  const ratios = [1, 1.342, 1.79, 2.13, 2.67, 3.17];
+  const offsets = [-1, .6, -.35, 1, -.7, .45];
+  const partials = isHat ? ratios.flatMap((ratio,index) => [1,3,5,7].map(harmonic => ({
+    ratio:ratio * 2 ** (offsets[index] * p.metalDetune / 1200) * harmonic,
+    amplitude:1 / harmonic
+  }))) : [];
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
   const sine = (mult) => Math.sin(phase * mult);
   const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
@@ -132,10 +150,21 @@ export function render(voice, overrides = {}, options = {}) {
         break;
       case 'rim': body = (sine(1) + sine(2.37) * 0.7 + sine(3.1) * 0.3) / 2; break;
       case 'cowbell': body = (sine(1) + sine(1.48) + p.tone * 0.3 * (sine(3) + sine(4.44))) / 2.6; break;
-      default: body = [1, 1.342, 1.79, 2.13, 2.67, 3.17].reduce((sum, m) => sum + sine(m), 0) / 3;
+      default: {
+        let metal = 0;
+        for (const partial of partials) {
+          // Fade partials out before Nyquist, including during pitch sweeps.
+          const taper = Math.max(0, Math.min(1, (sampleRate * .45 - f * partial.ratio) / (sampleRate * .05)));
+          const damping = Math.exp(-p.metalDamping * 3 * Math.max(0, partial.ratio - 1) * t / p.bodyDecay);
+          metal += sine(partial.ratio) * partial.amplitude * taper * damping;
+        }
+        metalLow += metalLP * (metal / 3.5 - metalLow);
+        metalBass += metalHP * (metalLow - metalBass);
+        body = metalLow - metalBass;
+      }
     }
     const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let value = p.bodyLevel * body * env(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
+    let value = metalGain * p.bodyLevel * body * env(t, p.attack, p.bodyDecay) + noiseGain * p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);

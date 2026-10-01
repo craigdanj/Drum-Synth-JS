@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Added richer odd-harmonic hat synthesis, metallic balance, detuning, damping, and independent metal filters.
+- Retuned both kits’ open and closed hats and added a hat-only Metallic source section.
+
 - Redesigned clap noise as independent bursts and wash, with six clap-only controls and seeded variation.
 - Retuned both current clap presets; regenerated samples and added clap structure UI.
 
