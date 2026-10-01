@@ -2,6 +2,8 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Drum Forge • Sound laboratory</title><style>:root{color-scheme:dark;--bg:#141513;--panel:#1c1e1b;--line:#343831;--muted:#a0a69a;--text:#edf0e6;--accent:#d4f67a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,sans-serif}main{max-width:1440px;margin:auto;padding:30px 42px}header,.section-top,.toolbar,.transport,footer,.actions{display:flex;align-items:center;justify-content:space-between;gap:16px}header{border-bottom:1px solid var(--line);padding-bottom:25px}.brand{color:inherit;text-decoration:none;font-weight:850;letter-spacing:2px;font-size:19px}.brand small{color:var(--accent);font-size:10px}.mark{display:inline-grid;place-items:center;background:var(--accent);color:var(--bg);width:32px;height:32px;margin-right:8px;border-radius:7px}.badge,.eyebrow{font-size:10px;letter-spacing:1.7px;font-weight:700;color:var(--muted)}.badge{border:1px solid var(--line);padding:8px 10px;border-radius:4px}.intro{padding:40px 0 26px}h1{font-size:clamp(36px,5vw,64px);line-height:1.1;letter-spacing:-3px;margin:14px 0}h1 em{color:var(--accent);font-style:normal}.intro p,.hint{color:var(--muted);font-size:14px;line-height:1.7}button,input{font:inherit}button{color:var(--text);background:#282c25;border:1px solid #42483b;border-radius:7px;padding:10px 14px;cursor:pointer;font-size:12px;font-weight:650;transition:background .12s}button:hover{background:#3a4230}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.primary{background:var(--accent);color:#1a2210;border-color:var(--accent)}.primary:hover{background:#e3ff9b}.toolbar{justify-content:flex-start;padding-bottom:20px}#status{color:var(--muted);font-size:12px}.master{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}input[type=range]{accent-color:var(--accent);width:100%;cursor:pointer}.master input{width:110px}.pads{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin-bottom:22px}.pad{height:108px;text-align:left;display:flex;flex-direction:column;justify-content:space-between;background:#20231e;border-color:var(--line);font-size:14px;padding:16px}.pad .pad-top{width:100%;display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}.pad.selected{border-color:var(--accent);background:#2b3320}.pad.selected .number{color:var(--accent)}.pad.hit{background:#526332}.studio{display:grid;grid-template-columns:minmax(330px,.9fr) minmax(500px,1.3fr);gap:22px}.panel{border:1px solid var(--line);border-radius:12px;padding:24px;background:var(--panel)}h2{font-size:25px;letter-spacing:-.8px;margin:8px 0 0}.section-top button{padding:8px 10px;font-size:11px}canvas{width:100%;height:82px;background:#151813;margin:20px 0 14px;border:1px solid var(--line);border-radius:6px}.sliders{display:grid;grid-template-columns:1fr 1fr;gap:15px 22px}.control label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:7px}.control output{color:var(--text);font-variant-numeric:tabular-nums}.actions{justify-content:flex-start;margin-top:24px;gap:8px;flex-wrap:wrap}.transport{justify-content:flex-start;margin:25px 0;flex-wrap:wrap;gap:10px}.transport label{font-size:11px;color:var(--muted)}input[type=number]{width:60px;padding:7px;color:var(--text);background:#11150f;border:1px solid var(--line);border-radius:5px}.grid-scroll{overflow:auto}.row{display:grid;grid-template-columns:66px repeat(16,minmax(20px,1fr));gap:5px;align-items:center;min-width:470px;margin:9px 0}.row-label{font-size:10px;color:var(--muted)}.step{height:29px;padding:0;border-radius:4px;border:1px solid #373e31;background:#292f24}.step.beat{background:#38412e}.step.on{background:var(--accent);border-color:var(--accent)}.step.current{outline:2px solid #fff;outline-offset:1px}.numbers span{text-align:center;color:#858d7c;font-size:9px}.hint{font-size:11px;margin-top:25px}footer{padding:28px 0 0;font-size:10px;color:#858d7c;letter-spacing:.5px}footer b{font-weight:400;margin-left:12px}@media(max-width:1100px){.studio{grid-template-columns:1fr}.pads{grid-template-columns:repeat(4,1fr)}}@media(max-width:600px){main{padding:20px 16px}.badge{display:none}.intro{padding-top:30px}h1{letter-spacing:-1.5px}.pads{gap:7px}.pad{height:85px;padding:10px;font-size:12px}.panel{padding:18px}.master{display:none}.toolbar{flex-wrap:wrap}.sliders{gap:15px}footer{display:block}footer span{display:block;margin-bottom:10px}.section-top{gap:8px}}
 
 .pack{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin-bottom:20px}.pack>div{display:flex;align-items:center;gap:18px;flex-wrap:wrap}.pack label{font-size:10px;letter-spacing:1.7px;color:var(--accent);font-weight:700}.pack select{font:inherit;font-weight:650;background:#282c25;color:var(--text);border:1px solid #566047;padding:10px;border-radius:6px;max-width:100%}.pack p{color:var(--muted);font-size:12px;line-height:1.6;margin:12px 0 0}.pack .hint{margin-top:6px}select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+.control-group{grid-column:1 / -1;margin:10px 0 0;color:var(--accent);font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:8px}
 </style></head>
 <body><main>
 <header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM FORGE <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
@@ -17,6 +19,9 @@ export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
+  bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
+  noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
+  transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -31,7 +36,7 @@ export const PRESETS = Object.freeze(Object.fromEntries(Object.entries({
   tom: { frequency: 115, decay: 0.45, pitchDrop: 0.8, noise: 0.06, tone: 0.4 },
   rim: { frequency: 720, decay: 0.065, pitchDrop: 0.1, noise: 0.15, snap: 0.7 },
   cowbell: { frequency: 560, decay: 0.25, pitchDrop: 0, noise: 0.02, tone: 0.75, snap: 0.2 }
-}).map(([key, value]) => [key, Object.freeze({ ...common, ...value })])));
+}).map(([key, value]) => [key, Object.freeze(mergeParams(common, value))])));
 const TAU = Math.PI * 2;
 function object(value, name) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(`${name} must be an object`);
@@ -43,30 +48,52 @@ function number(value, min, max, name) {
 function keys(value, allowed) {
   for (const key of Object.keys(value)) if (!allowed.includes(key)) throw new TypeError(`Unknown option: ${key}`);
 }
+// Legacy macros update their corresponding layers; explicit layer values win.
+function mergeParams(base, overrides) {
+  const p = { ...base, ...overrides };
+  const legacy = (key) => Object.hasOwn(overrides, key);
+  const layer = (key, macro, value) => {
+    if (!Object.hasOwn(overrides, key) && (legacy(macro) || p[key] === undefined)) p[key] = value;
+  };
+  layer('bodyLevel', 'noise', 1 - p.noise);
+  layer('noiseLevel', 'noise', p.noise);
+  layer('bodyDecay', 'decay', p.decay);
+  layer('noiseDecay', 'decay', p.decay);
+  layer('noiseAttack', 'attack', p.attack);
+  layer('transientLevel', 'snap', p.snap);
+  if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
+  return p;
+}
 export function resolveParams(voice, overrides = {}) {
   if (!Object.hasOwn(PRESETS, voice)) throw new TypeError(`Unknown voice: ${voice}`);
   object(overrides, 'parameters'); keys(overrides, Object.keys(PARAMS));
-  const params = { ...PRESETS[voice], ...overrides };
+  const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
   if (!Number.isInteger(params.seed)) throw new RangeError('seed must be an integer');
   return params;
 }
 
-/** Render mono PCM. decay is the time to roughly -60 dB after attack. */
+/** Render mono PCM. Layer decay times reach roughly -60 dB; see README for onset semantics. */
 export function render(voice, overrides = {}, options = {}) {
   const p = resolveParams(voice, overrides);
   object(options, 'render options'); keys(options, ['sampleRate', 'velocity']);
   const sampleRate = number(options.sampleRate ?? 44100, 8000, 96000, 'sampleRate');
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
-  const duration = p.attack + p.decay + (voice === 'clap' ? 0.036 : 0) + 0.015;
+  const burstTail = voice === 'clap' ? 0.036 : 0;
+  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay + burstTail : 0,
+    p.noiseLevel > 0 ? p.noiseAttack + p.noiseDecay + burstTail : 0,
+    p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
   const cutoff = Math.min(sampleRate * 0.4, 500 + p.tone * 14500);
   const alpha = 1 - Math.exp(-TAU * cutoff / sampleRate);
   const hpAlpha = 1 - Math.exp(-TAU * (voice.includes('Hat') ? 2500 : 700) / sampleRate);
   const sine = (mult) => Math.sin(phase * mult);
-  const env = t => t < 0 ? 0 : Math.min(1, t / p.attack) * Math.exp(-6.907755 * Math.max(0, t - p.attack) / p.decay);
+  const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
+  const layerEnv = (t, attack, decay) => voice === 'clap'
+    ? (env(t, attack, decay) + .8 * env(t - .012, attack, decay) + .65 * env(t - .024, attack, decay) + env(t - .036, attack, decay)) / 2
+    : env(t, attack, decay);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
@@ -75,21 +102,20 @@ export function render(voice, overrides = {}, options = {}) {
     const brightNoise = low - bodyLow;
     const f = Math.min(sampleRate * 0.18, p.frequency * (1 + p.pitchDrop * Math.exp(-t / p.pitchDecay)));
     phase += TAU * f / sampleRate;
-    let body, noise = brightNoise, envelope = env(t);
+    let body, noise = brightNoise;
     switch (voice) {
       case 'kick': body = sine(1) + p.tone * 0.18 * sine(2); noise = low; break;
       case 'tom': body = 0.8 * sine(1) + 0.2 * sine(1.5); break;
       case 'snare': body = 0.65 * sine(1) + 0.35 * sine(1.47); break;
       case 'clap':
         body = 0.25 * sine(1);
-        envelope = (env(t) + 0.8 * env(t - 0.012) + 0.65 * env(t - 0.024) + env(t - 0.036)) / 2;
         break;
       case 'rim': body = (sine(1) + sine(2.37) * 0.7 + sine(3.1) * 0.3) / 2; break;
       case 'cowbell': body = (sine(1) + sine(1.48) + p.tone * 0.3 * (sine(3) + sine(4.44))) / 2.6; break;
       default: body = [1, 1.342, 1.79, 2.13, 2.67, 3.17].reduce((sum, m) => sum + sine(m), 0) / 3;
     }
-    const transient = white * p.snap * Math.exp(-t / 0.003) * Math.min(1, t / 0.0005);
-    let value = ((1 - p.noise) * body + p.noise * noise) * envelope + transient;
+    const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
+    let value = p.bodyLevel * body * layerEnv(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * layerEnv(t, p.noiseAttack, p.noiseDecay) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);
@@ -145,13 +171,13 @@ export class DrumForge {
   }
   configure(voice, params) {
     this._assert(); resolveParams(voice, params);
-    this.kit[voice] = resolveParams(voice, { ...this.kit[voice], ...params }); return this;
+    this.kit[voice] = resolveParams(voice, mergeParams(this.kit[voice], params)); return this;
   }
   getParams(voice) { this._assert(); resolveParams(voice); return { ...this.kit[voice] }; }
   /** Schedule on the audio clock; call resume() in a user gesture first. */
   trigger(voice, options = {}) {
     this._assert(); object(options, 'trigger options'); keys(options, ['when', 'velocity', 'pan', 'params']);
-    const p = resolveParams(voice, { ...this.getParams(voice), ...resolveOverride(options.params) });
+    const p = resolveParams(voice, mergeParams(this.getParams(voice), resolveOverride(options.params)));
     const when = Math.max(this.context.currentTime, number(options.when ?? this.context.currentTime, 0, Number.MAX_VALUE, 'when'));
     const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
     const pan = number(options.pan ?? 0, -1, 1, 'pan');
@@ -202,7 +228,7 @@ const patches = {
   rim: { frequency: 820, decay: .045, pitchDrop: 0, tone: .62, noise: .045, snap: .15, drive: .3, volume: .58 },
   cowbell: { frequency: 540, decay: .34, pitchDrop: 0, tone: .95, noise: 0, snap: .025, drive: .6, volume: .48 }
 };
-export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze({...params, ...patches[voice]})])));
+export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, patches[voice]))])));
 export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808 });
 
 
@@ -231,17 +257,26 @@ voices.forEach((voice,i) => {
   pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span>${names[i]}</span>`;
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
-const labels = {frequency:'Frequency',decay:'Decay',attack:'Attack',pitchDrop:'Pitch sweep',pitchDecay:'Sweep time',tone:'Brightness',noise:'Noise mix',snap:'Transient',drive:'Drive',volume:'Level'};
-function format(key,value) { return ['attack','decay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
+const groups = [
+  ['Tone & pitch', {frequency:'Frequency',pitchDrop:'Pitch sweep',pitchDecay:'Sweep time',tone:'Brightness'}],
+  ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
+  ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
+  ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
+  ['Output', {drive:'Drive',volume:'Level'}]
+];
+function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
-  for(const [key,label] of Object.entries(labels)) {
+  for(const [group, labels] of groups) {
+    const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    for(const [key,label] of Object.entries(labels)) {
     const [min,max,increment]=PARAMS[key], wrapper=document.createElement('div'); wrapper.className='control';
     wrapper.innerHTML=`<label for="param-${key}">${label}<output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};
     $('controls').append(wrapper);
+  }
   }
   draw();
 }

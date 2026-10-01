@@ -21,3 +21,13 @@ test('kit edits merge; invalid values are rejected; past times clamp to now',()=
   assert.throws(()=>s.trigger('kick',{pan:2}));assert.throws(()=>s.trigger('kick',{params:{typo:1}}));assert.throws(()=>s.setVolume(-1));
   assert.throws(()=>new DrumForge({context:ctx,maxVoices:1.5}));
 });
+test('legacy configure and trigger updates map to layers without losing independent edits',()=>{
+ const s=new DrumForge({context:context()});
+ s.configure('snare',{bodyDecay:.2,noiseDecay:1});s.configure('snare',{frequency:200});
+ assert.equal(s.getParams('snare').noiseDecay,1);
+ s.configure('snare',{decay:.5,bodyDecay:.1});
+ assert.equal(s.getParams('snare').bodyDecay,.1);assert.equal(s.getParams('snare').noiseDecay,.5);
+ s.trigger('snare',{params:{noise:.2,transientDecay:.1}});
+ const p=JSON.parse([...s.cache.keys()][0])[1];assert.equal(p.bodyLevel,.8);assert.equal(p.noiseLevel,.2);assert.equal(p.transientDecay,.1);
+ assert.equal(s.getParams('snare').noiseLevel,.75);
+});

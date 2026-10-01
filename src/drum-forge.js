@@ -3,6 +3,9 @@ export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
+  bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
+  noiseLevel: [0, 1, 0.01], noiseAttack: [0.0005, 0.1, 0.0005], noiseDecay: [0.03, 3, 0.01],
+  transientLevel: [0, 1, 0.01], transientDecay: [0.001, 0.3, 0.001],
   volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
@@ -17,7 +20,7 @@ export const PRESETS = Object.freeze(Object.fromEntries(Object.entries({
   tom: { frequency: 115, decay: 0.45, pitchDrop: 0.8, noise: 0.06, tone: 0.4 },
   rim: { frequency: 720, decay: 0.065, pitchDrop: 0.1, noise: 0.15, snap: 0.7 },
   cowbell: { frequency: 560, decay: 0.25, pitchDrop: 0, noise: 0.02, tone: 0.75, snap: 0.2 }
-}).map(([key, value]) => [key, Object.freeze({ ...common, ...value })])));
+}).map(([key, value]) => [key, Object.freeze(mergeParams(common, value))])));
 const TAU = Math.PI * 2;
 function object(value, name) {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new TypeError(`${name} must be an object`);
@@ -29,30 +32,52 @@ function number(value, min, max, name) {
 function keys(value, allowed) {
   for (const key of Object.keys(value)) if (!allowed.includes(key)) throw new TypeError(`Unknown option: ${key}`);
 }
+// Legacy macros update their corresponding layers; explicit layer values win.
+function mergeParams(base, overrides) {
+  const p = { ...base, ...overrides };
+  const legacy = (key) => Object.hasOwn(overrides, key);
+  const layer = (key, macro, value) => {
+    if (!Object.hasOwn(overrides, key) && (legacy(macro) || p[key] === undefined)) p[key] = value;
+  };
+  layer('bodyLevel', 'noise', 1 - p.noise);
+  layer('noiseLevel', 'noise', p.noise);
+  layer('bodyDecay', 'decay', p.decay);
+  layer('noiseDecay', 'decay', p.decay);
+  layer('noiseAttack', 'attack', p.attack);
+  layer('transientLevel', 'snap', p.snap);
+  if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
+  return p;
+}
 export function resolveParams(voice, overrides = {}) {
   if (!Object.hasOwn(PRESETS, voice)) throw new TypeError(`Unknown voice: ${voice}`);
   object(overrides, 'parameters'); keys(overrides, Object.keys(PARAMS));
-  const params = { ...PRESETS[voice], ...overrides };
+  const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
   if (!Number.isInteger(params.seed)) throw new RangeError('seed must be an integer');
   return params;
 }
 
-/** Render mono PCM. decay is the time to roughly -60 dB after attack. */
+/** Render mono PCM. Layer decay times reach roughly -60 dB; see README for onset semantics. */
 export function render(voice, overrides = {}, options = {}) {
   const p = resolveParams(voice, overrides);
   object(options, 'render options'); keys(options, ['sampleRate', 'velocity']);
   const sampleRate = number(options.sampleRate ?? 44100, 8000, 96000, 'sampleRate');
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
-  const duration = p.attack + p.decay + (voice === 'clap' ? 0.036 : 0) + 0.015;
+  const burstTail = voice === 'clap' ? 0.036 : 0;
+  const duration = Math.max(p.bodyLevel > 0 ? p.attack + p.bodyDecay + burstTail : 0,
+    p.noiseLevel > 0 ? p.noiseAttack + p.noiseDecay + burstTail : 0,
+    p.transientLevel > 0 ? p.transientDecay : 0, .03) + .015;
   const samples = new Float32Array(Math.ceil(duration * sampleRate));
   let seed = p.seed >>> 0, phase = 0, low = 0, bodyLow = 0, dcIn = 0, dcOut = 0;
   const cutoff = Math.min(sampleRate * 0.4, 500 + p.tone * 14500);
   const alpha = 1 - Math.exp(-TAU * cutoff / sampleRate);
   const hpAlpha = 1 - Math.exp(-TAU * (voice.includes('Hat') ? 2500 : 700) / sampleRate);
   const sine = (mult) => Math.sin(phase * mult);
-  const env = t => t < 0 ? 0 : Math.min(1, t / p.attack) * Math.exp(-6.907755 * Math.max(0, t - p.attack) / p.decay);
+  const env = (t, attack, decay) => t < 0 ? 0 : Math.min(1, t / attack) * Math.exp(-6.907755 * Math.max(0, t - attack) / decay);
+  const layerEnv = (t, attack, decay) => voice === 'clap'
+    ? (env(t, attack, decay) + .8 * env(t - .012, attack, decay) + .65 * env(t - .024, attack, decay) + env(t - .036, attack, decay)) / 2
+    : env(t, attack, decay);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
@@ -61,21 +86,20 @@ export function render(voice, overrides = {}, options = {}) {
     const brightNoise = low - bodyLow;
     const f = Math.min(sampleRate * 0.18, p.frequency * (1 + p.pitchDrop * Math.exp(-t / p.pitchDecay)));
     phase += TAU * f / sampleRate;
-    let body, noise = brightNoise, envelope = env(t);
+    let body, noise = brightNoise;
     switch (voice) {
       case 'kick': body = sine(1) + p.tone * 0.18 * sine(2); noise = low; break;
       case 'tom': body = 0.8 * sine(1) + 0.2 * sine(1.5); break;
       case 'snare': body = 0.65 * sine(1) + 0.35 * sine(1.47); break;
       case 'clap':
         body = 0.25 * sine(1);
-        envelope = (env(t) + 0.8 * env(t - 0.012) + 0.65 * env(t - 0.024) + env(t - 0.036)) / 2;
         break;
       case 'rim': body = (sine(1) + sine(2.37) * 0.7 + sine(3.1) * 0.3) / 2; break;
       case 'cowbell': body = (sine(1) + sine(1.48) + p.tone * 0.3 * (sine(3) + sine(4.44))) / 2.6; break;
       default: body = [1, 1.342, 1.79, 2.13, 2.67, 3.17].reduce((sum, m) => sum + sine(m), 0) / 3;
     }
-    const transient = white * p.snap * Math.exp(-t / 0.003) * Math.min(1, t / 0.0005);
-    let value = ((1 - p.noise) * body + p.noise * noise) * envelope + transient;
+    const transient = white * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
+    let value = p.bodyLevel * body * layerEnv(t, p.attack, p.bodyDecay) + p.noiseLevel * noise * layerEnv(t, p.noiseAttack, p.noiseDecay) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
     const dc = value - dcIn + 0.995 * dcOut; dcIn = value; dcOut = dc;
     value = Math.tanh(dc * (1 + p.drive)) / Math.tanh(1 + p.drive);
@@ -131,13 +155,13 @@ export class DrumForge {
   }
   configure(voice, params) {
     this._assert(); resolveParams(voice, params);
-    this.kit[voice] = resolveParams(voice, { ...this.kit[voice], ...params }); return this;
+    this.kit[voice] = resolveParams(voice, mergeParams(this.kit[voice], params)); return this;
   }
   getParams(voice) { this._assert(); resolveParams(voice); return { ...this.kit[voice] }; }
   /** Schedule on the audio clock; call resume() in a user gesture first. */
   trigger(voice, options = {}) {
     this._assert(); object(options, 'trigger options'); keys(options, ['when', 'velocity', 'pan', 'params']);
-    const p = resolveParams(voice, { ...this.getParams(voice), ...resolveOverride(options.params) });
+    const p = resolveParams(voice, mergeParams(this.getParams(voice), resolveOverride(options.params)));
     const when = Math.max(this.context.currentTime, number(options.when ?? this.context.currentTime, 0, Number.MAX_VALUE, 'when'));
     const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
     const pan = number(options.pan ?? 0, -1, 1, 'pan');

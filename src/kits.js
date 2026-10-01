@@ -1,5 +1,5 @@
 /** Sound packs built from Drum Forge voices. 808-inspired, not hardware emulation. */
-import { PRESETS } from './drum-forge.js';
+import { PRESETS, resolveParams } from './drum-forge.js';
 const patches = {
   kick: { frequency: 48, decay: 1.4, pitchDrop: 1.65, pitchDecay: .018, tone: .08, noise: 0, snap: .055, drive: .15, volume: .86 },
   snare: { frequency: 172, decay: .29, pitchDrop: .12, pitchDecay: .012, tone: .72, noise: .64, snap: .22, drive: .25, volume: .68 },
@@ -10,5 +10,5 @@ const patches = {
   rim: { frequency: 820, decay: .045, pitchDrop: 0, tone: .62, noise: .045, snap: .15, drive: .3, volume: .58 },
   cowbell: { frequency: 540, decay: .34, pitchDrop: 0, tone: .95, noise: 0, snap: .025, drive: .6, volume: .48 }
 };
-export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze({...params, ...patches[voice]})])));
+export const KIT_808 = Object.freeze(Object.fromEntries(Object.entries(PRESETS).map(([voice, params]) => [voice, Object.freeze(resolveParams(voice, patches[voice]))])));
 export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808 });

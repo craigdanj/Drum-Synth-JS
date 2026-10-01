@@ -24,17 +24,26 @@ voices.forEach((voice,i) => {
   pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span>${names[i]}</span>`;
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
-const labels = {frequency:'Frequency',decay:'Decay',attack:'Attack',pitchDrop:'Pitch sweep',pitchDecay:'Sweep time',tone:'Brightness',noise:'Noise mix',snap:'Transient',drive:'Drive',volume:'Level'};
-function format(key,value) { return ['attack','decay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
+const groups = [
+  ['Tone & pitch', {frequency:'Frequency',pitchDrop:'Pitch sweep',pitchDecay:'Sweep time',tone:'Brightness'}],
+  ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
+  ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
+  ['Transient', {transientLevel:'Transient level',transientDecay:'Transient decay'}],
+  ['Output', {drive:'Drive',volume:'Level'}]
+];
+function format(key,value) { return ['attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : key==='frequency' ? `${value} Hz` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
-  for(const [key,label] of Object.entries(labels)) {
+  for(const [group, labels] of groups) {
+    const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    for(const [key,label] of Object.entries(labels)) {
     const [min,max,increment]=PARAMS[key], wrapper=document.createElement('div'); wrapper.className='control';
     wrapper.innerHTML=`<label for="param-${key}">${label}<output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};
     $('controls').append(wrapper);
+  }
   }
   draw();
 }

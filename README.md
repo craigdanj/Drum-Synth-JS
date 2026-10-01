@@ -163,3 +163,35 @@ The demo opens with **808-inspired · Vol. 01** selected at 96 BPM. Press **Play
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
 Import `KIT_808` from `./src/kits.js` and use `drums.trigger('kick', { params: KIT_808.kick })`. Run `npm run samples` to render both packs. Run `node scripts/build-demo.mjs` to create `demo/standalone.html`, which you can open directly in a browser without a server.
+
+## Independent sound layers
+
+The demo groups the new controls under Body, Noise, and Transient. Each level ranges from 0 to 1; set it to zero to mute that layer. Levels are independent, not a crossfade. All layers pass through the existing shared DC blocker and saturation, so their combined level also affects drive character.
+
+| Parameter | Range | Meaning |
+|---|---|---|
+| `bodyLevel` | 0–1 | Tonal component level |
+| `bodyDecay` | 0.03–3 seconds | Body envelope decay to approximately -60 dB after attack |
+| `noiseLevel` | 0–1 | Noise component level |
+| `noiseAttack` | 0.0005–0.1 seconds | Noise envelope attack |
+| `noiseDecay` | 0.03–3 seconds | Noise envelope decay to approximately -60 dB after attack |
+| `transientLevel` | 0–1 | Initial noise-click level |
+| `transientDecay` | 0.001–0.3 seconds | Transient exponential decay time to approximately -60 dB from onset |
+
+`attack` remains the body attack. The transient retains its original 0.5 ms onset ramp. Clap body and noise retain their four-burst structure, now with separate envelopes. Render duration follows the longest enabled layer, including clap bursts and the final fade; muted layers do not lengthen the sample.
+
+Example: short snare body with a longer rattle:
+
+```js
+drums.trigger('snare', { params: {
+  bodyLevel: 0.4, bodyDecay: 0.12,
+  noiseLevel: 0.7, noiseAttack: 0.002, noiseDecay: 0.6,
+  transientLevel: 0.25, transientDecay: 0.012
+} });
+```
+
+### Compatibility
+
+Original and 808-inspired defaults preserve their previous rendered PCM. Old parameter-only presets continue working. The legacy `noise` macro sets `bodyLevel = 1 - noise` and `noiseLevel = noise`; `decay` sets both body/noise decay; `snap` sets transient level; `attack` also sets noise attack unless an explicit `noiseAttack` is supplied. Explicit layer values in the same call take priority. This applies to `render`, `resolveParams`, `configure`, and per-hit `trigger` parameters. Macro fields are retained for compatibility and are not recalculated from independent layer edits. When overriding a fully resolved preset object, change its explicit layer fields, or use a partial macro update through `configure`.
+
+The demo exposes the independent controls in place of Noise mix, shared Decay, and Transient amount. Reset restores the active pack's voice. Exported JSON includes all seven new values.
