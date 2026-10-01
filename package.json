@@ -1,0 +1,14 @@
+{
+  "name": "drum-forge-js",
+  "version": "0.1.0",
+  "description": "Dependency-free configurable drum synthesis, Web Audio playback and WAV export",
+  "type": "module",
+  "main": "./src/drum-forge.js",
+  "types": "./src/drum-forge.d.ts",
+  "exports": {".": {"types": "./src/drum-forge.d.ts", "import": "./src/drum-forge.js"}},
+  "files": ["src", "README.md", "LICENSE"],
+  "scripts": {"test": "node --test", "start": "node scripts/serve.mjs", "samples": "node scripts/render-samples.mjs", "check": "node --check src/drum-forge.js && node --check demo/demo.js"},
+  "engines": {"node": ">=20"},
+  "keywords": ["drum", "synthesizer", "web-audio", "percussion", "wav"],
+  "license": "MIT"
+}
