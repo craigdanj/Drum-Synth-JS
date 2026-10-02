@@ -1,4 +1,4 @@
-import { DrumSynth, PRESETS, PARAMS, RESONANCE_VOICES, FM_VOICES, BODY_WAVEFORM_VOICES, render, encodeWav } from '../src/drum-synth.js';
+import { DrumSynth, PRESETS, PARAMS, EFFECT_PARAMS, DEFAULT_EFFECTS, RESONANCE_VOICES, FM_VOICES, BODY_WAVEFORM_VOICES, render, encodeWav } from '../src/drum-synth.js';
 import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY } from '../src/kits.js';
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
@@ -17,17 +17,33 @@ const kitInfo = {
 let activeKit = 'deep-dub';
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
+let effects = {...DEFAULT_EFFECTS};
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
-let pattern = starter();
+let pattern = allVoicesGroove();
 const hitStrength = () => Number($('hit-strength').value) / 100;
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
   const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
   return on ? (s%4===0 ? 1 : .65) : (i===1&&s===11 ? .35 : 0);
 })); }
+function allVoicesGroove() {
+  // One bar: alternate snare/clap backbeats, offbeat percussion, and a tom fill.
+  // Keep open hats off the closed-hat steps so they ring until the next closure.
+  const hits = {
+    kick: {0:1, 6:.65, 8:1, 14:.65},
+    snare: {4:1},
+    clap: {12:1},
+    closedHat: {0:.65, 2:.35, 4:.65, 6:.35, 8:.65, 10:.35, 12:.65, 14:.35},
+    openHat: {7:.65, 15:.65},
+    tom: {11:.35, 14:.65},
+    rim: {3:.65, 9:.35},
+    cowbell: {2:.65, 10:.35}
+  };
+  return voices.map(voice => Array.from({length:16}, (_,s) => hits[voice][s] ?? 0));
+}
 
 function status(message) { $('status').textContent = message; }
 async function enable() {
-  if (!synth) synth = new DrumSynth({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
+  if (!synth) synth = new DrumSynth({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000, effects });
   await synth.resume(); status('Audio ready'); $('enable').textContent = 'Audio enabled';
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
@@ -41,6 +57,7 @@ voices.forEach((voice,i) => {
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
 const groups = [
+  ['Effect sends', {delaySend:'Delay send (amount sent to echo)',reverbSend:'Reverb send (amount sent to room)'}],
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body oscillator', {bodyWaveform:'Waveform (raw tonal character)',bodyWaveformMix:'Shape blend (original → selected wave)',bodyPulseWidth:'Pulse width (square shape / hollow tone)'}],
   ['FM synthesis', {fmDepth:'FM depth (0 = off)',fmRatio:'FM ratio (× body frequency)',fmDecay:'FM decay (attack complexity)'}],
@@ -54,7 +71,7 @@ const groups = [
   ['Velocity response', {velocityToBrightness:'Brightness response (darker on softer hits)',velocityToTransient:'Transient response (gentler click on softer hits)'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { if(key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
@@ -66,6 +83,7 @@ function select(voice) {
     if(group==='Metallic source' && !voice.includes('Hat')) continue;
     if(group==='Clap structure' && voice!=='clap') continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    if(group==='Effect sends') {const note=document.createElement('p');note.className='control-note';note.textContent='0% is dry. Raise a send to add echo or space to this instrument’s next hits. Shared effect settings are beside the sequencer. WAV export and the waveform remain dry.';$('controls').append(note);}
     if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
     if(group==='Noise filter' || group==='Metallic source') {
       const note=document.createElement('p');note.className='control-note';note.textContent='Sweep starts brighter (+) or darker (−), then returns to the low-pass setting. Amount 0 disables it. Works at 100% hit strength too.';$('controls').append(note);
@@ -101,7 +119,7 @@ function select(voice) {
     wrapper.innerHTML=`<label for="param-${key}"><span>${label}</span><output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     if(group==='Velocity response') wrapper.querySelector('input').setAttribute('aria-describedby','velocity-help');
     if(group==='Body oscillator') wrapper.querySelector('input').setAttribute('aria-describedby','oscillator-help');
-    wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};
+    wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);if(!key.endsWith('Send'))draw();};
     $('controls').append(wrapper);
   }
   }
@@ -115,6 +133,29 @@ function draw() {
   ctx.strokeStyle='#353e2d';ctx.beginPath();ctx.moveTo(0,height/2);ctx.lineTo(width,height/2);ctx.stroke();
   ctx.strokeStyle='#d4f67a';ctx.beginPath();
   for(let x=0;x<width;x++){let min=0,max=0;const a=Math.floor(x*samples.length/width),b=Math.floor((x+1)*samples.length/width);for(let i=a;i<b;i++){min=Math.min(min,samples[i]);max=Math.max(max,samples[i]);}ctx.moveTo(x,height/2+min*35);ctx.lineTo(x,height/2+max*35);}ctx.stroke();
+}
+function effectFormat(key,value) {
+  if(key==='delayTime'||key==='reverbPreDelay')return `${Math.round(value*1000)} ms`;
+  if(key==='reverbDecay')return `${value.toFixed(1)} s`;
+  if(key.endsWith('Tone'))return `${Math.round(value)} Hz`;
+  return `${Math.round(value*100)}%`;
+}
+function buildEffects() {
+  $('effects-enabled').checked=effects.enabled;
+  $('effect-controls').replaceChildren();
+  const labels={delayTime:'Delay time (space between repeats)',delayFeedback:'Feedback (number of repeats)',
+    delayTone:'Delay tone (repeat brightness)',delayLevel:'Delay return (echo level)',
+    reverbDecay:'Reverb length (tail duration)',reverbPreDelay:'Pre-delay (gap before the room)',
+    reverbTone:'Reverb tone (tail brightness)',reverbLevel:'Reverb return (room level)'};
+  for(const [key,label] of Object.entries(labels)) {
+    const [min,max,increment]=EFFECT_PARAMS[key],wrapper=document.createElement('div');wrapper.className='control';
+    wrapper.innerHTML=`<label for="effect-${key}"><span>${label}</span><output id="effect-value-${key}">${effectFormat(key,effects[key])}</output></label><input id="effect-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${effects[key]}" aria-describedby="effects-help">`;
+    const input=wrapper.querySelector('input');
+    const apply=guarded(()=>{const value=Number(input.value);synth?.setEffects({[key]:value});effects[key]=value;});
+    input.oninput=()=>{$(`effect-value-${key}`).value=effectFormat(key,Number(input.value));if(key!=='reverbDecay')apply();};
+    if(key==='reverbDecay')input.onchange=apply;
+    $('effect-controls').append(wrapper);
+  }
 }
 function buildGrid() {
   $('intensity-hint').textContent=$('use-intensity').checked
@@ -169,10 +210,24 @@ async function changeKit(id) {
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
 $('use-intensity').onchange=buildGrid;
+$('effects-enabled').onchange=guarded(()=>{const enabled=$('effects-enabled').checked;synth?.setEffects({enabled});effects.enabled=enabled;status(enabled?'Effects enabled — raise a voice send or use Try space.':'Effects bypassed; tails cleared.');});
+$('clear-tails').onclick=()=>{synth?.clearEffects();status('Effect tails cleared. New hits can feed the effects again.');};
+$('dry-kit').onclick=()=>{for(const p of Object.values(kit)){p.delaySend=0;p.reverbSend=0;}synth?.clearEffects();select(selected);status('All sends in this kit set to 0%.');};
+$('try-space').onclick=guarded(()=>{
+  const settings={...DEFAULT_EFFECTS,delayTime:60/bpm/2};synth?.setEffects(settings);effects=settings;
+  const sends={kick:[0,0],snare:[.12,.28],clap:[.18,.35],closedHat:[0,.07],openHat:[.05,.18],tom:[.28,.22],rim:[.35,.12],cowbell:[.24,.2]};
+  for(const [voice,[delaySend,reverbSend]] of Object.entries(sends))Object.assign(kit[voice],{delaySend,reverbSend});
+  buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
+});
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('WAV exported');});
-$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
+$('all-voices-groove').onclick=guarded(async()=>{
+  const resume=running;stop();pattern=allVoicesGroove();buildGrid();
+  if(resume)await toggle();
+  status('All 8 groove loaded — every instrument plays.');
+});
+$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('Dry WAV exported — playback effects are not included.');});
+$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('resize',draw);window.addEventListener('pagehide',()=>{stop();synth?.dispose();synth=undefined;});
-select(selected);buildGrid();animate();
+select(selected);buildGrid();buildEffects();animate();

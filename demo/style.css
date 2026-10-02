@@ -12,3 +12,5 @@
 .control label{gap:10px;align-items:flex-start;line-height:1.5}.control label span{min-width:0}.control output{flex-shrink:0}.control-note{grid-column:1 / -1;margin:0;font-size:11px;line-height:1.65;color:var(--muted)}
 
 .control select{width:100%;padding:8px;border:1px solid var(--line);border-radius:5px;background:#151813;color:var(--text);font:inherit;font-size:12px}
+
+.effects-panel{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.effects-panel .hint{margin:14px 0}.effects-panel .actions{margin:14px 0}.effect-toggle{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.effect-toggle input{accent-color:var(--accent)}.effects-panel .section-top{flex-wrap:wrap}

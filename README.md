@@ -1,6 +1,6 @@
 # Drum Synth JS
 
-Version **1.0.0**.
+Version **1.1.0**.
 
 A small, dependency-free JavaScript drum synthesizer. Design percussion, play it with Web Audio, and export the same sound as a WAV file. No recordings, audio assets, build step, or runtime dependencies required.
 
@@ -24,7 +24,9 @@ npm start
 # Open http://localhost:8080
 ```
 
-Click **Enable audio**, then play the pads. A/S/D/F/G/H/J/K trigger voices; Space toggles the sequencer when focus is outside a form control. Choose a pad to edit its sound. Export WAV downloads a mono 44.1 kHz sample; Save preset downloads its parameters as JSON. The demo pauses when the tab is hidden.
+The demo opens with **All 8 groove**, a one-bar pattern using all eight instruments in the selected kit. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
+
+Click **Enable audio**, then play the pads. A/S/D/F/G/H/J/K trigger voices; Space toggles the sequencer when focus is outside a form control. Choose a pad to edit its sound. Export dry WAV downloads a mono 44.1 kHz sample without playback effects; Save preset downloads the voice parameters, sends, and shared effect settings as JSON. The demo pauses when the tab is hidden.
 
 Serve the repository root, not just the demo folder. ES modules require HTTP; do not open the HTML with `file://`. The demo can also be served by GitHub Pages from the repository root at `/demo/`.
 
@@ -69,7 +71,7 @@ const handle = drums.trigger('snare', {
 // await drums.dispose();
 ```
 
-`when` is an absolute `AudioContext.currentTime` value in seconds. Past times play immediately. A handle's `stop()` is idempotent and fades over 5 ms. At the polyphony limit, the oldest scheduled/playing voice is stopped. No automatic hi-hat choking is applied; keep and stop the open-hat handle if you want that behavior. Use a short lookahead scheduler for a sequencer (as in the demo); background timers can be throttled.
+`when` is an absolute `AudioContext.currentTime` value in seconds. Past times play immediately. A handle's `stop()` is idempotent and fades over 5 ms. At the polyphony limit, the oldest scheduled/playing voice is stopped. Hi-hat choking is enabled by default with a configurable fade. Existing delay/reverb tails can ring after the dry hat is choked. Use a short lookahead scheduler for a sequencer (as in the demo); background timers can be throttled.
 
 ### Export samples without a browser
 
@@ -112,24 +114,26 @@ The transient has its own short envelope, so it remains audible with a long body
 
 | Method / option | Behavior |
 |---|---|
-| `new DrumSynth({ context?, destination?, volume?, maxVoices? })` | Creates playback engine. Master volume defaults to 0.7; maxVoices to 32 (integer 1–128). Destination must belong to the context. |
+| `new DrumSynth({ context?, destination?, volume?, maxVoices?, chokeEnabled?, chokeFade?, effects? })` | Creates playback engine. Master volume defaults to 0.7; maxVoices to 32 (integer 1–128). Destination must belong to the context. |
 | `resume()` | Unlock/resume the context; call within a user gesture. |
 | `configure(voice, partialParams)` | Merge changes into a voice; returns the engine. |
 | `getParams(voice)` | Return a copy of the current voice parameters. |
 | `trigger(voice, { when?, velocity?, pan?, params? })` | Schedule hit; returns `{ voice, when, stop() }`. Velocity 0–1; pan -1–1. Overrides affect only this hit. |
 | `setVolume(0…1)` | Smoothly change master gain; returns engine. |
-| `stopAll()` | Stop all active and future scheduled hits. |
+| `getEffects()` / `setEffects(partialSettings)` | Read a copy of, or merge validated updates into, the shared effect settings. |
+| `clearEffects()` | Clear both wet tails; future trigger calls can feed fresh effects. |
+| `stopAll()` | Stop all active and future scheduled hits and clear effect tails. |
 | `dispose()` | Stop hits, clear cache, disconnect output, close only an internally created context. Idempotent promise. |
 | `render(voice, params?, { sampleRate?, velocity? })` | Render mono PCM. Sample rate integer 8000–96000 (default 44100); velocity 0–1 (default 1). |
 | `encodeWav({ samples, sampleRate })` | Encode mono 16-bit WAV; samples must be a nonempty Float32Array. |
 
-`context` and `output` are exposed for clock access and routing. Internal buffers are cached (up to 64 parameter combinations). Master gain and pan affect playback only, not exported samples. Keep master gain conservative when layering voices: the output bus does not include a limiter.
+`context` and `output` are exposed for clock access and routing. Internal buffers are cached (up to 64 parameter combinations). Master gain, pan, and delay/reverb sends affect playback only, not exported samples. Keep master gain conservative when layering voices: the output bus does not include a limiter.
 
 ## Design and limits
 
-The renderer combines integrated sine oscillators, inharmonic partials, filtered seeded noise, exponential envelopes, DC blocking and soft saturation. Playback uses AudioBufferSourceNode → GainNode → StereoPannerNode → master GainNode. This follows the [Web Audio API](https://www.w3.org/TR/webaudio/) scheduling model.
+The renderer combines integrated sine oscillators, inharmonic partials, filtered seeded noise, exponential envelopes, DC blocking and soft saturation. Dry playback uses AudioBufferSourceNode → GainNode → StereoPannerNode → master GainNode. Per-hit send gains branch after the panner to shared delay and reverb buses; their returns also feed the master gain. This follows the [Web Audio API](https://www.w3.org/TR/webaudio/) scheduling model.
 
-Samples are generated on the calling thread and cached during playback. Rendering many long sounds or changing parameters every hit can block the UI: pre-render in a worker for heavier workloads. This is not a continuously modulated AudioWorklet synthesizer. Changes apply to subsequent hits. Extreme pitches/drive, especially at low sample rates, can alias; this version does not oversample. No effects chain, MIDI input, sample loading or acoustic modeling is included.
+Samples are generated on the calling thread and cached during playback. Rendering many long sounds or changing parameters every hit can block the UI: pre-render in a worker for heavier workloads. This is not a continuously modulated AudioWorklet synthesizer. Changes apply to subsequent hits. Extreme pitches/drive, especially at low sample rates, can alias; this version does not oversample. Shared delay and reverb sends are available for Web Audio playback. MIDI input, sample loading, and acoustic modeling are not included.
 
 Browser playback requires AudioContext and StereoPannerNode; use a current Chrome, Firefox, Edge or Safari. Automated validation includes Node DSP and mocked playback tests. A browser executable could not be installed in the creation environment, so browser playback, visual layout and physical audio output still need manual checks.
 
@@ -589,3 +593,71 @@ This reduces oscillator aliasing; it does not make the whole instrument alias-fr
 Background on harmonic-sum synthesis: [Julius O. Smith, Additive Synthesis](https://www.dsprelated.com/freebooks/sasp/Additive_Synthesis.html).
 
 Automated checks cover bypass compatibility, waveform and width differences, layer isolation, spectral suppression of folded harmonics, validation, extreme FM/pitch at 8/44.1/96 kHz, configuration, caching, and JSON round trips. Browser playback and subjective listening remain unverified in this environment.
+
+
+## Delay and reverb sends
+
+Every voice has two additional playback parameters: `delaySend` and `reverbSend`, each from **0 to 1**, defaulting to **0**. A send routes a copy of the drum to a shared effect while retaining its dry sound. Send values are stored in the voice preset, work with `configure()` and per-hit overrides, and are captured when `trigger()` is called. They do not alter the cached dry sample or the output of `render()`.
+
+The engine now accepts **61 per-voice parameters** (the previous 59 plus two sends). Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
+
+### Hear the effects in the demo
+
+1. Click **Try space** in the Delay & reverb panel beside the sequencer.
+2. Press **Play groove**, or tap a pad. The example keeps the kick dry and adds modest space to the other instruments.
+3. Select an instrument and adjust its **Delay send** and **Reverb send** at the top of the voice controls.
+4. Adjust the shared return levels to change the overall echo and room volume. Use **Enable effects** to bypass the wet sound, **Clear tails** to silence lingering effects, or **Dry kit** to zero both sends for every voice in the selected kit.
+
+Try space sets an eighth-note delay using the BPM at the moment you click it. Delay time is otherwise a free millisecond control and does not automatically follow subsequent tempo changes. Per-voice sends are retained separately for each kit during the session. Shared settings apply across kits. Reset voice restores that voice’s factory sends of zero. Stopping the groove, switching kits, and hiding the page clear the shared tails.
+
+### Shared effect settings
+
+| Setting | Range | Default | Meaning |
+|---|---|---|---|
+| `enabled` | Boolean | `true` | Bypass both effects when false and discard existing wet tails; dry playback continues |
+| `delayTime` | 0.01–2 seconds | 0.3 | Time between echoes |
+| `delayFeedback` | 0–0.85 | 0.32 | Amount fed back for further repeats; zero produces one echo |
+| `delayTone` | 200–18000 Hz | 4500 | Low-pass cutoff in the repeat/feedback path; lower values make repeats darker |
+| `delayLevel` | 0–1 | 0.35 | Shared delay return level |
+| `reverbDecay` | 0.1–6 seconds | 1.6 | Duration of the generated decaying room response |
+| `reverbPreDelay` | 0–0.2 seconds | 0.015 | Gap before the reverberation begins |
+| `reverbTone` | 200–18000 Hz | 6500 | Low-pass cutoff on the reverberation |
+| `reverbLevel` | 0–1 | 0.3 | Shared reverb return level |
+
+The reverb uses a deterministic stereo noise impulse generated locally, so no recorded impulse response or network request is needed. Filter cutoffs are limited to 45% of the context sample rate. The delay’s tone filter is non-resonant and feedback is capped below unity. Continuous controls are smoothed; changing delay time can bend the pitch of existing repeats. Reverb length updates on slider release in the demo and replaces the previous response, which can cut its existing tail.
+
+```js
+import { DrumSynth, DEFAULT_EFFECTS, EFFECT_PARAMS } from './src/drum-synth.js';
+
+const drums = new DrumSynth({
+  volume: 0.6,
+  effects: { delayTime: 0.3125, delayFeedback: 0.35, reverbDecay: 1.8 }
+});
+
+drums.configure('snare', { delaySend: 0.15, reverbSend: 0.3 });
+drums.configure('rim', { delaySend: 0.4, reverbSend: 0.1 });
+
+// Call from a click or tap handler:
+await drums.resume();
+drums.trigger('snare');
+drums.trigger('tom', { velocity: 0.7, params: { reverbSend: 0.4 } });
+
+// Return changes affect existing tails as well as subsequent hits.
+drums.setEffects({ reverbTone: 3200, reverbLevel: 0.25 });
+const settings = drums.getEffects(); // independent copy
+
+drums.clearEffects();             // discard wet tails; keep settings
+// drums.setEffects({ enabled: false }); // dry playback; sends are retained
+// drums.setEffects({ enabled: true });  // effects on subsequent trigger calls
+// drums.stopAll();                     // stop dry voices and clear wet tails
+```
+
+`DEFAULT_EFFECTS` and numeric `EFFECT_PARAMS` ranges are frozen metadata exports. `setEffects()` merges updates and returns the instance. Invalid keys, nonfinite/out-of-range values, and non-boolean `enabled` values are rejected before applying updates. Effects buses are allocated lazily when an enabled nonzero send is first triggered.
+
+Both sends follow hit velocity, pan, and the voice’s stop/choke gain. Choking or stopping one voice prevents further input from that voice, while audio already in a shared effect can continue to ring. `clearEffects()` disconnects wet sends from currently playing and already queued hits; subsequent `trigger()` calls recreate the buses with the retained settings. It does not stop the dry voices. `stopAll()` also cancels the dry voices. Disposal releases the effects graph along with the engine’s other resources.
+
+**Export scope:** these effects are Web Audio playback effects. `render()`, `encodeWav()`, the waveform display, and bundled WAVs remain dry. The demo labels its button **Export dry WAV**. Save preset includes `{ kit, voice, params, effects }`; to restore it programmatically, pass `params` to `configure()` and `effects` to `setEffects()`. This release does not add a demo preset import button or wet WAV export.
+
+Wet returns add to the dry mix before master volume. The output bus has no limiter, so reduce master volume or return levels if a dense groove becomes too loud. Sound presets keep zero sends until you edit them or click Try space.
+
+Effects tests cover routing, shared buses, dry-buffer cache reuse, validation, deterministic stereo impulses, smoothed updates, bypass, choking/cancellation, and resource cleanup. Browser playback and subjective listening remain unverified in this environment.

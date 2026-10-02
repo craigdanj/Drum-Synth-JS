@@ -13,6 +13,8 @@
 .control label{gap:10px;align-items:flex-start;line-height:1.5}.control label span{min-width:0}.control output{flex-shrink:0}.control-note{grid-column:1 / -1;margin:0;font-size:11px;line-height:1.65;color:var(--muted)}
 
 .control select{width:100%;padding:8px;border:1px solid var(--line);border-radius:5px;background:#151813;color:var(--text);font:inherit;font-size:12px}
+
+.effects-panel{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.effects-panel .hint{margin:14px 0}.effects-panel .actions{margin:14px 0}.effect-toggle{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.effect-toggle input{accent-color:var(--accent)}.effects-panel .section-top{flex-wrap:wrap}
 </style></head>
 <body><main>
 <header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM SYNTH <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
@@ -21,9 +23,9 @@
 <section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="deep-dub" selected>Deep / Dub</option><option value="retro-arcade">Retro Arcade</option><option value="soft-dusty">Soft / Dusty</option><option value="electro-fm">Electro / FM</option><option value="minimal">Minimal</option><option value="industrial">Industrial</option><option value="original-refined">Drum Synth</option><option value="808-refined">808-inspired</option></select></div><p id="pack-description">Rounded low drums, dark hats, muted claps, and lingering percussion.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
 <div class="choke-controls"><label><input id="choke-enabled" type="checkbox" checked> Hi-hat choking</label><label for="choke-fade">Fade <output id="choke-value">5 ms</output></label><input id="choke-fade" type="range" min="1" max="100" step="1" value="5"><span>Closed hats cut off ringing open hats.</span></div>
 <section aria-label="Drum pads" id="pads" class="pads"></section>
-<div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><div class="hit-strength"><label for="hit-strength">Hit strength <output id="hit-strength-value">100%</output></label><input id="hit-strength" type="range" min="1" max="100" step="1" value="100"><small>Applies to pads, Play sound, waveform & WAV export.</small></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export WAV</button><button id="preset">↓ Save preset</button></div></section>
-<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><label><input id="use-intensity" type="checkbox"> Use intensity</label><button id="clear">Clear</button><button id="restore">Starter beat</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint"><span id="intensity-hint">Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.</span> Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p></section></div>
-<footer><span>DRUM SYNTH JS <b>v1.0.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
+<div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><div class="hit-strength"><label for="hit-strength">Hit strength <output id="hit-strength-value">100%</output></label><input id="hit-strength" type="range" min="1" max="100" step="1" value="100"><small>Applies to pads, Play sound, waveform & WAV export.</small></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export dry WAV</button><button id="preset">↓ Save preset</button></div></section>
+<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><label><input id="use-intensity" type="checkbox"> Use intensity</label><button id="clear">Clear</button><button id="restore">Starter beat</button><button id="all-voices-groove">All 8 groove</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">All 8 groove loads a sample pattern using every instrument. Enable Use intensity to hear its accents and ghost hits.<br><span id="intensity-hint">Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.</span> Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p><div class="effects-panel"><div class="section-top"><div><div class="eyebrow">SHARED SEND EFFECTS</div><h2>Delay &amp; reverb</h2></div><label class="effect-toggle"><input id="effects-enabled" type="checkbox" checked> Enable effects</label></div><p class="hint" id="effects-help">Choose a pad, then raise its Delay send or Reverb send. These settings shape the shared effects for every kit. Send 0% is dry; return levels control the wet sound. Changes to sends affect new hits.</p><div class="actions"><button id="try-space">Try space</button><button id="dry-kit">Dry kit</button><button id="clear-tails">Clear tails</button></div><p class="hint">Try space adds sends to this kit and sets an eighth-note delay at the current BPM. Stop groove clears tails. Waveform and WAV export are dry; Save preset includes sends and shared effect settings.</p><div class="sliders" id="effect-controls"></div></div></section></div>
+<footer><span>DRUM SYNTH JS <b>v1.1.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
 </main><script type="module">/** Drum Synth JS — deterministic percussion synthesis. MIT License. */
 export const TRANSIENT_TYPES = Object.freeze(['noise', 'tonal', 'blend']);
 export const RESONANCE_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
@@ -52,7 +54,8 @@ export const PARAMS = Object.freeze({
     [`resonance${n}Ratio`, [.5, 8, .01]], [`resonance${n}Level`, [0, 1, .01]], [`resonance${n}Decay`, [.01, 3, .01]]
   ])),
   fmDepth: [0, 4, .01], fmRatio: [.25, 8, .01], fmDecay: [.005, 3, .005],
-  volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
+  volume: [0, 1, 0.01], seed: [1, 4294967295, 1],
+  delaySend: [0, 1, .01], reverbSend: [0, 1, .01]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
 const common = { frequency: 150, decay: 0.25, attack: 0.001, pitchDrop: 0.5,
@@ -105,6 +108,8 @@ function mergeParams(base, overrides) {
   if (p.bodyWaveform === undefined) p.bodyWaveform = 'sine';
   if (p.bodyPulseWidth === undefined) p.bodyPulseWidth = .5;
   if (p.bodyWaveformMix === undefined) p.bodyWaveformMix = 1;
+  if (p.delaySend === undefined) p.delaySend = 0;
+  if (p.reverbSend === undefined) p.reverbSend = 0;
   p.metalMix ??= .5; p.metalDetune ??= 12; p.metalDamping ??= .3;
   p.metalHighpass ??= 1800; p.metalLowpass ??= 14500;
   p.tailLevel ??= .55; p.burstVariation ??= 0;
@@ -345,9 +350,84 @@ export function encodeWav(audio) {
   return buffer;
 }
 
+/** Shared playback effects; send amounts live in the individual voice Params. */
+export const EFFECT_PARAMS = Object.freeze(Object.fromEntries(Object.entries({
+  delayTime: [.01, 2, .005], delayFeedback: [0, .85, .01],
+  delayTone: [200, 18000, 10], delayLevel: [0, 1, .01],
+  reverbDecay: [.1, 6, .1], reverbPreDelay: [0, .2, .001],
+  reverbTone: [200, 18000, 10], reverbLevel: [0, 1, .01]
+}).map(([name, range]) => [name, Object.freeze(range)])));
+export const DEFAULT_EFFECTS = Object.freeze({enabled:true, delayTime:.3, delayFeedback:.32,
+  delayTone:4500, delayLevel:.35, reverbDecay:1.6, reverbPreDelay:.015,
+  reverbTone:6500, reverbLevel:.3});
+function resolveEffects(base, overrides) {
+  object(overrides, 'effects'); keys(overrides, ['enabled', ...Object.keys(EFFECT_PARAMS)]);
+  const p = {...base, ...overrides};
+  if (typeof p.enabled !== 'boolean') throw new TypeError('effects.enabled must be boolean');
+  for (const [key, [min, max]] of Object.entries(EFFECT_PARAMS)) number(p[key], min, max, `effects.${key}`);
+  return p;
+}
+function reverbImpulse(context, decay) {
+  // Two independent seeded noise channels: no downloads and stable timbre on rebuild.
+  const length = Math.ceil(context.sampleRate * decay), buffer = context.createBuffer(2, length, context.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const samples = buffer.getChannelData(channel);
+    let seed = channel === 0 ? 0x12345678 : 0x87654321, low = 0;
+    const alpha = 1 - Math.exp(-TAU * Math.min(8000, context.sampleRate * .4) / context.sampleRate);
+    for (let i = 0; i < length; i++) {
+      seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
+      low += alpha * ((seed >>> 0) / 2147483648 - 1 - low);
+      const t = i / context.sampleRate;
+      samples[i] = low * Math.exp(-6.907755 * t / decay) * Math.min(1, t / .005)
+        * Math.min(1, (length - 1 - i) / (context.sampleRate * .01));
+    }
+  }
+  return buffer;
+}
+class SendEffects {
+  constructor(context, output, settings) {
+    this.context = context; this.nodes = [];
+    const add = node => { this.nodes.push(node); return node; };
+    try {
+      this.delayInput = add(context.createGain());
+      this.delay = add(context.createDelay(2));
+      this.delayFilter = add(context.createBiquadFilter()); this.delayFilter.type = 'lowpass'; this.delayFilter.Q.value = -3.0103;
+      this.feedback = add(context.createGain()); this.delayReturn = add(context.createGain());
+      this.delayInput.connect(this.delay); this.delay.connect(this.delayFilter);
+      this.delayFilter.connect(this.feedback); this.feedback.connect(this.delay);
+      this.delayFilter.connect(this.delayReturn); this.delayReturn.connect(output);
+      this.reverbInput = add(context.createGain()); this.preDelay = add(context.createDelay(.2));
+      this.convolver = add(context.createConvolver()); this.convolver.normalize = true;
+      this.reverbFilter = add(context.createBiquadFilter()); this.reverbFilter.type = 'lowpass'; this.reverbFilter.Q.value = -3.0103;
+      this.reverbReturn = add(context.createGain());
+      this.reverbInput.connect(this.preDelay); this.preDelay.connect(this.convolver);
+      this.convolver.connect(this.reverbFilter); this.reverbFilter.connect(this.reverbReturn); this.reverbReturn.connect(output);
+      this.update(settings, true);
+    } catch (error) { this.dispose(); throw error; }
+  }
+  update(p, initial = false) {
+    // Construct the potentially large buffer before changing any live settings.
+    const impulse = initial || p.reverbDecay !== this.settings.reverbDecay ? reverbImpulse(this.context, p.reverbDecay) : null;
+    const set = (param, value) => {
+      if (initial) param.value = value;
+      else param.setTargetAtTime(value, this.context.currentTime, .015);
+    };
+    const cutoff = hz => Math.min(hz, this.context.sampleRate * .45);
+    set(this.delay.delayTime, p.delayTime); set(this.feedback.gain, p.delayFeedback);
+    set(this.delayFilter.frequency, cutoff(p.delayTone)); set(this.delayReturn.gain, p.delayLevel);
+    set(this.preDelay.delayTime, p.reverbPreDelay); set(this.reverbFilter.frequency, cutoff(p.reverbTone));
+    set(this.reverbReturn.gain, p.reverbLevel);
+    if (impulse) this.convolver.buffer = impulse;
+    this.settings = {...p};
+  }
+  dispose() { for (const node of this.nodes) node.disconnect(); this.nodes = []; }
+}
+
 export class DrumSynth {
   constructor(options = {}) {
-    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade']);
+    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade', 'effects']);
+    this._effectSettings = resolveEffects(DEFAULT_EFFECTS, options.effects === undefined ? {} : options.effects);
+    this._effects = null;
     const volume = number(options.volume ?? 0.7, 0, 1, 'volume');
     this.maxVoices = number(options.maxVoices ?? 32, 1, 128, 'maxVoices');
     if (!Number.isInteger(this.maxVoices)) throw new RangeError('maxVoices must be an integer');
@@ -370,6 +450,24 @@ export class DrumSynth {
   setVolume(value) {
     this._assert(); number(value, 0, 1, 'volume');
     this.output.gain.setTargetAtTime(value, this.context.currentTime, 0.01); return this;
+  }
+  getEffects() { this._assert(); return {...this._effectSettings}; }
+  setEffects(overrides = {}) {
+    this._assert();
+    const settings = resolveEffects(this._effectSettings, overrides);
+    if (!settings.enabled) this.clearEffects();
+    else this._effects?.update(settings);
+    this._effectSettings = settings; return this;
+  }
+  /** Clear shared wet tails without changing the settings or dry voices. */
+  clearEffects() {
+    this._assert();
+    this._effects?.dispose(); this._effects = null;
+    // Detach sends from the discarded bus, including already scheduled hits.
+    for (const record of this._playbacks.values()) {
+      for (const send of record.sends) send.disconnect();
+    }
+    return this;
   }
   setChoke(options = {}) {
     this._assert(); object(options, 'choke options'); keys(options, ['chokeEnabled', 'chokeFade']);
@@ -415,7 +513,11 @@ export class DrumSynth {
     const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
     const pan = number(options.pan ?? 0, -1, 1, 'pan');
     const effective = velocityParams(p, velocity);
-    const key = JSON.stringify([voice, effective]);
+    const {delaySend, reverbSend, ...dryParams} = effective;
+    const key = JSON.stringify([voice, dryParams]);
+    if (this._effectSettings.enabled && (delaySend > 0 || reverbSend > 0) && !this._effects) {
+      this._effects = new SendEffects(this.context, this.output, this._effectSettings);
+    }
     let buffer = this.cache.get(key);
     if (!buffer) {
       const audio = render(voice, effective, { sampleRate: this.context.sampleRate });
@@ -428,10 +530,17 @@ export class DrumSynth {
     const source = this.context.createBufferSource(), gain = this.context.createGain(), panner = this.context.createStereoPanner();
     source.buffer = buffer; gain.gain.value = velocity; panner.pan.value = pan;
     source.connect(gain); gain.connect(panner); panner.connect(this.output);
+    const sends = [];
+    if (this._effects) for (const [amount, input] of [[delaySend, this._effects.delayInput], [reverbSend, this._effects.reverbInput]]) {
+      if (amount === 0) continue;
+      const send = this.context.createGain(); send.gain.value = amount;
+      panner.connect(send); send.connect(input); sends.push(send);
+    }
     let stopped = false;
-    const record = {voice, when, velocity, source, gain, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const record = {voice, when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
     const cleanup = () => {
       stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
+      for (const send of sends) send.disconnect();
       this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
     };
     const handle = { voice, when, stop: () => {
@@ -446,7 +555,7 @@ export class DrumSynth {
     source.start(when); this._refreshChokes();
     return handle;
   }
-  stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); }
+  stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); this.clearEffects(); }
   async dispose() {
     if (this.disposed) return;
     this.stopAll(); this.disposed = true; this.cache.clear(); this.output.disconnect();
@@ -600,17 +709,33 @@ const kitInfo = {
 let activeKit = 'deep-dub';
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
+let effects = {...DEFAULT_EFFECTS};
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
-let pattern = starter();
+let pattern = allVoicesGroove();
 const hitStrength = () => Number($('hit-strength').value) / 100;
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
   const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
   return on ? (s%4===0 ? 1 : .65) : (i===1&&s===11 ? .35 : 0);
 })); }
+function allVoicesGroove() {
+  // One bar: alternate snare/clap backbeats, offbeat percussion, and a tom fill.
+  // Keep open hats off the closed-hat steps so they ring until the next closure.
+  const hits = {
+    kick: {0:1, 6:.65, 8:1, 14:.65},
+    snare: {4:1},
+    clap: {12:1},
+    closedHat: {0:.65, 2:.35, 4:.65, 6:.35, 8:.65, 10:.35, 12:.65, 14:.35},
+    openHat: {7:.65, 15:.65},
+    tom: {11:.35, 14:.65},
+    rim: {3:.65, 9:.35},
+    cowbell: {2:.65, 10:.35}
+  };
+  return voices.map(voice => Array.from({length:16}, (_,s) => hits[voice][s] ?? 0));
+}
 
 function status(message) { $('status').textContent = message; }
 async function enable() {
-  if (!synth) synth = new DrumSynth({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000 });
+  if (!synth) synth = new DrumSynth({ volume: Number($('master').value), chokeEnabled:$('choke-enabled').checked, chokeFade:Number($('choke-fade').value)/1000, effects });
   await synth.resume(); status('Audio ready'); $('enable').textContent = 'Audio enabled';
 }
 function guarded(fn) { return async (...args) => { try { await fn(...args); } catch(error) { status(error.message); } }; }
@@ -624,6 +749,7 @@ voices.forEach((voice,i) => {
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
 const groups = [
+  ['Effect sends', {delaySend:'Delay send (amount sent to echo)',reverbSend:'Reverb send (amount sent to room)'}],
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body oscillator', {bodyWaveform:'Waveform (raw tonal character)',bodyWaveformMix:'Shape blend (original → selected wave)',bodyPulseWidth:'Pulse width (square shape / hollow tone)'}],
   ['FM synthesis', {fmDepth:'FM depth (0 = off)',fmRatio:'FM ratio (× body frequency)',fmDecay:'FM decay (attack complexity)'}],
@@ -637,7 +763,7 @@ const groups = [
   ['Velocity response', {velocityToBrightness:'Brightness response (darker on softer hits)',velocityToTransient:'Transient response (gentler click on softer hits)'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { if(key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
@@ -649,6 +775,7 @@ function select(voice) {
     if(group==='Metallic source' && !voice.includes('Hat')) continue;
     if(group==='Clap structure' && voice!=='clap') continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    if(group==='Effect sends') {const note=document.createElement('p');note.className='control-note';note.textContent='0% is dry. Raise a send to add echo or space to this instrument’s next hits. Shared effect settings are beside the sequencer. WAV export and the waveform remain dry.';$('controls').append(note);}
     if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
     if(group==='Noise filter' || group==='Metallic source') {
       const note=document.createElement('p');note.className='control-note';note.textContent='Sweep starts brighter (+) or darker (−), then returns to the low-pass setting. Amount 0 disables it. Works at 100% hit strength too.';$('controls').append(note);
@@ -684,7 +811,7 @@ function select(voice) {
     wrapper.innerHTML=`<label for="param-${key}"><span>${label}</span><output id="value-${key}">${format(key,kit[voice][key])}</output></label><input id="param-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${kit[voice][key]}">`;
     if(group==='Velocity response') wrapper.querySelector('input').setAttribute('aria-describedby','velocity-help');
     if(group==='Body oscillator') wrapper.querySelector('input').setAttribute('aria-describedby','oscillator-help');
-    wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);draw();};
+    wrapper.querySelector('input').oninput=event=>{kit[voice][key]=Number(event.target.value);$(`value-${key}`).value=format(key,kit[voice][key]);if(!key.endsWith('Send'))draw();};
     $('controls').append(wrapper);
   }
   }
@@ -698,6 +825,29 @@ function draw() {
   ctx.strokeStyle='#353e2d';ctx.beginPath();ctx.moveTo(0,height/2);ctx.lineTo(width,height/2);ctx.stroke();
   ctx.strokeStyle='#d4f67a';ctx.beginPath();
   for(let x=0;x<width;x++){let min=0,max=0;const a=Math.floor(x*samples.length/width),b=Math.floor((x+1)*samples.length/width);for(let i=a;i<b;i++){min=Math.min(min,samples[i]);max=Math.max(max,samples[i]);}ctx.moveTo(x,height/2+min*35);ctx.lineTo(x,height/2+max*35);}ctx.stroke();
+}
+function effectFormat(key,value) {
+  if(key==='delayTime'||key==='reverbPreDelay')return `${Math.round(value*1000)} ms`;
+  if(key==='reverbDecay')return `${value.toFixed(1)} s`;
+  if(key.endsWith('Tone'))return `${Math.round(value)} Hz`;
+  return `${Math.round(value*100)}%`;
+}
+function buildEffects() {
+  $('effects-enabled').checked=effects.enabled;
+  $('effect-controls').replaceChildren();
+  const labels={delayTime:'Delay time (space between repeats)',delayFeedback:'Feedback (number of repeats)',
+    delayTone:'Delay tone (repeat brightness)',delayLevel:'Delay return (echo level)',
+    reverbDecay:'Reverb length (tail duration)',reverbPreDelay:'Pre-delay (gap before the room)',
+    reverbTone:'Reverb tone (tail brightness)',reverbLevel:'Reverb return (room level)'};
+  for(const [key,label] of Object.entries(labels)) {
+    const [min,max,increment]=EFFECT_PARAMS[key],wrapper=document.createElement('div');wrapper.className='control';
+    wrapper.innerHTML=`<label for="effect-${key}"><span>${label}</span><output id="effect-value-${key}">${effectFormat(key,effects[key])}</output></label><input id="effect-${key}" type="range" min="${min}" max="${max}" step="${increment}" value="${effects[key]}" aria-describedby="effects-help">`;
+    const input=wrapper.querySelector('input');
+    const apply=guarded(()=>{const value=Number(input.value);synth?.setEffects({[key]:value});effects[key]=value;});
+    input.oninput=()=>{$(`effect-value-${key}`).value=effectFormat(key,Number(input.value));if(key!=='reverbDecay')apply();};
+    if(key==='reverbDecay')input.onchange=apply;
+    $('effect-controls').append(wrapper);
+  }
 }
 function buildGrid() {
   $('intensity-hint').textContent=$('use-intensity').checked
@@ -752,11 +902,25 @@ async function changeKit(id) {
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
 $('use-intensity').onchange=buildGrid;
+$('effects-enabled').onchange=guarded(()=>{const enabled=$('effects-enabled').checked;synth?.setEffects({enabled});effects.enabled=enabled;status(enabled?'Effects enabled — raise a voice send or use Try space.':'Effects bypassed; tails cleared.');});
+$('clear-tails').onclick=()=>{synth?.clearEffects();status('Effect tails cleared. New hits can feed the effects again.');};
+$('dry-kit').onclick=()=>{for(const p of Object.values(kit)){p.delaySend=0;p.reverbSend=0;}synth?.clearEffects();select(selected);status('All sends in this kit set to 0%.');};
+$('try-space').onclick=guarded(()=>{
+  const settings={...DEFAULT_EFFECTS,delayTime:60/bpm/2};synth?.setEffects(settings);effects=settings;
+  const sends={kick:[0,0],snare:[.12,.28],clap:[.18,.35],closedHat:[0,.07],openHat:[.05,.18],tom:[.28,.22],rim:[.35,.12],cowbell:[.24,.2]};
+  for(const [voice,[delaySend,reverbSend]] of Object.entries(sends))Object.assign(kit[voice],{delaySend,reverbSend});
+  buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
+});
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('WAV exported');});
-$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected]},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
+$('all-voices-groove').onclick=guarded(async()=>{
+  const resume=running;stop();pattern=allVoicesGroove();buildGrid();
+  if(resume)await toggle();
+  status('All 8 groove loaded — every instrument plays.');
+});
+$('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('Dry WAV exported — playback effects are not included.');});
+$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('resize',draw);window.addEventListener('pagehide',()=>{stop();synth?.dispose();synth=undefined;});
-select(selected);buildGrid();animate();
+select(selected);buildGrid();buildEffects();animate();
 </script></body></html>

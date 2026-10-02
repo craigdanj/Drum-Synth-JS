@@ -1,6 +1,16 @@
 # Changelog
 
+## 1.1.0 — 2026-10-02
+
+- Added independent delay and reverb sends to every voice, with shared filtered feedback delay and generated stereo convolution reverb.
+- Added eight global effect controls, bypass, tail clearing, and typed getEffects/setEffects/clearEffects APIs.
+- Added explained demo controls, Try space audition settings, Dry kit, and effect settings in preset JSON. WAV exports are explicitly labeled dry.
+- Preserved dry synthesis output and avoided duplicate cached samples when only sends change.
+- Added effects routing, validation, impulse-response, bypass, choking, and cleanup tests.
+
 ## 1.0.0 — 2026-10-01
+
+- Added an All 8 groove demo pattern featuring every instrument, loaded on opening with a dedicated reload button and optional intensity dynamics.
 
 - Released as Drum Synth JS, with the `drum-synth-js` package, `DrumSynth` class, and `drum-synth.js` entry point.
 

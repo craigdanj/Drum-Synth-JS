@@ -26,7 +26,8 @@ export const PARAMS = Object.freeze({
     [`resonance${n}Ratio`, [.5, 8, .01]], [`resonance${n}Level`, [0, 1, .01]], [`resonance${n}Decay`, [.01, 3, .01]]
   ])),
   fmDepth: [0, 4, .01], fmRatio: [.25, 8, .01], fmDecay: [.005, 3, .005],
-  volume: [0, 1, 0.01], seed: [1, 4294967295, 1]
+  volume: [0, 1, 0.01], seed: [1, 4294967295, 1],
+  delaySend: [0, 1, .01], reverbSend: [0, 1, .01]
 });
 for (const range of Object.values(PARAMS)) Object.freeze(range);
 const common = { frequency: 150, decay: 0.25, attack: 0.001, pitchDrop: 0.5,
@@ -79,6 +80,8 @@ function mergeParams(base, overrides) {
   if (p.bodyWaveform === undefined) p.bodyWaveform = 'sine';
   if (p.bodyPulseWidth === undefined) p.bodyPulseWidth = .5;
   if (p.bodyWaveformMix === undefined) p.bodyWaveformMix = 1;
+  if (p.delaySend === undefined) p.delaySend = 0;
+  if (p.reverbSend === undefined) p.reverbSend = 0;
   p.metalMix ??= .5; p.metalDetune ??= 12; p.metalDamping ??= .3;
   p.metalHighpass ??= 1800; p.metalLowpass ??= 14500;
   p.tailLevel ??= .55; p.burstVariation ??= 0;
@@ -319,9 +322,84 @@ export function encodeWav(audio) {
   return buffer;
 }
 
+/** Shared playback effects; send amounts live in the individual voice Params. */
+export const EFFECT_PARAMS = Object.freeze(Object.fromEntries(Object.entries({
+  delayTime: [.01, 2, .005], delayFeedback: [0, .85, .01],
+  delayTone: [200, 18000, 10], delayLevel: [0, 1, .01],
+  reverbDecay: [.1, 6, .1], reverbPreDelay: [0, .2, .001],
+  reverbTone: [200, 18000, 10], reverbLevel: [0, 1, .01]
+}).map(([name, range]) => [name, Object.freeze(range)])));
+export const DEFAULT_EFFECTS = Object.freeze({enabled:true, delayTime:.3, delayFeedback:.32,
+  delayTone:4500, delayLevel:.35, reverbDecay:1.6, reverbPreDelay:.015,
+  reverbTone:6500, reverbLevel:.3});
+function resolveEffects(base, overrides) {
+  object(overrides, 'effects'); keys(overrides, ['enabled', ...Object.keys(EFFECT_PARAMS)]);
+  const p = {...base, ...overrides};
+  if (typeof p.enabled !== 'boolean') throw new TypeError('effects.enabled must be boolean');
+  for (const [key, [min, max]] of Object.entries(EFFECT_PARAMS)) number(p[key], min, max, `effects.${key}`);
+  return p;
+}
+function reverbImpulse(context, decay) {
+  // Two independent seeded noise channels: no downloads and stable timbre on rebuild.
+  const length = Math.ceil(context.sampleRate * decay), buffer = context.createBuffer(2, length, context.sampleRate);
+  for (let channel = 0; channel < 2; channel++) {
+    const samples = buffer.getChannelData(channel);
+    let seed = channel === 0 ? 0x12345678 : 0x87654321, low = 0;
+    const alpha = 1 - Math.exp(-TAU * Math.min(8000, context.sampleRate * .4) / context.sampleRate);
+    for (let i = 0; i < length; i++) {
+      seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
+      low += alpha * ((seed >>> 0) / 2147483648 - 1 - low);
+      const t = i / context.sampleRate;
+      samples[i] = low * Math.exp(-6.907755 * t / decay) * Math.min(1, t / .005)
+        * Math.min(1, (length - 1 - i) / (context.sampleRate * .01));
+    }
+  }
+  return buffer;
+}
+class SendEffects {
+  constructor(context, output, settings) {
+    this.context = context; this.nodes = [];
+    const add = node => { this.nodes.push(node); return node; };
+    try {
+      this.delayInput = add(context.createGain());
+      this.delay = add(context.createDelay(2));
+      this.delayFilter = add(context.createBiquadFilter()); this.delayFilter.type = 'lowpass'; this.delayFilter.Q.value = -3.0103;
+      this.feedback = add(context.createGain()); this.delayReturn = add(context.createGain());
+      this.delayInput.connect(this.delay); this.delay.connect(this.delayFilter);
+      this.delayFilter.connect(this.feedback); this.feedback.connect(this.delay);
+      this.delayFilter.connect(this.delayReturn); this.delayReturn.connect(output);
+      this.reverbInput = add(context.createGain()); this.preDelay = add(context.createDelay(.2));
+      this.convolver = add(context.createConvolver()); this.convolver.normalize = true;
+      this.reverbFilter = add(context.createBiquadFilter()); this.reverbFilter.type = 'lowpass'; this.reverbFilter.Q.value = -3.0103;
+      this.reverbReturn = add(context.createGain());
+      this.reverbInput.connect(this.preDelay); this.preDelay.connect(this.convolver);
+      this.convolver.connect(this.reverbFilter); this.reverbFilter.connect(this.reverbReturn); this.reverbReturn.connect(output);
+      this.update(settings, true);
+    } catch (error) { this.dispose(); throw error; }
+  }
+  update(p, initial = false) {
+    // Construct the potentially large buffer before changing any live settings.
+    const impulse = initial || p.reverbDecay !== this.settings.reverbDecay ? reverbImpulse(this.context, p.reverbDecay) : null;
+    const set = (param, value) => {
+      if (initial) param.value = value;
+      else param.setTargetAtTime(value, this.context.currentTime, .015);
+    };
+    const cutoff = hz => Math.min(hz, this.context.sampleRate * .45);
+    set(this.delay.delayTime, p.delayTime); set(this.feedback.gain, p.delayFeedback);
+    set(this.delayFilter.frequency, cutoff(p.delayTone)); set(this.delayReturn.gain, p.delayLevel);
+    set(this.preDelay.delayTime, p.reverbPreDelay); set(this.reverbFilter.frequency, cutoff(p.reverbTone));
+    set(this.reverbReturn.gain, p.reverbLevel);
+    if (impulse) this.convolver.buffer = impulse;
+    this.settings = {...p};
+  }
+  dispose() { for (const node of this.nodes) node.disconnect(); this.nodes = []; }
+}
+
 export class DrumSynth {
   constructor(options = {}) {
-    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade']);
+    object(options, 'options'); keys(options, ['context', 'destination', 'volume', 'maxVoices', 'chokeEnabled', 'chokeFade', 'effects']);
+    this._effectSettings = resolveEffects(DEFAULT_EFFECTS, options.effects === undefined ? {} : options.effects);
+    this._effects = null;
     const volume = number(options.volume ?? 0.7, 0, 1, 'volume');
     this.maxVoices = number(options.maxVoices ?? 32, 1, 128, 'maxVoices');
     if (!Number.isInteger(this.maxVoices)) throw new RangeError('maxVoices must be an integer');
@@ -344,6 +422,24 @@ export class DrumSynth {
   setVolume(value) {
     this._assert(); number(value, 0, 1, 'volume');
     this.output.gain.setTargetAtTime(value, this.context.currentTime, 0.01); return this;
+  }
+  getEffects() { this._assert(); return {...this._effectSettings}; }
+  setEffects(overrides = {}) {
+    this._assert();
+    const settings = resolveEffects(this._effectSettings, overrides);
+    if (!settings.enabled) this.clearEffects();
+    else this._effects?.update(settings);
+    this._effectSettings = settings; return this;
+  }
+  /** Clear shared wet tails without changing the settings or dry voices. */
+  clearEffects() {
+    this._assert();
+    this._effects?.dispose(); this._effects = null;
+    // Detach sends from the discarded bus, including already scheduled hits.
+    for (const record of this._playbacks.values()) {
+      for (const send of record.sends) send.disconnect();
+    }
+    return this;
   }
   setChoke(options = {}) {
     this._assert(); object(options, 'choke options'); keys(options, ['chokeEnabled', 'chokeFade']);
@@ -389,7 +485,11 @@ export class DrumSynth {
     const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
     const pan = number(options.pan ?? 0, -1, 1, 'pan');
     const effective = velocityParams(p, velocity);
-    const key = JSON.stringify([voice, effective]);
+    const {delaySend, reverbSend, ...dryParams} = effective;
+    const key = JSON.stringify([voice, dryParams]);
+    if (this._effectSettings.enabled && (delaySend > 0 || reverbSend > 0) && !this._effects) {
+      this._effects = new SendEffects(this.context, this.output, this._effectSettings);
+    }
     let buffer = this.cache.get(key);
     if (!buffer) {
       const audio = render(voice, effective, { sampleRate: this.context.sampleRate });
@@ -402,10 +502,17 @@ export class DrumSynth {
     const source = this.context.createBufferSource(), gain = this.context.createGain(), panner = this.context.createStereoPanner();
     source.buffer = buffer; gain.gain.value = velocity; panner.pan.value = pan;
     source.connect(gain); gain.connect(panner); panner.connect(this.output);
+    const sends = [];
+    if (this._effects) for (const [amount, input] of [[delaySend, this._effects.delayInput], [reverbSend, this._effects.reverbInput]]) {
+      if (amount === 0) continue;
+      const send = this.context.createGain(); send.gain.value = amount;
+      panner.connect(send); send.connect(input); sends.push(send);
+    }
     let stopped = false;
-    const record = {voice, when, velocity, source, gain, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const record = {voice, when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
     const cleanup = () => {
       stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
+      for (const send of sends) send.disconnect();
       this.active.delete(handle); this._playbacks.delete(handle); this._refreshChokes();
     };
     const handle = { voice, when, stop: () => {
@@ -420,7 +527,7 @@ export class DrumSynth {
     source.start(when); this._refreshChokes();
     return handle;
   }
-  stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); }
+  stopAll() { this._assert(); for (const h of [...this.active]) h.stop(); this.clearEffects(); }
   async dispose() {
     if (this.disposed) return;
     this.stopAll(); this.disposed = true; this.cache.clear(); this.output.disconnect();
