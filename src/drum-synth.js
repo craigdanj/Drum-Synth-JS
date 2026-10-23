@@ -1,4 +1,5 @@
 /** Drum Synth JS — deterministic percussion synthesis. MIT License. */
+export const BODY_MODELS = Object.freeze(['classic', 'modal']);
 export const TRANSIENT_TYPES = Object.freeze(['noise', 'tonal', 'blend']);
 export const RESONANCE_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
 export const FM_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
@@ -8,6 +9,8 @@ export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
   pitchSweepSemitones: [-48, 48, .1], pitchCurve: [.25, 4, .05],
+  pitchBendSemitones: [-24, 24, .1], pitchBendTime: [.005, .5, .005], pitchBendRelease: [.01, 2, .01],
+  strikePosition: [0, 1, .01], damping: [0, 1, .01],
   noiseHighpass: [0, 18000, 10], noiseLowpass: [20, 20000, 10], noiseResonance: [0, 1, .01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
@@ -22,7 +25,7 @@ export const PARAMS = Object.freeze({
   noiseFilterEnvAmount: [-4, 4, .05], noiseFilterEnvDecay: [.005, 3, .005],
   metalFilterEnvAmount: [-4, 4, .05], metalFilterEnvDecay: [.005, 3, .005],
   velocityToBrightness: [0, 1, .01], velocityToTransient: [0, 1, .01],
-  ...Object.fromEntries([1, 2, 3].flatMap(n => [
+  ...Object.fromEntries([1, 2, 3, 4, 5].flatMap(n => [
     [`resonance${n}Ratio`, [.5, 8, .01]], [`resonance${n}Level`, [0, 1, .01]], [`resonance${n}Decay`, [.01, 3, .01]]
   ])),
   fmDepth: [0, 4, .01], fmRatio: [.25, 8, .01], fmDecay: [.005, 3, .005],
@@ -62,6 +65,10 @@ function mergeParams(base, overrides) {
   };
   layer('pitchSweepSemitones', 'pitchDrop', 12 * Math.log2(1 + p.pitchDrop));
   layer('noiseLowpass', 'tone', 500 + p.tone * 14500);
+  if (p.bodyModel === undefined) p.bodyModel = 'classic';
+  for (const [key, value] of Object.entries({pitchBendSemitones:0, pitchBendTime:.1, pitchBendRelease:.25, strikePosition:.5, damping:0})) {
+    if (p[key] === undefined) p[key] = value;
+  }
   p.pitchCurve ??= 1; p.noiseResonance ??= 0;
   layer('bodyLevel', 'noise', 1 - p.noise);
   layer('noiseLevel', 'noise', p.noise);
@@ -88,7 +95,7 @@ function mergeParams(base, overrides) {
   if (p.transientType === undefined) p.transientType = 'noise'; p.transientTone ??= 1; p.transientFrequency ??= 1600; p.transientMix ??= .5;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
-  for (const [index, ratio] of [1.5, 2.37, 3.1].entries()) {
+  for (const [index, ratio] of [1.5, 2.37, 3.1, 4.2, 5.4].entries()) {
     const n=index+1;
     if (p[`resonance${n}Ratio`] === undefined) p[`resonance${n}Ratio`] = ratio;
     if (p[`resonance${n}Level`] === undefined) p[`resonance${n}Level`] = 0;
@@ -98,9 +105,10 @@ function mergeParams(base, overrides) {
 }
 export function resolveParams(voice, overrides = {}) {
   if (!Object.hasOwn(PRESETS, voice)) throw new TypeError(`Unknown voice: ${voice}`);
-  object(overrides, 'parameters'); keys(overrides, [...Object.keys(PARAMS), 'transientType', 'bodyWaveform']);
+  object(overrides, 'parameters'); keys(overrides, [...Object.keys(PARAMS), 'transientType', 'bodyWaveform', 'bodyModel']);
   if (Object.hasOwn(overrides, 'transientType') && !TRANSIENT_TYPES.includes(overrides.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
   if (Object.hasOwn(overrides, 'bodyWaveform') && !BODY_WAVEFORMS.includes(overrides.bodyWaveform)) throw new TypeError('bodyWaveform must be sine, triangle, square, or saw');
+  if (Object.hasOwn(overrides, 'bodyModel') && !BODY_MODELS.includes(overrides.bodyModel)) throw new TypeError('bodyModel must be classic or modal');
   const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
   if (!TRANSIENT_TYPES.includes(params.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
@@ -127,15 +135,19 @@ export function render(voice, overrides = {}, options = {}) {
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
   p = velocityParams(p, velocity);
-  const isHat = voice === 'closedHat' || voice === 'openHat';
+  const modal = p.bodyModel === 'modal';
+  const isHat = !modal && (voice === 'closedHat' || voice === 'openHat');
   // Centered balance preserves the independent layer levels at 0.5.
   const metalGain = isHat ? 2 * p.metalMix : 1;
   const noiseGain = isHat ? 2 * (1 - p.metalMix) : 1;
-  const isClap = voice === 'clap';
-  const resonances = RESONANCE_VOICES.includes(voice) ? [1,2,3].map(n => ({
-    ratio:p[`resonance${n}Ratio`], level:p[`resonance${n}Level`], decay:p[`resonance${n}Decay`]
+  const isClap = !modal && voice === 'clap';
+  // A perceptual damping/strike approximation, not a physical membrane solver.
+  const ringDecay = (decay, ratio=1) => modal ? decay / (1 + 12 * p.damping * Math.sqrt(ratio)) : decay;
+  const bodyDecay = ringDecay(p.bodyDecay);
+  const resonances = (modal || RESONANCE_VOICES.includes(voice)) ? [1,2,3,4,5].map(n => ({
+    ratio:p[`resonance${n}Ratio`], level:p[`resonance${n}Level`], decay:ringDecay(p[`resonance${n}Decay`], p[`resonance${n}Ratio`])
   })).filter(r => r.level > 0) : [];
-  const bodyEnd = p.attack + Math.max(p.bodyDecay, ...resonances.map(r => r.decay));
+  const bodyEnd = p.attack + Math.max(bodyDecay, ...resonances.map(r => r.decay));
   // Separate random stream: changing burst structure never shifts the noise sequence.
   let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
   const randomBurst = () => {
@@ -180,10 +192,10 @@ export function render(voice, overrides = {}, options = {}) {
   const transientHz = Math.min(sampleRate * .4, p.transientFrequency);
   let transientLow = 0;
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
-  const fmEnabled = FM_VOICES.includes(voice) && p.fmDepth > 0;
+  const fmEnabled = !modal && FM_VOICES.includes(voice) && p.fmDepth > 0;
   let fmPhase = 0, modulatorPhase = 0;
   const sine = (mult) => Math.sin((fmEnabled ? fmPhase : phase) * mult);
-  const shapeEnabled = BODY_WAVEFORM_VOICES.includes(voice) && p.bodyLevel > 0
+  const shapeEnabled = !modal && BODY_WAVEFORM_VOICES.includes(voice) && p.bodyLevel > 0
     && p.bodyWaveform !== 'sine' && p.bodyWaveformMix > 0;
   // Finite Fourier series, with no DC term. Square duty cycle is centered on the
   // sine peak, so a 50% square and the sine blend share fundamental phase.
@@ -241,7 +253,13 @@ export function render(voice, overrides = {}, options = {}) {
     const filtered = low * (1 - p.noiseResonance) + resonant * p.noiseResonance;
     bodyLow += hpAlpha * (filtered - bodyLow);
     const brightNoise = filtered - bodyLow;
-    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))));
+    // Smooth rise to the pressure bend, then return to the unbent pitch.
+    let bend = 0;
+    if (p.pitchBendSemitones !== 0 && t < p.pitchBendTime + p.pitchBendRelease) {
+      bend = t < p.pitchBendTime ? .5 - .5 * Math.cos(Math.PI * t / p.pitchBendTime)
+        : .5 + .5 * Math.cos(Math.PI * (t - p.pitchBendTime) / p.pitchBendRelease);
+    }
+    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))) * 2 ** (bend * p.pitchBendSemitones / 12));
     phase += TAU * f / sampleRate;
     bodyBandwidth = f; fmMargin = 0;
     if (fmEnabled) {
@@ -256,7 +274,8 @@ export function render(voice, overrides = {}, options = {}) {
       fmMargin = Math.min(1, index) * modulatorHz * 2;
     }
     let body, noise = brightNoise;
-    switch (voice) {
+    if (modal) body = sine(1) * (1 - .55 * p.strikePosition);
+    else switch (voice) {
       case 'kick': body = oscillator(1) + p.tone * 0.18 * oscillator(2); break;
       case 'tom': body = 0.8 * oscillator(1) + 0.2 * oscillator(1.5); break;
       case 'snare': body = 0.65 * oscillator(1) + 0.35 * oscillator(1.47); break;
@@ -284,10 +303,10 @@ export function render(voice, overrides = {}, options = {}) {
     const impact = p.transientType === 'noise' ? clickNoise : p.transientType === 'tonal' ? knock
       : clickNoise * (1 - p.transientMix) + knock * p.transientMix;
     const transient = impact * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let bodySignal = body * env(t, p.attack, p.bodyDecay);
+    let bodySignal = body * env(t, p.attack, bodyDecay);
     for (const resonance of resonances) {
       const taper = Math.max(0, Math.min(1, (sampleRate * .45 - f * resonance.ratio) / (sampleRate * .05)));
-      bodySignal += Math.sin(phase * resonance.ratio) * resonance.level * taper * env(t, p.attack, resonance.decay);
+      bodySignal += Math.sin(phase * resonance.ratio) * resonance.level * (modal ? .25 + .75 * p.strikePosition : 1) * taper * env(t, p.attack, resonance.decay);
     }
     let value = metalGain * p.bodyLevel * bodySignal + noiseGain * p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
@@ -450,9 +469,9 @@ export class DrumSynth {
   }
   _refreshChokes() {
     const now = this.context.currentTime;
-    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat');
+    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat' && !r.modal);
     for (const r of this._playbacks.values()) {
-      if (r.voice !== 'openHat' || r.chokeAt <= now) continue; // A started closure is irreversible.
+      if (r.voice !== 'openHat' || r.modal || r.chokeAt <= now) continue; // A started closure is irreversible.
       let at = Infinity;
       if (this.chokeEnabled) for (const c of closed) {
         if (c.when >= now && c.when >= r.when && c.when < r.end) at = Math.min(at, c.when);
@@ -509,7 +528,7 @@ export class DrumSynth {
       panner.connect(send); send.connect(input); sends.push(send);
     }
     let stopped = false;
-    const record = {voice, when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const record = {voice, modal:p.bodyModel === 'modal', when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
     const cleanup = () => {
       stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
       for (const send of sends) send.disconnect();

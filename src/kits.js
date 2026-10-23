@@ -111,7 +111,103 @@ export const KIT_SOFT_DUSTY = palette({
   cowbell: {frequency:465, bodyLevel:.85, bodyDecay:.21, noiseLevel:.01, noiseAttack:.003, noiseDecay:.04, noiseHighpass:1400, noiseLowpass:3100, transientType:'tonal', transientFrequency:950, transientLevel:.028, resonance1Ratio:2.04, resonance1Level:.05, resonance1Decay:.1, volume:.61}
 });
 
-export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
+// Synthesized interpretations; each named instrument also exposes its compatible slot.
+const indianBase = {
+  bodyModel:'modal', bodyLevel:.75, bodyDecay:.7, attack:.001,
+  strikePosition:.55, damping:.02, pitchSweepSemitones:0, pitchDecay:.012,
+  pitchBendSemitones:0, pitchBendTime:.12, pitchBendRelease:.28,
+  noiseLevel:.018, noiseAttack:.0005, noiseDecay:.035,
+  noiseHighpass:650, noiseLowpass:4200, noiseResonance:0,
+  transientType:'blend', transientMix:.7, transientFrequency:1500,
+  transientTone:.55, transientLevel:.12, transientDecay:.005,
+  velocityToBrightness:.35, velocityToTransient:.65,
+  tone:0, drive:0, volume:.72, fmDepth:0, delaySend:0, reverbSend:0
+};
+const indianSounds = [
+  ['bayanBass','Bayan bass','kick', {
+    frequency:92, bodyDecay:1.05, strikePosition:.2, damping:.035,
+    pitchSweepSemitones:1.3, transientFrequency:380, transientLevel:.08,
+    resonance1Ratio:2, resonance1Level:.24, resonance1Decay:.55,
+    resonance2Ratio:3, resonance2Level:.12, resonance2Decay:.32,
+    resonance3Ratio:4.05, resonance3Level:.045, resonance3Decay:.13, volume:0.7
+  }],
+  ['tablaOpen','Tabla open','snare', {
+    frequency:262, bodyDecay:1.1, strikePosition:.7, damping:.015,
+    bodyLevel:.63, transientFrequency:1950, transientLevel:.16,
+    resonance1Ratio:2, resonance1Level:.62, resonance1Decay:.9,
+    resonance2Ratio:3, resonance2Level:.38, resonance2Decay:.58,
+    resonance3Ratio:4.02, resonance3Level:.2, resonance3Decay:.32,
+    resonance4Ratio:5.05, resonance4Level:.11, resonance4Decay:.16,
+    resonance5Ratio:6.12, resonance5Level:.055, resonance5Decay:.08, volume:0.62
+  }],
+  ['tablaMuted','Tabla muted','clap', {
+    frequency:262, bodyDecay:1.1, strikePosition:.85, damping:.85,
+    bodyLevel:.56, noiseLevel:.11, noiseDecay:.04,
+    transientFrequency:2200, transientMix:.4, transientLevel:.24, transientDecay:.004,
+    resonance1Ratio:2, resonance1Level:.62, resonance1Decay:.9,
+    resonance2Ratio:3, resonance2Level:.38, resonance2Decay:.58,
+    resonance3Ratio:4.02, resonance3Level:.2, resonance3Decay:.32,
+    resonance4Ratio:5.05, resonance4Level:.11, resonance4Decay:.16,
+    resonance5Ratio:6.12, resonance5Level:.055, resonance5Decay:.08, volume:0.65
+  }],
+  ['dholakTreble','Dholak treble','closedHat', {
+    frequency:310, bodyDecay:.5, strikePosition:.7, damping:.12,
+    pitchSweepSemitones:1.8, bodyLevel:.72, noiseLevel:.085, noiseDecay:.055,
+    transientFrequency:1750, transientLevel:.15, transientMix:.5,
+    resonance1Ratio:1.59, resonance1Level:.4, resonance1Decay:.3,
+    resonance2Ratio:2.14, resonance2Level:.22, resonance2Decay:.2,
+    resonance3Ratio:2.65, resonance3Level:.1, resonance3Decay:.09,
+    resonance4Ratio:3.6, resonance4Level:.05, resonance4Decay:.05, volume:0.62
+  }],
+  ['manjira','Manjira','openHat', {
+    frequency:1450, bodyDecay:1.65, strikePosition:.8, damping:.01,
+    bodyLevel:.42, noiseLevel:.035, noiseDecay:.065, noiseHighpass:3500, noiseLowpass:11000,
+    transientFrequency:5200, transientMix:.3, transientTone:.9, transientLevel:.11,
+    resonance1Ratio:1.47, resonance1Level:.65, resonance1Decay:1.35,
+    resonance2Ratio:2.09, resonance2Level:.38, resonance2Decay:1.05,
+    resonance3Ratio:2.56, resonance3Level:.3, resonance3Decay:.7,
+    resonance4Ratio:3.71, resonance4Level:.18, resonance4Decay:.4,
+    resonance5Ratio:5.18, resonance5Level:.1, resonance5Decay:.21, volume:0.47
+  }],
+  ['bayanBend','Bayan bend','tom', {
+    frequency:92, bodyDecay:1.55, strikePosition:.25, damping:.02,
+    pitchBendSemitones:7, pitchBendTime:.14, pitchBendRelease:.34,
+    transientFrequency:380, transientLevel:.08,
+    resonance1Ratio:2, resonance1Level:.26, resonance1Decay:.75,
+    resonance2Ratio:3, resonance2Level:.13, resonance2Decay:.45,
+    resonance3Ratio:4.05, resonance3Level:.045, resonance3Decay:.16, volume:0.7
+  }],
+  ['dholakBass','Dholak bass','rim', {
+    frequency:135, bodyDecay:.7, strikePosition:.3, damping:.06,
+    pitchSweepSemitones:3.5, pitchDecay:.023, noiseLevel:.045,
+    transientFrequency:620, transientLevel:.14, transientMix:.6,
+    resonance1Ratio:1.59, resonance1Level:.35, resonance1Decay:.48,
+    resonance2Ratio:2.14, resonance2Level:.2, resonance2Decay:.25,
+    resonance3Ratio:2.92, resonance3Level:.09, resonance3Decay:.11, volume:0.68
+  }],
+  ['ghatam','Ghatam','cowbell', {
+    frequency:420, bodyDecay:.22, strikePosition:.6, damping:.025,
+    bodyLevel:.7, noiseLevel:.025, transientFrequency:2600, transientLevel:.21, transientMix:.85,
+    resonance1Ratio:1.46, resonance1Level:.48, resonance1Decay:.14,
+    resonance2Ratio:2.32, resonance2Level:.33, resonance2Decay:.09,
+    resonance3Ratio:3.17, resonance3Level:.18, resonance3Decay:.055,
+    resonance4Ratio:4.73, resonance4Level:.09, resonance4Decay:.035, volume:0.59
+  }]
+];
+export const INDIAN_PERCUSSION = Object.freeze(Object.fromEntries(indianSounds.map(([id,name,voice,patch]) =>
+  [id, Object.freeze({name, voice, params:Object.freeze(resolveParams(voice, {...indianBase,...patch}))})])));
+export const KIT_INDIAN = Object.freeze(Object.fromEntries(Object.values(INDIAN_PERCUSSION).map(({voice,params}) => [voice,params])));
+export const INDIAN_LABELS = Object.freeze(Object.fromEntries(Object.values(INDIAN_PERCUSSION).map(({voice,name}) => [voice,name])));
+// A contemporary 16-step audition pattern, not a traditional tala/theka transcription.
+const indianHits = {
+  kick:{0:1,8:.65}, snare:{0:.65,3:.65,6:1,10:.65,14:1},
+  clap:{2:.35,7:.65,11:.35,15:.65}, closedHat:{2:.65,6:.35,10:.65,14:.35},
+  openHat:{0:.35,8:.35}, tom:{12:.65}, rim:{4:.65,12:.35}, cowbell:{5:.35,9:.65,13:.35}
+};
+export const INDIAN_GROOVE = Object.freeze(Object.fromEntries(Object.entries(indianHits).map(([voice,hits]) =>
+  [voice,Object.freeze(Array.from({length:16},(_,step) => hits[step] ?? 0))])));
+
+export const KITS = Object.freeze({ indian:KIT_INDIAN, original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
 export const REFINEMENT_NOTES = Object.freeze({
   kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
   snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',

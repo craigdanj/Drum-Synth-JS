@@ -46,3 +46,15 @@ test('choke options validate atomically and reject writes after disposal',async(
  const {s}=setup();assert.throws(()=>s.setChoke({chokeEnabled:false,chokeFade:NaN}));assert.equal(s.chokeEnabled,true);
  assert.throws(()=>s.setChoke({typo:1}));await s.dispose();assert.throws(()=>s.setChoke({chokeEnabled:false}));
 });
+
+test('modal percussion never participates in hi-hat choke scheduling',()=>{
+ const {s,sources}=setup();
+ s.trigger('openHat',{when:8,params:{bodyModel:'modal'}});
+ s.trigger('closedHat',{when:8.1});
+ assert.equal(sources[0].stops.length,0);
+ s.trigger('openHat',{when:9});
+ s.trigger('closedHat',{when:9.1,params:{bodyModel:'modal'}});
+ assert.equal(sources[2].stops.length,0);
+ s.trigger('closedHat',{when:9.2});
+ assert.equal(sources[2].stops.at(-1),9.205);
+});

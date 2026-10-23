@@ -1,5 +1,10 @@
 import type {Voice,Params} from './drum-synth.js';
 export type Kit = Readonly<Record<Voice,Readonly<Params>>>;
+export type IndianInstrument = 'bayanBass' | 'tablaOpen' | 'tablaMuted' | 'dholakTreble' | 'manjira' | 'bayanBend' | 'dholakBass' | 'ghatam';
+export const KIT_INDIAN: Kit;
+export const INDIAN_PERCUSSION: Readonly<Record<IndianInstrument, Readonly<{name:string; voice:Voice; params:Readonly<Params>}>>>;
+export const INDIAN_LABELS: Readonly<Record<Voice,string>>;
+export const INDIAN_GROOVE: Readonly<Record<Voice,readonly number[]>>;
 export const KIT_808: Kit;
 export const KIT_ORIGINAL_REFINED: Kit;
 export const KIT_808_REFINED: Kit;
@@ -9,5 +14,5 @@ export const KIT_INDUSTRIAL: Kit;
 export const KIT_DEEP_DUB: Kit;
 export const KIT_RETRO_ARCADE: Kit;
 export const KIT_SOFT_DUSTY: Kit;
-export const KITS: Readonly<Record<'original' | '808' | 'original-refined' | '808-refined' | 'electro-fm' | 'minimal' | 'industrial' | 'deep-dub' | 'retro-arcade' | 'soft-dusty', Kit>>;
+export const KITS: Readonly<Record<'indian' | 'original' | '808' | 'original-refined' | '808-refined' | 'electro-fm' | 'minimal' | 'industrial' | 'deep-dub' | 'retro-arcade' | 'soft-dusty', Kit>>;
 export const REFINEMENT_NOTES: Readonly<Record<Voice,string>>;
