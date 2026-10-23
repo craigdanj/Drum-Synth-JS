@@ -1,12 +1,15 @@
 import { DrumSynth, PRESETS, PARAMS, EFFECT_PARAMS, DEFAULT_EFFECTS, RESONANCE_VOICES, FM_VOICES, BODY_WAVEFORM_VOICES, render, encodeWav } from '../src/drum-synth.js';
-import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KIT_INDIAN, INDIAN_LABELS, INDIAN_GROOVE, KIT_INDIAN_2, INDIAN_2_LABELS, INDIAN_2_GROOVE } from '../src/kits.js';
+import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KIT_INDIAN, INDIAN_LABELS, INDIAN_GROOVE, KIT_INDIAN_2, INDIAN_2_LABELS, INDIAN_2_GROOVE, KIT_WEST_AFRICAN, WEST_AFRICAN_LABELS, WEST_AFRICAN_GROOVE, KIT_MIDDLE_EASTERN, MIDDLE_EASTERN_LABELS, MIDDLE_EASTERN_GROOVE, KIT_LATIN, LATIN_LABELS, LATIN_GROOVE } from '../src/kits.js';
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), standardNames = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const demoKits = {'indian-2':KIT_INDIAN_2, indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
-const kitLabels = {indian:INDIAN_LABELS, 'indian-2':INDIAN_2_LABELS};
-const kitGrooves = {indian:INDIAN_GROOVE, 'indian-2':INDIAN_2_GROOVE};
+const demoKits = {'middle-eastern':KIT_MIDDLE_EASTERN, latin:KIT_LATIN, 'west-african':KIT_WEST_AFRICAN, 'indian-2':KIT_INDIAN_2, indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const kitLabels = {'middle-eastern':MIDDLE_EASTERN_LABELS, latin:LATIN_LABELS, 'west-african':WEST_AFRICAN_LABELS, indian:INDIAN_LABELS, 'indian-2':INDIAN_2_LABELS};
+const kitGrooves = {'middle-eastern':MIDDLE_EASTERN_GROOVE, latin:LATIN_GROOVE, 'west-african':WEST_AFRICAN_GROOVE, indian:INDIAN_GROOVE, 'indian-2':INDIAN_2_GROOVE};
 const kitInfo = {
+  'middle-eastern':['Middle Eastern Percussion','Darbuka doum, tek and slap; riq taps and jingles, daf, and finger cymbals. Synthesized interpretations.'],
+  latin:['Latin Percussion','Open and slapped conga, low/high bongos, timbale, claves, maracas, and a güiro scrape. Synthesized interpretations.'],
+  'west-african':['West African Percussion','Djembe bass, tone and slap; bending talking drum, shekere, and high/low gankogui bells. Synthesized interpretations.'],
   'indian-2':['Indian Percussion II','Mridangam bass, treble and muted strokes; kanjira, dhol, khanjari, and ghungroo bells. Synthesized interpretations.'],
   indian:['Indian Percussion','Tabla, bending bayan, dholak, ghatam, and ringing manjira. Synthesized interpretations with open and muted strokes.'],
   'original-refined':['Drum Synth','Shaped pitch sweeps, independent layers, and focused noise filters.'],
@@ -18,12 +21,12 @@ const kitInfo = {
   'soft-dusty':['Soft / Dusty','Gentle attacks, dark rattles, damped hats, and soft tonal knocks.'],
   industrial:['Industrial','Saw-driven kicks and snares, pulse-metal clangs, and detuned hats.']
 };
-let activeKit = 'indian-2';
+let activeKit = 'west-african';
 let names = voices.map(voice => kitLabels[activeKit][voice]);
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let effects = {...DEFAULT_EFFECTS};
-let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 108;
+let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 112;
 let pattern = kitGroove();
 function kitGroove() { return kitGrooves[activeKit] ? voices.map(voice => [...kitGrooves[activeKit][voice]]) : allVoicesGroove(); }
 const hitStrength = () => Number($('hit-strength').value) / 100;
@@ -94,7 +97,8 @@ function select(voice) {
     if(group.startsWith('Body resonance') && !modal && !RESONANCE_VOICES.includes(voice)) continue;
     if(group==='Metallic source' && (modal || !voice.includes('Hat'))) continue;
     if(group==='Clap structure' && (modal || voice!=='clap')) continue;
-    const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group==='Clap structure'&&activeKit==='latin'&&voice==='clap'?'Güiro scrape':group;$('controls').append(heading);
+    if(group==='Clap structure' && activeKit==='latin' && voice==='clap') {const note=document.createElement('p');note.className='control-note';note.textContent='Each noise burst represents a scrape across a ridge. Burst count sets the number of ridges; spacing sets scrape speed; burst decay sets the rasp length. Tail level adds residual rubbing.';$('controls').append(note);}
     if(group==='Hand percussion' || group==='Pitch bend') {const note=document.createElement('p');note.className='control-note';note.textContent=group==='Hand percussion'?'Centre favours the low body; edge emphasises upper ringing tones. Damping shortens the body and damps higher tones faster. These are synthesized approximations.':'A second pitch motion: rises or falls to the bend amount, then returns to the tuning. Amount 0 switches it off. Try Bayan bend with 0 versus +7 semitones.';$('controls').append(note);}
     if(group==='Effect sends') {const note=document.createElement('p');note.className='control-note';note.textContent='0% is dry. Raise a send to add echo or space to this instrument’s next hits. Shared effect settings are beside the sequencer. WAV export and the waveform remain dry.';$('controls').append(note);}
     if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
@@ -244,14 +248,17 @@ $('try-space').onclick=guarded(()=>{
   buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
 });
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-async function loadIndianGroove(id,tempo) {
+async function loadKitGroove(id,tempo) {
   const resume=running;stop();await changeKit(id);pattern=kitGroove();
   bpm=tempo;$('bpm').value=bpm;$('use-intensity').checked=true;buildGrid();
   if(resume)await toggle();
   status(`${kitInfo[id][0]} groove loaded at ${bpm} BPM with expressive intensities.${resume?'':' Press Play groove.'}`);
 }
-$('indian-groove').onclick=guarded(()=>loadIndianGroove('indian',96));
-$('indian-2-groove').onclick=guarded(()=>loadIndianGroove('indian-2',108));
+$('middle-eastern-groove').onclick=guarded(()=>loadKitGroove('middle-eastern',104));
+$('latin-groove').onclick=guarded(()=>loadKitGroove('latin',116));
+$('west-african-groove').onclick=guarded(()=>loadKitGroove('west-african',112));
+$('indian-groove').onclick=guarded(()=>loadKitGroove('indian',96));
+$('indian-2-groove').onclick=guarded(()=>loadKitGroove('indian-2',108));
 $('all-voices-groove').onclick=guarded(async()=>{
   const resume=running;stop();pattern=kitGroove();buildGrid();
   if(resume)await toggle();

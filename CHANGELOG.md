@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.0 — 2026-10-23
+
+- Added West African, Middle Eastern, and Latin percussion packs: 24 named synthesized sounds and 24 new WAV examples.
+- Added djembe articulations, open/bending talking drum, shekere and gankogui bells; darbuka, riq, daf and finger cymbals; conga, bongos, timbale, claves, maracas and güiro.
+- Added typed preset, kit, label and groove exports, plus dedicated 112, 104 and 116 BPM audition buttons.
+- Added güiro scrape explanations for the existing noise-burst controls. The engine remains at 73 parameters and existing kit audio is unchanged.
+- Expanded the demo to 13 selectable kits and added validation for rendered sound, articulation, scrape pulses, groove headroom and choke behavior.
+
 ## 1.3.0 — 2026-10-23
 
 - Added Indian Percussion II: mridangam bass/treble/muted, kanjira slap, ghungroo, dhol bass/treble, and khanjari, with eight new WAV examples.

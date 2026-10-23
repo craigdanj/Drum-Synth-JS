@@ -305,7 +305,289 @@ const indian2Hits = {
 export const INDIAN_2_GROOVE = Object.freeze(Object.fromEntries(Object.entries(indian2Hits).map(([voice,hits]) =>
   [voice,Object.freeze(Array.from({length:16},(_,step) => hits[step] ?? 0))])));
 
-export const KITS = Object.freeze({ 'indian-2':KIT_INDIAN_2, indian:KIT_INDIAN, original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
+// Cross-tradition audition palette; these are synthesized interpretations.
+const westAfricanBase = {
+  bodyModel:'modal', frequency:180, bodyLevel:.7, bodyDecay:.6, attack:.001,
+  strikePosition:.55, damping:.03, pitchSweepSemitones:0, pitchDecay:.018,
+  pitchBendSemitones:0, pitchBendTime:.1, pitchBendRelease:.27,
+  noiseLevel:.025, noiseAttack:.0005, noiseDecay:.04,
+  noiseHighpass:700, noiseLowpass:5000, noiseResonance:0,
+  transientType:'blend', transientMix:.65, transientFrequency:1500,
+  transientTone:.65, transientLevel:.13, transientDecay:.005,
+  velocityToBrightness:.4, velocityToTransient:.65,
+  tone:0, drive:0, volume:.6, fmDepth:0, delaySend:0, reverbSend:0
+};
+const westAfricanSounds = [
+  ['djembeBass','Djembe bass','kick', {
+    frequency:77, bodyLevel:.9, bodyDecay:.76, strikePosition:.12, damping:.025,
+    pitchSweepSemitones:3.5, pitchDecay:.028, noiseLevel:.035, noiseLowpass:2600,
+    transientFrequency:490, transientLevel:.12, transientMix:.8,
+    resonance1Ratio:1.59, resonance1Level:.28, resonance1Decay:.4,
+    resonance2Ratio:2.14, resonance2Level:.13, resonance2Decay:.22,
+    resonance3Ratio:2.92, resonance3Level:.05, resonance3Decay:.1, volume:.66
+  }],
+  ['djembeTone','Djembe tone','snare', {
+    frequency:220, bodyLevel:.72, bodyDecay:.64, strikePosition:.75, damping:.03,
+    pitchSweepSemitones:1.2, pitchDecay:.014, noiseLevel:.045, noiseDecay:.045,
+    transientFrequency:1700, transientLevel:.18, transientMix:.75,
+    resonance1Ratio:1.59, resonance1Level:.5, resonance1Decay:.44,
+    resonance2Ratio:2.14, resonance2Level:.31, resonance2Decay:.29,
+    resonance3Ratio:2.65, resonance3Level:.17, resonance3Decay:.16,
+    resonance4Ratio:3.6, resonance4Level:.08, resonance4Decay:.08, volume:.61
+  }],
+  ['djembeSlap','Djembe slap','clap', {
+    frequency:220, bodyLevel:.43, bodyDecay:.4, strikePosition:1, damping:.32,
+    pitchSweepSemitones:2.5, pitchDecay:.008,
+    noiseLevel:.3, noiseDecay:.065, noiseHighpass:1700, noiseLowpass:9000,
+    noiseFilterEnvAmount:1, noiseFilterEnvDecay:.03,
+    transientFrequency:3600, transientLevel:.3, transientMix:.2, transientTone:.9, transientDecay:.004,
+    resonance1Ratio:1.59, resonance1Level:.25, resonance1Decay:.25,
+    resonance2Ratio:2.14, resonance2Level:.35, resonance2Decay:.18,
+    resonance3Ratio:2.65, resonance3Level:.38, resonance3Decay:.13,
+    resonance4Ratio:3.6, resonance4Level:.4, resonance4Decay:.1,
+    resonance5Ratio:5.4, resonance5Level:.22, resonance5Decay:.06, volume:.65
+  }],
+  ['shekere','Shekere','closedHat', {
+    frequency:165, bodyLevel:.085, bodyDecay:.12, attack:.004, strikePosition:.4, damping:.12,
+    noiseLevel:.86, noiseAttack:.012, noiseDecay:.25, noiseHighpass:1500, noiseLowpass:9500,
+    noiseFilterEnvAmount:.6, noiseFilterEnvDecay:.12,
+    transientType:'noise', transientTone:.75, transientLevel:.065, transientDecay:.012,
+    velocityToBrightness:.65, resonance1Ratio:2.31, resonance1Level:.12, resonance1Decay:.075,
+    resonance2Ratio:3.67, resonance2Level:.07, resonance2Decay:.05, volume:.5
+  }],
+  ['gankoguiHigh','Gankogui high','openHat', {
+    frequency:960, bodyLevel:.49, bodyDecay:.74, strikePosition:.78, damping:.015,
+    noiseLevel:.008, transientFrequency:3800, transientLevel:.14, transientMix:.85,
+    resonance1Ratio:1.43, resonance1Level:.52, resonance1Decay:.56,
+    resonance2Ratio:2.13, resonance2Level:.34, resonance2Decay:.4,
+    resonance3Ratio:2.71, resonance3Level:.2, resonance3Decay:.22,
+    resonance4Ratio:3.87, resonance4Level:.1, resonance4Decay:.11,
+    resonance5Ratio:5.26, resonance5Level:.05, resonance5Decay:.065, volume:.48
+  }],
+  ['talkingDrumOpen','Talking drum open','tom', {
+    frequency:155, bodyLevel:.77, bodyDecay:1.05, strikePosition:.45, damping:.025,
+    noiseLevel:.035, transientFrequency:1100, transientLevel:.16, transientMix:.7,
+    resonance1Ratio:1.59, resonance1Level:.33, resonance1Decay:.67,
+    resonance2Ratio:2.14, resonance2Level:.2, resonance2Decay:.43,
+    resonance3Ratio:2.92, resonance3Level:.11, resonance3Decay:.23,
+    resonance4Ratio:3.7, resonance4Level:.05, resonance4Decay:.11, volume:.62
+  }],
+  ['talkingDrumBend','Talking drum bend','rim', {
+    frequency:155, bodyLevel:.77, bodyDecay:1.05, strikePosition:.45, damping:.025,
+    pitchBendSemitones:12, pitchBendTime:.1, pitchBendRelease:.27,
+    noiseLevel:.035, transientFrequency:1100, transientLevel:.16, transientMix:.7,
+    resonance1Ratio:1.59, resonance1Level:.33, resonance1Decay:.67,
+    resonance2Ratio:2.14, resonance2Level:.2, resonance2Decay:.43,
+    resonance3Ratio:2.92, resonance3Level:.11, resonance3Decay:.23,
+    resonance4Ratio:3.7, resonance4Level:.05, resonance4Decay:.11, volume:.62
+  }],
+  ['gankoguiLow','Gankogui low','cowbell', {
+    frequency:620, bodyLevel:.53, bodyDecay:1, strikePosition:.7, damping:.015,
+    noiseLevel:.008, transientFrequency:2600, transientLevel:.13, transientMix:.85,
+    resonance1Ratio:1.43, resonance1Level:.52, resonance1Decay:.75,
+    resonance2Ratio:2.13, resonance2Level:.34, resonance2Decay:.5,
+    resonance3Ratio:2.71, resonance3Level:.2, resonance3Decay:.3,
+    resonance4Ratio:3.87, resonance4Level:.1, resonance4Decay:.15,
+    resonance5Ratio:5.26, resonance5Level:.05, resonance5Decay:.08, volume:.51
+  }]
+];
+export const WEST_AFRICAN_PERCUSSION = Object.freeze(Object.fromEntries(westAfricanSounds.map(([id,name,voice,patch]) =>
+  [id, Object.freeze({name, voice, params:Object.freeze(resolveParams(voice, {...westAfricanBase,...patch}))})])));
+export const KIT_WEST_AFRICAN = Object.freeze(Object.fromEntries(Object.values(WEST_AFRICAN_PERCUSSION).map(({voice,params}) => [voice,params])));
+export const WEST_AFRICAN_LABELS = Object.freeze(Object.fromEntries(Object.values(WEST_AFRICAN_PERCUSSION).map(({voice,name}) => [voice,name])));
+// Original 16-step audition groove, not a transcription of a traditional rhythm.
+const westAfricanHits = {
+  kick:{0:1,6:.65,10:.65}, snare:{2:.65,5:1,9:.65,14:1},
+  clap:{3:.65,7:1,11:.65,15:1}, closedHat:{0:.35,2:.65,4:.35,6:.65,8:.35,10:.65,12:.35,14:.65},
+  openHat:{3:.35,7:.35,10:.35,14:.35}, tom:{4:.65},
+  rim:{12:.65}, cowbell:{0:.35,8:.35}
+};
+export const WEST_AFRICAN_GROOVE = Object.freeze(Object.fromEntries(Object.entries(westAfricanHits).map(([voice,hits]) =>
+  [voice,Object.freeze(Array.from({length:16},(_,step) => hits[step] ?? 0))])));
+
+const middleEasternBase = {
+  bodyModel:'modal', frequency:180, bodyLevel:.7, bodyDecay:.55, attack:.001,
+  strikePosition:.6, damping:.04, pitchSweepSemitones:0, pitchDecay:.015,
+  noiseLevel:.035, noiseAttack:.0005, noiseDecay:.04, noiseHighpass:800, noiseLowpass:5200,
+  transientType:'blend', transientMix:.65, transientTone:.7, transientFrequency:1800,
+  transientLevel:.15, transientDecay:.005, velocityToBrightness:.4, velocityToTransient:.6,
+  tone:0, drive:0, volume:.6, delaySend:0, reverbSend:0
+};
+const middleEasternSounds = [
+  ['darbukaDoum','Darbuka doum','kick', {
+    frequency:108, bodyLevel:.86, bodyDecay:.68, strikePosition:.2, damping:.02,
+    pitchSweepSemitones:3, pitchDecay:.024, noiseLevel:.025,
+    transientFrequency:620, transientMix:.8, transientLevel:.11,
+    resonance1Ratio:1.59, resonance1Level:.34, resonance1Decay:.4,
+    resonance2Ratio:2.14, resonance2Level:.17, resonance2Decay:.21,
+    resonance3Ratio:2.92, resonance3Level:.08, resonance3Decay:.1, volume:.66
+  }],
+  ['darbukaTek','Darbuka tek','snare', {
+    frequency:355, bodyLevel:.65, bodyDecay:.3, strikePosition:.85, damping:.06,
+    pitchSweepSemitones:1.8, pitchDecay:.01, transientFrequency:2700, transientLevel:.23,
+    noiseLevel:.075, noiseDecay:.045, noiseHighpass:1700, noiseLowpass:7000,
+    resonance1Ratio:1.59, resonance1Level:.46, resonance1Decay:.2,
+    resonance2Ratio:2.14, resonance2Level:.29, resonance2Decay:.12,
+    resonance3Ratio:2.65, resonance3Level:.15, resonance3Decay:.07,
+    resonance4Ratio:3.6, resonance4Level:.08, resonance4Decay:.04, volume:.6
+  }],
+  ['darbukaSlap','Darbuka slap','clap', {
+    frequency:355, bodyLevel:.4, bodyDecay:.26, strikePosition:1, damping:.36,
+    noiseLevel:.33, noiseDecay:.065, noiseHighpass:2100, noiseLowpass:10500,
+    noiseFilterEnvAmount:.8, noiseFilterEnvDecay:.025,
+    transientFrequency:4100, transientLevel:.32, transientMix:.22, transientTone:.95, transientDecay:.003,
+    resonance1Ratio:1.59, resonance1Level:.26, resonance1Decay:.18,
+    resonance2Ratio:2.14, resonance2Level:.38, resonance2Decay:.13,
+    resonance3Ratio:2.65, resonance3Level:.3, resonance3Decay:.09,
+    resonance4Ratio:3.6, resonance4Level:.2, resonance4Decay:.05, volume:.62
+  }],
+  ['riqTap','Riq tap','closedHat', {
+    frequency:320, bodyLevel:.48, bodyDecay:.18, damping:.01, strikePosition:.7,
+    noiseLevel:.16, noiseDecay:.15, noiseHighpass:2000, noiseLowpass:7200,
+    transientFrequency:2100, transientLevel:.2, transientMix:.6,
+    resonance1Ratio:1.59, resonance1Level:.3, resonance1Decay:.12,
+    resonance2Ratio:2.14, resonance2Level:.14, resonance2Decay:.07,
+    resonance3Ratio:4.67, resonance3Level:.2, resonance3Decay:.3,
+    resonance4Ratio:6.3, resonance4Level:.15, resonance4Decay:.23,
+    resonance5Ratio:7.81, resonance5Level:.08, resonance5Decay:.15, volume:.56
+  }],
+  ['riqShake','Riq shake','openHat', {
+    bodyModel:'classic', frequency:680, bodyLevel:.56, attack:.004, bodyDecay:.34,
+    metalMix:.72, metalDetune:42, metalDamping:.3, metalHighpass:2200, metalLowpass:10500,
+    metalFilterEnvAmount:.65, metalFilterEnvDecay:.13,
+    noiseLevel:.38, noiseAttack:.007, noiseDecay:.28, noiseHighpass:3200, noiseLowpass:10000,
+    transientType:'noise', transientTone:.85, transientLevel:.075, transientDecay:.01,
+    velocityToBrightness:.6, volume:.49
+  }],
+  ['dafBass','Daf bass','tom', {
+    frequency:94, bodyLevel:.84, bodyDecay:1.2, strikePosition:.24, damping:.025,
+    pitchSweepSemitones:2.5, pitchDecay:.035, noiseLevel:.13, noiseAttack:.004, noiseDecay:.3,
+    noiseHighpass:1000, noiseLowpass:4300, transientFrequency:500, transientLevel:.12,
+    resonance1Ratio:1.59, resonance1Level:.33, resonance1Decay:.73,
+    resonance2Ratio:2.14, resonance2Level:.2, resonance2Decay:.41,
+    resonance3Ratio:2.92, resonance3Level:.1, resonance3Decay:.22, volume:.63
+  }],
+  ['dafEdge','Daf edge','rim', {
+    frequency:188, bodyLevel:.61, bodyDecay:.38, strikePosition:.85, damping:.12,
+    noiseLevel:.2, noiseDecay:.18, noiseHighpass:1700, noiseLowpass:5600,
+    transientFrequency:1600, transientLevel:.22, transientMix:.45,
+    resonance1Ratio:1.59, resonance1Level:.41, resonance1Decay:.27,
+    resonance2Ratio:2.14, resonance2Level:.26, resonance2Decay:.17,
+    resonance3Ratio:2.92, resonance3Level:.13, resonance3Decay:.09, volume:.6
+  }],
+  ['fingerCymbals','Finger cymbals','cowbell', {
+    frequency:1850, bodyLevel:.4, bodyDecay:1.12, strikePosition:.85, damping:.01,
+    noiseLevel:.009, noiseHighpass:3800, noiseLowpass:12000,
+    transientFrequency:5800, transientLevel:.12, transientMix:.8, transientTone:.9,
+    resonance1Ratio:1.48, resonance1Level:.55, resonance1Decay:.9,
+    resonance2Ratio:2.17, resonance2Level:.33, resonance2Decay:.65,
+    resonance3Ratio:2.81, resonance3Level:.2, resonance3Decay:.4,
+    resonance4Ratio:3.92, resonance4Level:.11, resonance4Decay:.22,
+    resonance5Ratio:5.3, resonance5Level:.06, resonance5Decay:.12, volume:.45
+  }]
+];
+export const MIDDLE_EASTERN_PERCUSSION = Object.freeze(Object.fromEntries(middleEasternSounds.map(([id,name,voice,patch]) =>
+  [id,Object.freeze({name,voice,params:Object.freeze(resolveParams(voice,{...middleEasternBase,...patch}))})])));
+export const KIT_MIDDLE_EASTERN = Object.freeze(Object.fromEntries(Object.values(MIDDLE_EASTERN_PERCUSSION).map(({voice,params})=>[voice,params])));
+export const MIDDLE_EASTERN_LABELS = Object.freeze(Object.fromEntries(Object.values(MIDDLE_EASTERN_PERCUSSION).map(({voice,name})=>[voice,name])));
+// Original mixed-instrument audition pattern; not a named traditional iqa'.
+const middleEasternHits = {
+  kick:{0:1,6:.65,8:1}, snare:{2:.65,7:.65,10:1,14:.65}, clap:{3:.35,11:.65,15:.65},
+  closedHat:{1:.35,5:.65,9:.35,13:.65}, openHat:{4:.35,12:.35},
+  tom:{4:.65}, rim:{12:.65}, cowbell:{0:.35,8:.35}
+};
+export const MIDDLE_EASTERN_GROOVE = Object.freeze(Object.fromEntries(Object.entries(middleEasternHits).map(([voice,hits])=>
+  [voice,Object.freeze(Array.from({length:16},(_,step)=>hits[step]??0))])));
+
+const latinBase = {
+  bodyModel:'modal', frequency:200, bodyLevel:.7, bodyDecay:.5, attack:.001,
+  strikePosition:.6, damping:.04, pitchSweepSemitones:0, pitchDecay:.015,
+  noiseLevel:.035, noiseAttack:.0005, noiseDecay:.04, noiseHighpass:900, noiseLowpass:5500,
+  transientType:'blend', transientMix:.7, transientTone:.65, transientFrequency:1900,
+  transientLevel:.15, transientDecay:.005, velocityToBrightness:.4, velocityToTransient:.65,
+  tone:0, drive:0, volume:.6, delaySend:0, reverbSend:0
+};
+const latinSounds = [
+  ['congaOpen','Conga open','kick', {
+    frequency:174, bodyLevel:.8, bodyDecay:.79, strikePosition:.52, damping:.025,
+    pitchSweepSemitones:2.2, pitchDecay:.021, transientFrequency:1050, transientLevel:.15,
+    resonance1Ratio:1.59, resonance1Level:.38, resonance1Decay:.5,
+    resonance2Ratio:2.14, resonance2Level:.22, resonance2Decay:.3,
+    resonance3Ratio:2.92, resonance3Level:.11, resonance3Decay:.16,
+    resonance4Ratio:3.6, resonance4Level:.055, resonance4Decay:.07, volume:.64
+  }],
+  ['congaSlap','Conga slap','snare', {
+    frequency:174, bodyLevel:.44, bodyDecay:.3, strikePosition:1, damping:.3,
+    noiseLevel:.29, noiseDecay:.06, noiseHighpass:1800, noiseLowpass:8500,
+    noiseFilterEnvAmount:.9, noiseFilterEnvDecay:.028,
+    transientFrequency:3200, transientLevel:.3, transientMix:.25, transientTone:.85, transientDecay:.004,
+    resonance1Ratio:1.59, resonance1Level:.26, resonance1Decay:.2,
+    resonance2Ratio:2.14, resonance2Level:.35, resonance2Decay:.15,
+    resonance3Ratio:2.92, resonance3Level:.35, resonance3Decay:.1,
+    resonance4Ratio:4.1, resonance4Level:.2, resonance4Decay:.06, volume:.64
+  }],
+  ['guiro','Güiro','clap', {
+    bodyModel:'classic', bodyLevel:0, noiseLevel:.9, noiseAttack:.0005,
+    burstCount:8, burstSpacing:.019, burstDecay:.014, burstVariation:.12,
+    tailLevel:.09, tailDecay:.04, noiseHighpass:850, noiseLowpass:5100, noiseResonance:.2,
+    noiseFilterEnvAmount:.6, noiseFilterEnvDecay:.18,
+    transientType:'noise', transientTone:.55, transientLevel:.025, transientDecay:.003,
+    velocityToBrightness:.5, volume:.57
+  }],
+  ['maracas','Maracas','closedHat', {
+    frequency:210, bodyLevel:.04, bodyDecay:.09, attack:.002, damping:.15,
+    noiseLevel:.95, noiseAttack:.006, noiseDecay:.16, noiseHighpass:2600, noiseLowpass:12000,
+    noiseFilterEnvAmount:.6, noiseFilterEnvDecay:.07,
+    transientType:'noise', transientTone:.9, transientLevel:.065, transientDecay:.006,
+    velocityToBrightness:.6, volume:.47
+  }],
+  ['claves','Claves','openHat', {
+    frequency:2200, bodyLevel:.53, bodyDecay:.065, strikePosition:.65, damping:0,
+    noiseLevel:.008, noiseHighpass:3000, noiseLowpass:9500,
+    transientType:'tonal', transientFrequency:3800, transientLevel:.19, transientDecay:.002,
+    resonance1Ratio:2.76, resonance1Level:.25, resonance1Decay:.035,
+    resonance2Ratio:5.4, resonance2Level:.08, resonance2Decay:.018, volume:.47
+  }],
+  ['bongoLow','Bongo low','tom', {
+    frequency:260, bodyLevel:.72, bodyDecay:.42, strikePosition:.6, damping:.04,
+    pitchSweepSemitones:2.4, pitchDecay:.013, transientFrequency:1750, transientLevel:.19,
+    resonance1Ratio:1.59, resonance1Level:.4, resonance1Decay:.28,
+    resonance2Ratio:2.14, resonance2Level:.22, resonance2Decay:.16,
+    resonance3Ratio:2.92, resonance3Level:.11, resonance3Decay:.085, volume:.6
+  }],
+  ['bongoHigh','Bongo high','rim', {
+    frequency:390, bodyLevel:.68, bodyDecay:.31, strikePosition:.72, damping:.045,
+    pitchSweepSemitones:2.4, pitchDecay:.013, transientFrequency:2550, transientLevel:.2,
+    resonance1Ratio:1.59, resonance1Level:.4, resonance1Decay:.21,
+    resonance2Ratio:2.14, resonance2Level:.22, resonance2Decay:.12,
+    resonance3Ratio:2.92, resonance3Level:.11, resonance3Decay:.06, volume:.56
+  }],
+  ['timbale','Timbale','cowbell', {
+    frequency:305, bodyLevel:.66, bodyDecay:.58, strikePosition:.8, damping:.015,
+    pitchSweepSemitones:2, pitchDecay:.01, noiseLevel:.12, noiseDecay:.065,
+    noiseHighpass:2000, noiseLowpass:9000,
+    transientFrequency:3900, transientLevel:.27, transientMix:.65, transientTone:.85,
+    resonance1Ratio:1.59, resonance1Level:.42, resonance1Decay:.4,
+    resonance2Ratio:2.14, resonance2Level:.29, resonance2Decay:.24,
+    resonance3Ratio:3.18, resonance3Level:.22, resonance3Decay:.37,
+    resonance4Ratio:4.71, resonance4Level:.13, resonance4Decay:.19,
+    resonance5Ratio:6.3, resonance5Level:.07, resonance5Decay:.09, volume:.56
+  }]
+];
+export const LATIN_PERCUSSION = Object.freeze(Object.fromEntries(latinSounds.map(([id,name,voice,patch]) =>
+  [id,Object.freeze({name,voice,params:Object.freeze(resolveParams(voice,{...latinBase,...patch}))})])));
+export const KIT_LATIN = Object.freeze(Object.fromEntries(Object.values(LATIN_PERCUSSION).map(({voice,params})=>[voice,params])));
+export const LATIN_LABELS = Object.freeze(Object.fromEntries(Object.values(LATIN_PERCUSSION).map(({voice,name})=>[voice,name])));
+// Original 16-step audition pattern; not a complete son/salsa ensemble transcription.
+const latinHits = {
+  kick:{0:.65,6:1,10:.65,14:1}, snare:{4:.65,12:.65}, clap:{2:.35,10:.35},
+  closedHat:{0:.35,2:.35,4:.35,6:.35,8:.35,10:.35,12:.35,14:.35},
+  openHat:{0:.65,6:.65,12:.65}, tom:{3:.65,11:.65}, rim:{5:.65,9:.35,15:.65}, cowbell:{7:.65,13:.35}
+};
+export const LATIN_GROOVE = Object.freeze(Object.fromEntries(Object.entries(latinHits).map(([voice,hits])=>
+  [voice,Object.freeze(Array.from({length:16},(_,step)=>hits[step]??0))])));
+
+export const KITS = Object.freeze({ 'middle-eastern':KIT_MIDDLE_EASTERN, latin:KIT_LATIN, 'west-african':KIT_WEST_AFRICAN, 'indian-2':KIT_INDIAN_2, indian:KIT_INDIAN, original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
 export const REFINEMENT_NOTES = Object.freeze({
   kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
   snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',

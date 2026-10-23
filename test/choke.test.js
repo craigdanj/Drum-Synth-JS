@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {DrumSynth} from '../src/drum-synth.js';
-import {KIT_INDIAN_2} from '../src/kits.js';
+import {KIT_INDIAN_2,KIT_WEST_AFRICAN,KIT_MIDDLE_EASTERN,KIT_LATIN} from '../src/kits.js';
 function setup(options={}) {
  const sources=[],gains=[];
  const param=()=>({value:1,events:[],setTargetAtTime(v,t){this.events.push(['target',v,t]);},setValueAtTime(v,t){this.events.push(['set',v,t]);},cancelScheduledValues(t){this.events.push(['cancel',t]);},linearRampToValueAtTime(v,t){this.events.push(['ramp',v,t]);}});
@@ -64,5 +64,12 @@ test('ghungroo bells keep ringing over kanjira slaps in Indian II',()=>{
  const {s,sources}=setup();
  s.trigger('openHat',{when:8,params:KIT_INDIAN_2.openHat});
  s.trigger('closedHat',{when:8.1,params:KIT_INDIAN_2.closedHat});
+ assert.equal(sources[0].stops.length,0);
+});
+
+for(const [name,kit] of [['West African',KIT_WEST_AFRICAN],['Middle Eastern',KIT_MIDDLE_EASTERN],['Latin',KIT_LATIN]])test(`${name}: bells, jingles and claves are not cut by shakers or hand drums`,()=>{
+ const {s,sources}=setup();
+ s.trigger('openHat',{when:8,params:kit.openHat});
+ s.trigger('closedHat',{when:8.01,params:kit.closedHat});
  assert.equal(sources[0].stops.length,0);
 });

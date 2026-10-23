@@ -1,12 +1,12 @@
 # Drum Synth JS
 
-Version **1.3.0**.
+Version **1.4.0**.
 
 A small, dependency-free JavaScript drum synthesizer. Design percussion, play it with Web Audio, and export the same sound as a WAV file. No recordings, audio assets, build step, or runtime dependencies required.
 
 ## Included
 
-- Ten example kits, including two Indian percussion packs with sixteen named sounds and dedicated grooves.
+- Thirteen example kits, including two Indian packs plus West African, Middle Eastern, and Latin percussion, with named sounds and dedicated grooves.
 - Eight compatible voice slots: kick, snare, clap, closed/open hi-hats, tom, rim and cowbell.
 - Pitch, pitch envelope, attack, decay, brightness, noise, transient, drive and level controls.
 - Seeded noise for reproducible samples; mono floating-point PCM and 16-bit WAV export.
@@ -25,7 +25,7 @@ npm start
 # Open http://localhost:8080
 ```
 
-The demo opens with **Indian Percussion II** and a one-bar audition pattern using all eight sounds. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
+The demo opens with **West African Percussion** and a one-bar audition pattern using all eight sounds. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
 
 Click **Enable audio**, then play the pads. A/S/D/F/G/H/J/K trigger voices; Space toggles the sequencer when focus is outside a form control. Choose a pad to edit its sound. Export dry WAV downloads a mono 44.1 kHz sample without playback effects; Save preset downloads the voice parameters, sends, and shared effect settings as JSON. The demo pauses when the tab is hidden.
 
@@ -165,7 +165,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **Indian Percussion II** selected at 108 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the ten kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **West African Percussion** selected at 112 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the thirteen kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -205,7 +205,7 @@ The demo exposes the independent controls in place of Noise mix, shared Decay, a
 
 ## Demo sound packs
 
-The demo offers ten kits: **Indian Percussion II**, **Indian Percussion**, **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
+The demo offers thirteen kits: **West African Percussion**, **Middle Eastern Percussion**, **Latin Percussion**, **Indian Percussion II**, **Indian Percussion**, **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
 
 `KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. Their WAVs are in `samples/original-refined/` and `samples/808-refined/`. Earlier presets remain available in the plugin API for compatibility but are no longer offered in the demo.
 
@@ -514,7 +514,7 @@ Validation covers all 24 sounds: parameter resolution, deterministic output, fin
 
 ## Deep / Dub, Retro Arcade, and Soft / Dusty sound packs
 
-Each pack adds eight editable voices in the same slots as the existing kits. Select a pack to audition its sounds or play your current sequence. Deep / Dub is selected when the demo opens. Switching packs preserves the pattern, tempo, and each pack’s session edits; Reset voice restores that pack’s preset.
+Each pack adds eight editable voices in the same slots as the existing kits. Select a pack to audition its sounds or play your current sequence. Choose Deep / Dub from the sound-pack selector. Switching packs preserves the pattern, tempo, and each pack’s session edits; Reset voice restores that pack’s preset.
 
 | Pack | Character | Useful sounds to audition |
 |---|---|---|
@@ -600,7 +600,7 @@ Automated checks cover bypass compatibility, waveform and width differences, lay
 
 Every voice has two additional playback parameters: `delaySend` and `reverbSend`, each from **0 to 1**, defaulting to **0**. A send routes a copy of the drum to a shared effect while retaining its dry sound. Send values are stored in the voice preset, work with `configure()` and per-hit overrides, and are captured when `trigger()` is called. They do not alter the cached dry sample or the output of `render()`.
 
-Version 1.3.0 accepts **73 per-voice parameters**: 70 numeric settings and three enum choices, including the two effect sends. Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
+Version 1.4.0 accepts **73 per-voice parameters**: 70 numeric settings and three enum choices, including the two effect sends. Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
 
 ### Hear the effects in the demo
 
@@ -724,7 +724,7 @@ All older presets default to the classic model, zero pitch bend, and zero levels
 
 ## Indian Percussion II (v1.3.0)
 
-The demo opens on the second pack. Press **Indian II groove → Play groove** to hear all eight instruments at 108 BPM with Use intensity enabled. **Indian I groove** loads the first pack and its original 96 BPM pattern. **All 8 groove** loads the pattern for the selected kit. Switching the pack dropdown preserves your current pattern, tempo, and intensity preference, and retains each kit's sound edits separately.
+Choose the second Indian pack, or press **Indian II groove → Play groove** to hear all eight instruments at 108 BPM with Use intensity enabled. **Indian I groove** loads the first pack and its original 96 BPM pattern. **All 8 groove** loads the pattern for the selected kit. Switching the pack dropdown preserves your current pattern, tempo, and intensity preference, and retains each kit's sound edits separately.
 
 | Named preset | Demo pad / API slot | Sound design |
 |---|---|---|
@@ -762,3 +762,76 @@ Seven sounds use the modal body model and its strike/damping controls. **Ghungro
 The parameter count remains 73; this release builds on the existing synthesis controls. Automated checks cover both packs at 8, 44.1, and 96 kHz, deterministic PCM, muted/open articulation, groove headroom at the default master level, and bell/choke interaction. Browser listening remains unverified.
 
 Instrument references used for the design vocabulary: [The Met: Musical Instruments of the Indian Subcontinent](https://www.metmuseum.org/essays/musical-instruments-of-the-indian-subcontinent), [Hartenberger Collection: Mridangam](https://wmic.net/india-mridangam/), and [Kanjira](https://wmic.net/india-kanjira/). Preset tuning is our synthesis design, not a measured acoustic model from those sources.
+
+
+## West African, Middle Eastern, and Latin percussion (v1.4.0)
+
+Three new packs add 24 named sounds and 24 WAV examples. The demo now contains 13 selectable kits (104 current sounds); the sample archive also retains 16 legacy examples, for 120 WAVs in total. The engine still has 73 per-voice parameters. These packs use the existing modal, noise, transient, metallic, and noise-burst sources.
+
+### Listen to the packs
+
+- **West African groove → Play groove** loads the West African kit at 112 BPM.
+- **Middle Eastern groove → Play groove** loads the Middle Eastern kit at 104 BPM.
+- **Latin groove → Play groove** loads the Latin kit at 116 BPM.
+
+Each groove button enables Use intensity and loads an original 16-step pattern using all eight sounds. The patterns demonstrate the presets; they are not transcriptions of named traditional rhythms or recreations of specific ensembles. The palettes draw from several instruments and traditions within each broad region. Each sound is a synthesized interpretation rather than a sampled or measured acoustic model.
+
+The sound-pack dropdown preserves the current pattern, BPM, and intensity preference. **All 8 groove** reloads the pattern for the selected kit without changing the tempo. Per-kit edits, Reset voice, named JSON preset export, effect sends, and dry WAV export work with all packs.
+
+### Instrument and API slot map
+
+| Existing slot | West African | Middle Eastern | Latin |
+|---|---|---|---|
+| `kick` | Djembe bass | Darbuka doum | Conga open |
+| `snare` | Djembe tone | Darbuka tek | Conga slap |
+| `clap` | Djembe slap | Darbuka slap | Güiro |
+| `closedHat` | Shekere | Riq tap | Maracas |
+| `openHat` | Gankogui high | Riq shake | Claves |
+| `tom` | Talking drum open | Daf bass | Bongo low |
+| `rim` | Talking drum bend | Daf edge | Bongo high |
+| `cowbell` | Gankogui low | Finger cymbals | Timbale |
+
+Named preset maps expose the real display names and their compatible slots, so applications need not maintain this mapping themselves:
+
+| Pack ID | Named presets | Kit | Labels | Groove |
+|---|---|---|---|---|
+| `west-african` | `WEST_AFRICAN_PERCUSSION` | `KIT_WEST_AFRICAN` | `WEST_AFRICAN_LABELS` | `WEST_AFRICAN_GROOVE` |
+| `middle-eastern` | `MIDDLE_EASTERN_PERCUSSION` | `KIT_MIDDLE_EASTERN` | `MIDDLE_EASTERN_LABELS` | `MIDDLE_EASTERN_GROOVE` |
+| `latin` | `LATIN_PERCUSSION` | `KIT_LATIN` | `LATIN_LABELS` | `LATIN_GROOVE` |
+
+The corresponding named preset keys are:
+
+- West African: `djembeBass`, `djembeTone`, `djembeSlap`, `shekere`, `gankoguiHigh`, `talkingDrumOpen`, `talkingDrumBend`, `gankoguiLow`.
+- Middle Eastern: `darbukaDoum`, `darbukaTek`, `darbukaSlap`, `riqTap`, `riqShake`, `dafBass`, `dafEdge`, `fingerCymbals`.
+- Latin: `congaOpen`, `congaSlap`, `guiro`, `maracas`, `claves`, `bongoLow`, `bongoHigh`, `timbale`.
+
+```js
+import { DrumSynth, render } from './src/drum-synth.js';
+import { WEST_AFRICAN_PERCUSSION, MIDDLE_EASTERN_PERCUSSION, LATIN_PERCUSSION, KITS } from './src/kits.js';
+// Installed-package presets are also available from 'drum-synth-js/kits'.
+const drums = new DrumSynth();
+const sound = WEST_AFRICAN_PERCUSSION.talkingDrumBend;
+// Inside a click or other user gesture:
+await drums.resume();
+drums.trigger(sound.voice, {params:sound.params, velocity:.8});
+const scrape = LATIN_PERCUSSION.guiro;
+const audio = render(scrape.voice, {...scrape.params, burstSpacing:.03});
+// Configure an existing eight-lane sequencer:
+for (const [voice,params] of Object.entries(KITS['middle-eastern'])) drums.configure(voice,params);
+```
+
+Preset, kit, label, and groove maps are frozen. Groove values are 16-step velocity arrays keyed by slot; copy them before editing. All named exports include TypeScript declarations.
+
+### Shape the new sounds
+
+**West African:** compare Djembe bass, tone, and slap. Slap has a shorter ring and brighter noise/transient components. Strike position changes the modal partial balance; Damping shortens the ring. Talking drum bend rises by 12 semitones over 100 ms and returns over 270 ms. Set Bend amount to 0 to match its open companion, or use a negative amount for a downward gesture. Gankogui low/high use different base tunings and inharmonic resonance banks. Shekere is mostly filtered noise with a small gourd-like tonal body; Noise attack and Noise decay shape the shake.
+
+**Middle Eastern:** Darbuka doum emphasises the low body, tek the edge ring, and slap a short, bright impact. Riq tap combines a short skin tone with upper resonances and noise. Riq shake uses the classic metallic bank: Metal mix, detune, damping, and Body decay shape its jingles. Daf bass/edge have different body and noise balances. Finger cymbals use high inharmonic modes; adjust the resonance decay times to change the ring.
+
+**Latin:** Conga open/slap contrast a ringing body and a damped impact. Bongo low/high provide two tunings and decay lengths. Timbale adds longer upper resonances; Claves is a short tonal knock. Maracas uses a fast filtered-noise envelope. Güiro reuses the classic clap source's burst envelope as a sequence of scrape ridges: Burst count sets ridge count (up to eight), Burst spacing controls scrape speed, Burst decay controls each rasp, and Tail level adds residual rubbing. The demo explains these under **Güiro scrape**. A single rendered scrape has finite length; repeated sequencer hits can form a longer pattern.
+
+The modal shaker/hand-drum slots do not choke the bells, jingles, or claves. Older kit audio is unchanged. `npm run samples` writes the named WAVs to `samples/west-african/`, `samples/middle-eastern/`, and `samples/latin/`.
+
+Validation covers deterministic and bounded audio at 8, 44.1, and 96 kHz, zero-velocity silence, WAV encoding, articulation differences, pitch-bend bypass, repeated scrape pulses, groove headroom, and choke interaction. Browser playback and subjective listening remain unverified in this environment.
+
+Instrument references for the design vocabulary: [The Met: Jembe](https://www.metmuseum.org/art/collection/search/503286), [Grinnell: Gankogui](https://omeka-s.grinnell.edu/s/MusicalInstruments/item/966), [The Met: Riqq](https://www.metmuseum.org/art/collection/search/504421), and [Smithsonian: Güiro](https://americanhistory.si.edu/collections/object/nmah_602447). Preset ratios, timings, and the audition grooves are our sound-design choices, not measurements taken from those sources.

@@ -32,3 +32,17 @@ await mkdir(new URL('../samples/indian-2/', import.meta.url), {recursive:true});
 for (const [id, {voice,params}] of Object.entries(INDIAN_PERCUSSION_2)) {
   await writeFile(new URL(`../samples/indian-2/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
 }
+
+const { WEST_AFRICAN_PERCUSSION } = await import('../src/kits.js');
+await mkdir(new URL('../samples/west-african/', import.meta.url), {recursive:true});
+for (const [id, {voice,params}] of Object.entries(WEST_AFRICAN_PERCUSSION)) {
+  await writeFile(new URL(`../samples/west-african/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
+}
+
+const { MIDDLE_EASTERN_PERCUSSION, LATIN_PERCUSSION } = await import('../src/kits.js');
+for (const [pack,sounds] of Object.entries({'middle-eastern':MIDDLE_EASTERN_PERCUSSION,latin:LATIN_PERCUSSION})) {
+  await mkdir(new URL(`../samples/${pack}/`, import.meta.url), {recursive:true});
+  for (const [id,{voice,params}] of Object.entries(sounds)) {
+    await writeFile(new URL(`../samples/${pack}/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
+  }
+}
