@@ -1,10 +1,13 @@
 import { DrumSynth, PRESETS, PARAMS, EFFECT_PARAMS, DEFAULT_EFFECTS, RESONANCE_VOICES, FM_VOICES, BODY_WAVEFORM_VOICES, render, encodeWav } from '../src/drum-synth.js';
-import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KIT_INDIAN, INDIAN_LABELS, INDIAN_GROOVE } from '../src/kits.js';
+import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KIT_INDIAN, INDIAN_LABELS, INDIAN_GROOVE, KIT_INDIAN_2, INDIAN_2_LABELS, INDIAN_2_GROOVE } from '../src/kits.js';
 const $ = id => document.getElementById(id);
 const voices = Object.keys(PRESETS), standardNames = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const demoKits = {indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const demoKits = {'indian-2':KIT_INDIAN_2, indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const kitLabels = {indian:INDIAN_LABELS, 'indian-2':INDIAN_2_LABELS};
+const kitGrooves = {indian:INDIAN_GROOVE, 'indian-2':INDIAN_2_GROOVE};
 const kitInfo = {
+  'indian-2':['Indian Percussion II','Mridangam bass, treble and muted strokes; kanjira, dhol, khanjari, and ghungroo bells. Synthesized interpretations.'],
   indian:['Indian Percussion','Tabla, bending bayan, dholak, ghatam, and ringing manjira. Synthesized interpretations with open and muted strokes.'],
   'original-refined':['Drum Synth','Shaped pitch sweeps, independent layers, and focused noise filters.'],
   '808-refined':['808-inspired','Deep bass drums, crisp claps, and tightly tuned metallic hats.'],
@@ -15,14 +18,14 @@ const kitInfo = {
   'soft-dusty':['Soft / Dusty','Gentle attacks, dark rattles, damped hats, and soft tonal knocks.'],
   industrial:['Industrial','Saw-driven kicks and snares, pulse-metal clangs, and detuned hats.']
 };
-let activeKit = 'indian';
-let names = voices.map(voice => INDIAN_LABELS[voice]);
+let activeKit = 'indian-2';
+let names = voices.map(voice => kitLabels[activeKit][voice]);
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let effects = {...DEFAULT_EFFECTS};
-let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
-let pattern = indianGroove();
-function indianGroove() { return voices.map(voice => [...INDIAN_GROOVE[voice]]); }
+let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 108;
+let pattern = kitGroove();
+function kitGroove() { return kitGrooves[activeKit] ? voices.map(voice => [...kitGrooves[activeKit][voice]]) : allVoicesGroove(); }
 const hitStrength = () => Number($('hit-strength').value) / 100;
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
   const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
@@ -83,7 +86,7 @@ function select(voice) {
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
   const modal=kit[voice].bodyModel==='modal';
-  document.querySelector('.choke-controls').hidden=voices.every(v=>kit[v].bodyModel==='modal');
+  document.querySelector('.choke-controls').hidden=kit.closedHat.bodyModel==='modal'||kit.openHat.bodyModel==='modal';
   for(const [group, labels] of groups) {
     if(group==='Hand percussion' && !modal)continue;
     if(group==='Body oscillator' && (modal || !BODY_WAVEFORM_VOICES.includes(voice))) continue;
@@ -226,7 +229,7 @@ async function changeKit(id) {
   status(`${name} kit loaded`);
 }
 function refreshLabels() {
-  names=activeKit==='indian'?voices.map(v=>INDIAN_LABELS[v]):standardNames;
+  names=kitLabels[activeKit]?voices.map(v=>kitLabels[activeKit][v]):standardNames;
   document.querySelectorAll('.pad-name').forEach((label,i)=>label.textContent=names[i]);
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
@@ -241,14 +244,16 @@ $('try-space').onclick=guarded(()=>{
   buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
 });
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
-$('indian-groove').onclick=guarded(async()=>{
-  const resume=running;stop();await changeKit('indian');pattern=indianGroove();
-  bpm=96;$('bpm').value=bpm;$('use-intensity').checked=true;buildGrid();
+async function loadIndianGroove(id,tempo) {
+  const resume=running;stop();await changeKit(id);pattern=kitGroove();
+  bpm=tempo;$('bpm').value=bpm;$('use-intensity').checked=true;buildGrid();
   if(resume)await toggle();
-  status('Indian groove loaded at 96 BPM with expressive intensities. Press Play groove.');
-});
+  status(`${kitInfo[id][0]} groove loaded at ${bpm} BPM with expressive intensities.${resume?'':' Press Play groove.'}`);
+}
+$('indian-groove').onclick=guarded(()=>loadIndianGroove('indian',96));
+$('indian-2-groove').onclick=guarded(()=>loadIndianGroove('indian-2',108));
 $('all-voices-groove').onclick=guarded(async()=>{
-  const resume=running;stop();pattern=activeKit==='indian'?indianGroove():allVoicesGroove();buildGrid();
+  const resume=running;stop();pattern=kitGroove();buildGrid();
   if(resume)await toggle();
   status('All 8 groove loaded — every instrument plays.');
 });

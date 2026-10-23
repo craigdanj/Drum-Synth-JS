@@ -1,12 +1,12 @@
 # Drum Synth JS
 
-Version **1.2.0**.
+Version **1.3.0**.
 
 A small, dependency-free JavaScript drum synthesizer. Design percussion, play it with Web Audio, and export the same sound as a WAV file. No recordings, audio assets, build step, or runtime dependencies required.
 
 ## Included
 
-- Nine example kits, including eight named Indian percussion sounds with a dedicated groove.
+- Ten example kits, including two Indian percussion packs with sixteen named sounds and dedicated grooves.
 - Eight compatible voice slots: kick, snare, clap, closed/open hi-hats, tom, rim and cowbell.
 - Pitch, pitch envelope, attack, decay, brightness, noise, transient, drive and level controls.
 - Seeded noise for reproducible samples; mono floating-point PCM and 16-bit WAV export.
@@ -25,7 +25,7 @@ npm start
 # Open http://localhost:8080
 ```
 
-The demo opens with **Indian Percussion** and a one-bar audition pattern using all eight sounds. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
+The demo opens with **Indian Percussion II** and a one-bar audition pattern using all eight sounds. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
 
 Click **Enable audio**, then play the pads. A/S/D/F/G/H/J/K trigger voices; Space toggles the sequencer when focus is outside a form control. Choose a pad to edit its sound. Export dry WAV downloads a mono 44.1 kHz sample without playback effects; Save preset downloads the voice parameters, sends, and shared effect settings as JSON. The demo pauses when the tab is hidden.
 
@@ -165,7 +165,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **Indian Percussion** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the nine kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **Indian Percussion II** selected at 108 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the ten kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -205,7 +205,7 @@ The demo exposes the independent controls in place of Noise mix, shared Decay, a
 
 ## Demo sound packs
 
-The demo offers nine kits: **Indian Percussion**, **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
+The demo offers ten kits: **Indian Percussion II**, **Indian Percussion**, **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
 
 `KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. Their WAVs are in `samples/original-refined/` and `samples/808-refined/`. Earlier presets remain available in the plugin API for compatibility but are no longer offered in the demo.
 
@@ -600,7 +600,7 @@ Automated checks cover bypass compatibility, waveform and width differences, lay
 
 Every voice has two additional playback parameters: `delaySend` and `reverbSend`, each from **0 to 1**, defaulting to **0**. A send routes a copy of the drum to a shared effect while retaining its dry sound. Send values are stored in the voice preset, work with `configure()` and per-hit overrides, and are captured when `trigger()` is called. They do not alter the cached dry sample or the output of `render()`.
 
-Version 1.2.0 accepts **73 per-voice parameters**: 70 numeric settings and three enum choices, including the two effect sends. Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
+Version 1.3.0 accepts **73 per-voice parameters**: 70 numeric settings and three enum choices, including the two effect sends. Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
 
 ### Hear the effects in the demo
 
@@ -666,7 +666,7 @@ Effects tests cover routing, shared buses, dry-buffer cache reuse, validation, d
 
 ## Indian Percussion (v1.2.0)
 
-Choose **Indian Percussion** in the demo, then press **Indian groove → Play groove**. The groove button sets 96 BPM and enables Use intensity so you hear accents and lighter strokes. It selects all eight sounds in a contemporary 16-step audition pattern, not a traditional tala/theka transcription. Choosing a kit from the dropdown preserves the current pattern, tempo, and intensity preference.
+Choose **Indian Percussion** in the demo, then press **Indian I groove → Play groove**. The groove button sets 96 BPM and enables Use intensity so you hear accents and lighter strokes. It selects all eight sounds in a contemporary 16-step audition pattern, not a traditional tala/theka transcription. Choosing a kit from the dropdown preserves the current pattern, tempo, and intensity preference.
 
 | Named preset | Demo pad / API slot | Character |
 |---|---|---|
@@ -720,3 +720,45 @@ Modal damping divides each decay by `1 + 12 * damping * sqrt(partialRatio)` (the
 Modal mode replaces the classic oscillator, clap bursts, and hat metal bank. FM, waveform, Body tone, clap structure, and metal-source settings are inactive in that mode, so the demo hides them. Body, noise, transient, velocity, sends, pitch, and resonance controls remain available. Modal hits do not participate in hi-hat choking, even when using the `closedHat` or `openHat` slots. Classic hats keep their normal choking behavior.
 
 All older presets default to the classic model, zero pitch bend, and zero levels in resonance slots 4–5. Their rendered WAVs remain byte-identical to v1.1.0. The new synthesis controls and named kit API include TypeScript declarations and tests. Browser playback and subjective listening remain unverified in this environment.
+
+
+## Indian Percussion II (v1.3.0)
+
+The demo opens on the second pack. Press **Indian II groove → Play groove** to hear all eight instruments at 108 BPM with Use intensity enabled. **Indian I groove** loads the first pack and its original 96 BPM pattern. **All 8 groove** loads the pattern for the selected kit. Switching the pack dropdown preserves your current pattern, tempo, and intensity preference, and retains each kit's sound edits separately.
+
+| Named preset | Demo pad / API slot | Sound design |
+|---|---|---|
+| `mridangamBass` | Mridangam bass / `kick` | Low body with harmonic ringing and a small downward bend |
+| `mridangamTreble` | Mridangam treble / `snare` | Tuned, open stroke with five upper resonances |
+| `mridangamMuted` | Mridangam muted / `clap` | Short, damped companion to the open treble stroke |
+| `kanjiraSlap` | Kanjira slap / `closedHat` | Sharp skin impact, brief pitch sweep, and upper ringing tones |
+| `ghungroo` | Ghungroo / `openHat` | Detuned metallic bell cluster with a soft rattling tail |
+| `dholBass` | Dhol bass / `tom` | Deep, forceful drum body with a stick-like transient |
+| `dholTreble` | Dhol treble / `rim` | Brighter drum strike with short inharmonic ringing |
+| `khanjari` | Khanjari / `cowbell` | Short frame-drum body with a brighter jingle-like tail |
+
+These presets are synthesized interpretations. The groove combines the instruments for auditioning; it is not a traditional tala transcription or a recreation of a particular ensemble. The first Indian pack and all older kits retain their sounds. Eight new mono WAVs are included in `samples/indian-2/`; regenerate them with `npm run samples`.
+
+```js
+import { DrumSynth, render } from './src/drum-synth.js';
+import { INDIAN_PERCUSSION_2, KIT_INDIAN_2, INDIAN_2_LABELS, INDIAN_2_GROOVE } from './src/kits.js';
+// Installed-package preset imports also work from 'drum-synth-js/kits'.
+const drums = new DrumSynth();
+const sound = INDIAN_PERCUSSION_2.mridangamTreble;
+// From a user gesture:
+await drums.resume();
+drums.trigger(sound.voice, {params:sound.params, velocity:.8});
+// Offline: adjust damping to create a shorter articulation.
+const audio = render(sound.voice, {...sound.params, damping:.3});
+// For an existing eight-lane sequencer:
+for (const [voice,params] of Object.entries(KIT_INDIAN_2)) drums.configure(voice,params);
+// Labels and 16-step velocity arrays are keyed by the same slots.
+```
+
+`KITS['indian-2']` references the new kit. The named preset, label, and groove maps are frozen; copy them before editing. Existing scheduling, per-hit velocity, panning, effect sends, dry WAV export, and JSON preset export work with both packs.
+
+Seven sounds use the modal body model and its strike/damping controls. **Ghungroo uses the classic metallic bank**: adjust Metal detune for bell spread, Metal damping for high-frequency decay, Body decay for ringing length, and Noise level/decay for the rattling tail. Its modal strike/damping controls are therefore hidden. The modal kanjira does not choke the ghungroo, and the demo hides hi-hat choking controls when the kit lacks a pair of classic hat sources.
+
+The parameter count remains 73; this release builds on the existing synthesis controls. Automated checks cover both packs at 8, 44.1, and 96 kHz, deterministic PCM, muted/open articulation, groove headroom at the default master level, and bell/choke interaction. Browser listening remains unverified.
+
+Instrument references used for the design vocabulary: [The Met: Musical Instruments of the Indian Subcontinent](https://www.metmuseum.org/essays/musical-instruments-of-the-indian-subcontinent), [Hartenberger Collection: Mridangam](https://wmic.net/india-mridangam/), and [Kanjira](https://wmic.net/india-kanjira/). Preset tuning is our synthesis design, not a measured acoustic model from those sources.

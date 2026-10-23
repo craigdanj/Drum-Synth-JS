@@ -1,14 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {render,resolveParams,PARAMS,PRESETS} from '../src/drum-synth.js';
-import {INDIAN_PERCUSSION,KIT_INDIAN,KITS,INDIAN_GROOVE,INDIAN_LABELS} from '../src/kits.js';
+import {INDIAN_PERCUSSION,KIT_INDIAN,KITS,INDIAN_GROOVE,INDIAN_LABELS,INDIAN_PERCUSSION_2,KIT_INDIAN_2,INDIAN_2_GROOVE,INDIAN_2_LABELS} from '../src/kits.js';
 const energy = samples => samples.reduce((sum,s)=>sum+s*s,0);
-test('Indian pack has eight named, frozen, distinct and playable instruments',()=>{
-  assert.equal(KITS.indian,KIT_INDIAN);
-  assert.deepEqual(Object.keys(KIT_INDIAN),Object.keys(PRESETS));
+for (const [kitId,sounds,kit,groove,labels] of [
+  ['indian',INDIAN_PERCUSSION,KIT_INDIAN,INDIAN_GROOVE,INDIAN_LABELS],
+  ['indian-2',INDIAN_PERCUSSION_2,KIT_INDIAN_2,INDIAN_2_GROOVE,INDIAN_2_LABELS]
+]) test(`${kitId}: eight named, frozen, distinct and playable instruments`,()=>{
+  assert.equal(KITS[kitId],kit);
+  assert.deepEqual(Object.keys(kit),Object.keys(PRESETS));
   const fingerprints=new Set();
-  for(const [id,{name,voice,params}] of Object.entries(INDIAN_PERCUSSION)) {
-    assert.equal(INDIAN_LABELS[voice],name);assert.equal(KIT_INDIAN[voice],params);
+  for(const [id,{name,voice,params}] of Object.entries(sounds)) {
+    assert.equal(labels[voice],name);assert.equal(kit[voice],params);
     assert.ok(Object.isFrozen(params));assert.deepEqual(resolveParams(voice,params),params);
     const a=render(voice,params);assert.deepEqual(a,render(voice,params));
     fingerprints.add(JSON.stringify([...a.samples.slice(0,200)]));
@@ -18,9 +21,9 @@ test('Indian pack has eight named, frozen, distinct and playable instruments',()
       assert.equal(Math.abs(b.samples[0]),0);assert.equal(Math.abs(b.samples.at(-1)),0);
       assert.ok(velocity===0 ? energy(b.samples)===0 : energy(b.samples)>1e-4,id);
     }
-    assert.equal(INDIAN_GROOVE[voice].length,16);
-    assert.ok(INDIAN_GROOVE[voice].some(v=>v>0));
-    assert.ok(INDIAN_GROOVE[voice].every(v=>[0,.35,.65,1].includes(v)));
+    assert.equal(groove[voice].length,16);
+    assert.ok(groove[voice].some(v=>v>0));
+    assert.ok(groove[voice].every(v=>[0,.35,.65,1].includes(v)));
   }
   assert.equal(fingerprints.size,8);
 });
@@ -71,4 +74,27 @@ test('new model and gesture parameters validate and neutral settings preserve cl
     const [min,max]=PARAMS[key];for(const value of [null,NaN,Infinity,min-1,max+1])assert.throws(()=>resolveParams('tom',{[key]:value}));
   }
   for(const voice of Object.keys(PRESETS))assert.deepEqual(render(voice),render(voice,{bodyModel:'classic',strikePosition:1,damping:1,pitchBendSemitones:0,resonance4Level:0,resonance5Level:0}));
+});
+
+test('mridangam muted stroke is shorter and new pack differs from Indian I',()=>{
+  const a=INDIAN_PERCUSSION_2.mridangamTreble,b=INDIAN_PERCUSSION_2.mridangamMuted;
+  const open=render(a.voice,a.params),muted=render(b.voice,b.params);
+  assert.ok(muted.duration<open.duration*.25);
+  assert.ok(energy(muted.samples.slice(2205))<energy(open.samples.slice(2205))*.03);
+  for(const voice of Object.keys(PRESETS))assert.notDeepEqual(render(voice,KIT_INDIAN_2[voice]),render(voice,KIT_INDIAN[voice]));
+  assert.notDeepEqual(INDIAN_2_GROOVE,INDIAN_GROOVE);
+});
+test('Indian II groove has headroom with accents and with full intensity',()=>{
+  const sampleRate=44100,stepSeconds=60/108/4;
+  for(const dynamic of [true,false]) {
+    const mix=new Float32Array(Math.ceil(sampleRate*7));
+    for(const {voice,params} of Object.values(INDIAN_PERCUSSION_2))for(let step=0;step<32;step++) {
+      const v=INDIAN_2_GROOVE[voice][step%16];if(!v)continue;
+      const sound=render(voice,params,{sampleRate,velocity:dynamic?v:1}).samples;
+      const offset=Math.round(step*stepSeconds*sampleRate);
+      for(let i=0;i<sound.length&&offset+i<mix.length;i++)mix[offset+i]+=sound[i]*.7;
+    }
+    const peak=mix.reduce((m,v)=>Math.max(m,Math.abs(v)),0);
+    assert.ok(peak>.1 && peak<.95,`default master peak ${peak}`);
+  }
 });

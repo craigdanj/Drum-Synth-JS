@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0 — 2026-10-23
+
+- Added Indian Percussion II: mridangam bass/treble/muted, kanjira slap, ghungroo, dhol bass/treble, and khanjari, with eight new WAV examples.
+- Added named and typed preset, label, and groove exports plus `KITS['indian-2']`.
+- Added a dedicated 108 BPM groove and updated demo labels, pack selection, reset, and exports. Both Indian packs have separate groove buttons.
+- Used the existing modal and metallic sources; parameter count remains 73. Older kit audio is unchanged.
+- Added checks for sample validity, articulation differences, groove headroom, and ghungroo ringing over kanjira hits.
+
 ## 1.2.0 — 2026-10-23
 
 - Added Indian Percussion with eight named synthesized sounds: bayan bass/bend, tabla open/muted, dholak bass/treble, ghatam, and manjira, plus eight WAV examples.

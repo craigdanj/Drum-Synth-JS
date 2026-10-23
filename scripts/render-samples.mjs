@@ -26,3 +26,9 @@ await mkdir(new URL('../samples/indian/', import.meta.url), {recursive:true});
 for (const [id, {voice,params}] of Object.entries(INDIAN_PERCUSSION)) {
   await writeFile(new URL(`../samples/indian/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
 }
+
+const { INDIAN_PERCUSSION_2 } = await import('../src/kits.js');
+await mkdir(new URL('../samples/indian-2/', import.meta.url), {recursive:true});
+for (const [id, {voice,params}] of Object.entries(INDIAN_PERCUSSION_2)) {
+  await writeFile(new URL(`../samples/indian-2/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
+}
