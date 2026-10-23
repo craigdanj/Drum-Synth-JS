@@ -1,10 +1,11 @@
 import { DrumSynth, PRESETS, PARAMS, EFFECT_PARAMS, DEFAULT_EFFECTS, RESONANCE_VOICES, FM_VOICES, BODY_WAVEFORM_VOICES, render, encodeWav } from '../src/drum-synth.js';
-import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY } from '../src/kits.js';
+import { KIT_ORIGINAL_REFINED, KIT_808_REFINED, KIT_ELECTRO_FM, KIT_MINIMAL, KIT_INDUSTRIAL, KIT_DEEP_DUB, KIT_RETRO_ARCADE, KIT_SOFT_DUSTY, KIT_INDIAN, INDIAN_LABELS, INDIAN_GROOVE } from '../src/kits.js';
 const $ = id => document.getElementById(id);
-const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
+const voices = Object.keys(PRESETS), standardNames = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const demoKits = {'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const demoKits = {indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
 const kitInfo = {
+  indian:['Indian Percussion','Tabla, bending bayan, dholak, ghatam, and ringing manjira. Synthesized interpretations with open and muted strokes.'],
   'original-refined':['Drum Synth','Shaped pitch sweeps, independent layers, and focused noise filters.'],
   '808-refined':['808-inspired','Deep bass drums, crisp claps, and tightly tuned metallic hats.'],
   'electro-fm':['Electro / FM','Triangle-weighted kicks, pulse snares, and FM percussion with sharper waveforms.'],
@@ -14,12 +15,14 @@ const kitInfo = {
   'soft-dusty':['Soft / Dusty','Gentle attacks, dark rattles, damped hats, and soft tonal knocks.'],
   industrial:['Industrial','Saw-driven kicks and snares, pulse-metal clangs, and detuned hats.']
 };
-let activeKit = 'deep-dub';
+let activeKit = 'indian';
+let names = voices.map(voice => INDIAN_LABELS[voice]);
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let effects = {...DEFAULT_EFFECTS};
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
-let pattern = allVoicesGroove();
+let pattern = indianGroove();
+function indianGroove() { return voices.map(voice => [...INDIAN_GROOVE[voice]]); }
 const hitStrength = () => Number($('hit-strength').value) / 100;
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
   const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
@@ -53,16 +56,19 @@ async function hit(voice) {
 function flash(voice) { const pad = document.querySelector(`[data-voice="${voice}"]`); pad.classList.add('hit'); setTimeout(()=>pad.classList.remove('hit'),100); }
 voices.forEach((voice,i) => {
   const pad = document.createElement('button'); pad.className='pad'; pad.dataset.voice=voice;
-  pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span>${names[i]}</span>`;
+  pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span class="pad-name">${names[i]}</span>`;
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
 const groups = [
   ['Effect sends', {delaySend:'Delay send (amount sent to echo)',reverbSend:'Reverb send (amount sent to room)'}],
+  ['Sound model', {bodyModel:'Body model'}],
+  ['Hand percussion', {strikePosition:'Strike position (centre → edge)',damping:'Damping (open → muted)'}],
+  ['Pitch bend', {pitchBendSemitones:'Bend amount (down − / up +)',pitchBendTime:'Bend rise (time to reach peak)',pitchBendRelease:'Bend return (time back to tuning)'}],
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body oscillator', {bodyWaveform:'Waveform (raw tonal character)',bodyWaveformMix:'Shape blend (original → selected wave)',bodyPulseWidth:'Pulse width (square shape / hollow tone)'}],
   ['FM synthesis', {fmDepth:'FM depth (0 = off)',fmRatio:'FM ratio (× body frequency)',fmDecay:'FM decay (attack complexity)'}],
   ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
-  ...[1,2,3].map(n=>[`Body resonance ${n}`, {[`resonance${n}Ratio`]:'Pitch ratio (× body frequency)',[`resonance${n}Level`]:'Added resonance level', [`resonance${n}Decay`]:'Ring decay'}]),
+  ...[1,2,3,4,5].map(n=>[`Body resonance ${n}`, {[`resonance${n}Ratio`]:'Pitch ratio (× body frequency)',[`resonance${n}Level`]:'Added resonance level', [`resonance${n}Decay`]:'Ring decay'}]),
   ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
   ['Clap structure', {burstCount:'Burst count',burstSpacing:'Burst spacing',burstDecay:'Burst decay',tailLevel:'Tail level',tailDecay:'Tail decay',burstVariation:'Burst variation'}],
   ['Metallic source', {metalMix:'Metal / noise balance',metalDetune:'Detune',metalDamping:'Damping',metalHighpass:'Metal high-pass',metalLowpass:'Metal low-pass',metalFilterEnvAmount:'Metal sweep (+ bright / − dark start)',metalFilterEnvDecay:'Metal sweep decay'}],
@@ -71,25 +77,29 @@ const groups = [
   ['Velocity response', {velocityToBrightness:'Brightness response (darker on softer hits)',velocityToTransient:'Transient response (gentler click on softer hits)'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='pitchBendSemitones')return `${value>0?'+':''}${value.toFixed(1)} st`; if(key==='pitchBendTime'||key==='pitchBendRelease')return `${Math.round(value*1000)} ms`; if(key==='strikePosition'||key==='damping')return `${Math.round(value*100)}%`; if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
+  const modal=kit[voice].bodyModel==='modal';
+  document.querySelector('.choke-controls').hidden=voices.every(v=>kit[v].bodyModel==='modal');
   for(const [group, labels] of groups) {
-    if(group==='Body oscillator' && !BODY_WAVEFORM_VOICES.includes(voice)) continue;
-    if(group==='FM synthesis' && !FM_VOICES.includes(voice)) continue;
-    if(group.startsWith('Body resonance') && !RESONANCE_VOICES.includes(voice)) continue;
-    if(group==='Metallic source' && !voice.includes('Hat')) continue;
-    if(group==='Clap structure' && voice!=='clap') continue;
+    if(group==='Hand percussion' && !modal)continue;
+    if(group==='Body oscillator' && (modal || !BODY_WAVEFORM_VOICES.includes(voice))) continue;
+    if(group==='FM synthesis' && (modal || !FM_VOICES.includes(voice))) continue;
+    if(group.startsWith('Body resonance') && !modal && !RESONANCE_VOICES.includes(voice)) continue;
+    if(group==='Metallic source' && (modal || !voice.includes('Hat'))) continue;
+    if(group==='Clap structure' && (modal || voice!=='clap')) continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    if(group==='Hand percussion' || group==='Pitch bend') {const note=document.createElement('p');note.className='control-note';note.textContent=group==='Hand percussion'?'Centre favours the low body; edge emphasises upper ringing tones. Damping shortens the body and damps higher tones faster. These are synthesized approximations.':'A second pitch motion: rises or falls to the bend amount, then returns to the tuning. Amount 0 switches it off. Try Bayan bend with 0 versus +7 semitones.';$('controls').append(note);}
     if(group==='Effect sends') {const note=document.createElement('p');note.className='control-note';note.textContent='0% is dry. Raise a send to add echo or space to this instrument’s next hits. Shared effect settings are beside the sequencer. WAV export and the waveform remain dry.';$('controls').append(note);}
     if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
     if(group==='Noise filter' || group==='Metallic source') {
       const note=document.createElement('p');note.className='control-note';note.textContent='Sweep starts brighter (+) or darker (−), then returns to the low-pass setting. Amount 0 disables it. Works at 100% hit strength too.';$('controls').append(note);
     }
     if(group==='FM synthesis') {const note=document.createElement('p');note.className='control-note';note.textContent='Adds a complex or metallic attack to the original tonal body. Depth 0 is off; larger depth adds more modulation. Ratio changes character; decay sets how quickly it settles. Try Tom: depth 1, ratio 1.4, decay 120 ms. Works at 100% intensity.';$('controls').append(note);}
-    if(group==='Body resonance 1') {const note=document.createElement('p');note.className='control-note';note.textContent='Add up to three ringing tones to the existing body. Ratio follows body pitch; each tone has its own decay. Level 0 disables a tone. Body level controls them all.';$('controls').append(note);}
+    if(group==='Body resonance 1') {const note=document.createElement('p');note.className='control-note';note.textContent='Add up to five ringing tones to the existing body. Ratio follows body pitch; each tone has its own decay. Level 0 disables a tone. Body level controls them all.';$('controls').append(note);}
     if(group==='Transient') {const note=document.createElement('p');note.className='control-note';note.textContent='Shapes the initial impact, even at 100% strength. Raise Transient level to hear it clearly; it does not change the drum body.';$('controls').append(note);}
     if(group==='Velocity response') {
       const note=document.createElement('p');note.className='control-note';note.id='velocity-help';
@@ -97,7 +107,14 @@ function select(voice) {
       $('controls').append(note);
     }
     for(const [key,label] of Object.entries(labels)) {
-    if(voice==='clap' && key==='noiseDecay') continue;
+    if(modal && key==='tone')continue;
+    if(key==='bodyModel') {
+      const wrapper=document.createElement('div');wrapper.className='control';
+      wrapper.innerHTML='<label for="param-bodyModel">Body model (source of the ringing tone)</label><select id="param-bodyModel"><option value="classic">Classic drum voice</option><option value="modal">Resonant percussion</option></select>';
+      const input=wrapper.querySelector('select');input.value=kit[voice].bodyModel;
+      input.onchange=()=>{kit[voice].bodyModel=input.value;select(voice);};$('controls').append(wrapper);continue;
+    }
+    if(!modal && voice==='clap' && key==='noiseDecay') continue;
     if(key==='bodyWaveform') {
       const wrapper=document.createElement('div');wrapper.className='control';
       wrapper.innerHTML='<label for="param-bodyWaveform">Waveform (raw tonal character)</label><select id="param-bodyWaveform" aria-describedby="oscillator-help"><option value="sine">Sine (round)</option><option value="triangle">Triangle (gentle edges)</option><option value="square">Square / pulse (hollow)</option><option value="saw">Saw (buzzy)</option></select>';
@@ -202,11 +219,15 @@ $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(va
 $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(selected);};
 async function changeKit(id) {
   const resume = running; stop(); activeKit=id; kit=edits[activeKit]; $('kit').value=id;
-  select(selected);
+  refreshLabels();select(selected);buildGrid();
   const [name,description]=kitInfo[id];
   $('pack-description').textContent = description;
   if(resume) await toggle();
   status(`${name} kit loaded`);
+}
+function refreshLabels() {
+  names=activeKit==='indian'?voices.map(v=>INDIAN_LABELS[v]):standardNames;
+  document.querySelectorAll('.pad-name').forEach((label,i)=>label.textContent=names[i]);
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
 $('use-intensity').onchange=buildGrid;
@@ -220,13 +241,19 @@ $('try-space').onclick=guarded(()=>{
   buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
 });
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
+$('indian-groove').onclick=guarded(async()=>{
+  const resume=running;stop();await changeKit('indian');pattern=indianGroove();
+  bpm=96;$('bpm').value=bpm;$('use-intensity').checked=true;buildGrid();
+  if(resume)await toggle();
+  status('Indian groove loaded at 96 BPM with expressive intensities. Press Play groove.');
+});
 $('all-voices-groove').onclick=guarded(async()=>{
-  const resume=running;stop();pattern=allVoicesGroove();buildGrid();
+  const resume=running;stop();pattern=activeKit==='indian'?indianGroove():allVoicesGroove();buildGrid();
   if(resume)await toggle();
   status('All 8 groove loaded — every instrument plays.');
 });
 $('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('Dry WAV exported — playback effects are not included.');});
-$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
+$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,name:names[voices.indexOf(selected)],voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('resize',draw);window.addEventListener('pagehide',()=>{stop();synth?.dispose();synth=undefined;});

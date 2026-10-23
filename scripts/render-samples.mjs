@@ -20,3 +20,9 @@ for (const [pack, presets] of Object.entries({'original-refined': KIT_ORIGINAL_R
     await writeFile(new URL(`../samples/${pack}/${voice}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice, params))));
   }
 }
+
+const { INDIAN_PERCUSSION } = await import('../src/kits.js');
+await mkdir(new URL('../samples/indian/', import.meta.url), {recursive:true});
+for (const [id, {voice,params}] of Object.entries(INDIAN_PERCUSSION)) {
+  await writeFile(new URL(`../samples/indian/${id}.wav`, import.meta.url), Buffer.from(encodeWav(render(voice,params))));
+}

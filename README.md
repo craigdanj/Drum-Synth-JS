@@ -1,12 +1,13 @@
 # Drum Synth JS
 
-Version **1.1.0**.
+Version **1.2.0**.
 
 A small, dependency-free JavaScript drum synthesizer. Design percussion, play it with Web Audio, and export the same sound as a WAV file. No recordings, audio assets, build step, or runtime dependencies required.
 
 ## Included
 
-- Eight voices: kick, snare, clap, closed/open hi-hats, tom, rim and cowbell.
+- Nine example kits, including eight named Indian percussion sounds with a dedicated groove.
+- Eight compatible voice slots: kick, snare, clap, closed/open hi-hats, tom, rim and cowbell.
 - Pitch, pitch envelope, attack, decay, brightness, noise, transient, drive and level controls.
 - Seeded noise for reproducible samples; mono floating-point PCM and 16-bit WAV export.
 - Audio-clock scheduling, velocity, stereo panning, polyphony limits and cleanup.
@@ -24,7 +25,7 @@ npm start
 # Open http://localhost:8080
 ```
 
-The demo opens with **All 8 groove**, a one-bar pattern using all eight instruments in the selected kit. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
+The demo opens with **Indian Percussion** and a one-bar audition pattern using all eight sounds. Press **Play groove** to hear it. The **All 8 groove** button reloads it; **Starter beat** loads the simpler pattern. Kit switching keeps the pattern and tempo. Enable **Use intensity** for the sample groove’s accents and ghost hits; when unchecked, all enabled steps play at 100% intensity.
 
 Click **Enable audio**, then play the pads. A/S/D/F/G/H/J/K trigger voices; Space toggles the sequencer when focus is outside a form control. Choose a pad to edit its sound. Export dry WAV downloads a mono 44.1 kHz sample without playback effects; Save preset downloads the voice parameters, sends, and shared effect settings as JSON. The demo pauses when the tab is hidden.
 
@@ -164,7 +165,7 @@ MIT © 2026 Craig Johnson. Generated audio is yours to use; no source recordings
 
 ## 808-inspired sound pack
 
-The demo opens with **Deep / Dub** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the eight kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
+The demo opens with **Indian Percussion** selected at 96 BPM. Press **Play groove** or tap individual pads to hear it. Choose any of the nine kits from the pack selector; edits are retained separately for each kit during the session. Reset voice restores the selected pack's settings. WAV and preset exports include your active pack and edits.
 
 This is a preset-based interpretation using the existing eight synthesis algorithms, not a circuit-accurate TR-808 emulation. It includes kick, snare, clap, closed/open hats, low tom, rim, and cowbell. No recordings are required. The engine API and original defaults remain unchanged.
 
@@ -204,7 +205,7 @@ The demo exposes the independent controls in place of Noise mix, shared Decay, a
 
 ## Demo sound packs
 
-The demo offers eight kits: **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
+The demo offers nine kits: **Indian Percussion**, **Deep / Dub**, **Retro Arcade**, **Soft / Dusty**, **Electro / FM**, **Minimal**, **Industrial**, **Drum Synth**, and **808-inspired**. The last two retain their refined presets. Tap a pad to audition and edit it, or press **Play groove**. Switching packs restarts a playing groove with the same pattern and tempo. Edits are retained separately for each kit; **Reset voice** restores the selected kit’s preset.
 
 `KIT_ORIGINAL_REFINED` and `KIT_808_REFINED` are exported from `src/kits.js`. Their WAVs are in `samples/original-refined/` and `samples/808-refined/`. Earlier presets remain available in the plugin API for compatibility but are no longer offered in the demo.
 
@@ -408,9 +409,9 @@ drums.trigger('tom', {params: {
 
 ## Adjustable body resonances
 
-Kicks, snares, toms, rims, and cowbells now have **three additional ringing tones** mixed with the existing body. These are synthesized tonal components, not a resonant effect applied to external audio. The original body structure stays intact; the extra tones let you add shell-like ring, harmonics, or less harmonic metallic character.
+Kicks, snares, toms, rims, and cowbells now have **five additional ringing tones** mixed with the existing body. These are synthesized tonal components, not a resonant effect applied to external audio. The original body structure stays intact; the extra tones let you add shell-like ring, harmonics, or less harmonic metallic character.
 
-Each slot (`1`, `2`, or `3`) provides:
+Each slot (`1` through `5`) provides:
 
 | Parameter | Range | Purpose |
 |---|---|---|
@@ -418,11 +419,11 @@ Each slot (`1`, `2`, or `3`) provides:
 | `resonance1Level` | 0–1 | Added tone level; 0 disables this slot |
 | `resonance1Decay` | 0.01–3 seconds | Independent ring decay to approximately -60 dB after attack |
 
-The same names with `2` or `3` select the other slots. A ratio of 2 is one octave above the body; 0.5 is one octave below. Non-integer ratios such as 1.59 or 2.37 create less harmonic ringing. The extra tones follow Frequency and Pitch sweep; their attack uses Body attack. Body level controls the original body and every added resonance together. Body decay only sets the original body's decay; each added resonance has its own decay, so it can ring after the original body has faded.
+The same names with `2`, `3`, `4`, or `5` select the other slots. A ratio of 2 is one octave above the body; 0.5 is one octave below. Non-integer ratios such as 1.59 or 2.37 create less harmonic ringing. The extra tones follow Frequency, Pitch sweep, and Pitch bend; their attack uses Body attack. Body level controls the original body and every added resonance together. Body decay only sets the original body's decay; each added resonance has its own decay, so it can ring after the original body has faded.
 
 The enabled tones extend rendering to include the longest ring, with the existing end fade. Muted slots do not lengthen exports. Frequency components taper out between 0.40 and 0.45 times the sample rate to reduce folding at extreme ratios and pitches; this does not make the existing saturation or original body fully anti-aliased. Added tones are not automatically normalized, so raising several levels increases loudness and drives the shared saturation harder.
 
-The demo shows **Body resonance 1–3** only for the five supported voices. Clap and hats ignore these controls; hats retain their separate Metallic source controls. All base engine presets default to zero added resonance levels, preserving their earlier sound. Both current demo kits are retuned with moderate levels: subtle kick harmonics, short snare/rim rings, and more pronounced tom/cowbell resonances. Preset exports, WAV rendering, cache keys, and TypeScript declarations include all nine parameters. `RESONANCE_VOICES` exports the supported voice names for custom interfaces.
+The demo shows **Body resonance 1–5** for the five classic tonal voices, and for every slot using the modal body model. Classic claps and hats ignore these controls; classic hats retain their separate Metallic source controls. All base engine presets default to zero added resonance levels, preserving their earlier sound. The Drum Synth and 808-inspired kits are retuned with moderate levels: subtle kick harmonics, short snare/rim rings, and more pronounced tom/cowbell resonances. Preset exports, WAV rendering, cache keys, and TypeScript declarations include all fifteen resonance parameters. `RESONANCE_VOICES` exports the classic supported voice names; modal bodies support them in every slot.
 
 ### Try it
 
@@ -599,7 +600,7 @@ Automated checks cover bypass compatibility, waveform and width differences, lay
 
 Every voice has two additional playback parameters: `delaySend` and `reverbSend`, each from **0 to 1**, defaulting to **0**. A send routes a copy of the drum to a shared effect while retaining its dry sound. Send values are stored in the voice preset, work with `configure()` and per-hit overrides, and are captured when `trigger()` is called. They do not alter the cached dry sample or the output of `render()`.
 
-The engine now accepts **61 per-voice parameters** (the previous 59 plus two sends). Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
+Version 1.2.0 accepts **73 per-voice parameters**: 70 numeric settings and three enum choices, including the two effect sends. Shared effects have **eight numeric settings and one enabled flag**, configured separately from the voices.
 
 ### Hear the effects in the demo
 
@@ -661,3 +662,61 @@ Both sends follow hit velocity, pan, and the voice’s stop/choke gain. Choking 
 Wet returns add to the dry mix before master volume. The output bus has no limiter, so reduce master volume or return levels if a dense groove becomes too loud. Sound presets keep zero sends until you edit them or click Try space.
 
 Effects tests cover routing, shared buses, dry-buffer cache reuse, validation, deterministic stereo impulses, smoothed updates, bypass, choking/cancellation, and resource cleanup. Browser playback and subjective listening remain unverified in this environment.
+
+
+## Indian Percussion (v1.2.0)
+
+Choose **Indian Percussion** in the demo, then press **Indian groove → Play groove**. The groove button sets 96 BPM and enables Use intensity so you hear accents and lighter strokes. It selects all eight sounds in a contemporary 16-step audition pattern, not a traditional tala/theka transcription. Choosing a kit from the dropdown preserves the current pattern, tempo, and intensity preference.
+
+| Named preset | Demo pad / API slot | Character |
+|---|---|---|
+| `bayanBass` | Bayan bass / `kick` | Low, rounded resonance |
+| `tablaOpen` | Tabla open / `snare` | Tuned dayan-inspired ring with near-harmonic partials |
+| `tablaMuted` | Tabla muted / `clap` | Damped companion stroke with a short impact |
+| `dholakTreble` | Dholak treble / `closedHat` | Higher skin tone with a brief noisy attack |
+| `manjira` | Manjira / `openHat` | Bright, inharmonic cymbal ring |
+| `bayanBend` | Bayan bend / `tom` | Bass tone that bends up and returns |
+| `dholakBass` | Dholak bass / `rim` | Low skin tone with a short pitch drop |
+| `ghatam` | Ghatam / `cowbell` | Short clay-pot-inspired knock and ring |
+
+These are synthesized interpretations made from resonant tones, noise, and transients. They are not sampled instruments or exact physical models. The pad labels reflect the instruments; the eight existing API slots remain stable for sequencers. No knowledge of the slot mapping is required when using the named preset API:
+
+```js
+import { DrumSynth, render } from './src/drum-synth.js';
+import { INDIAN_PERCUSSION, KIT_INDIAN, INDIAN_GROOVE } from './src/kits.js';
+// With an installed package, the presets are also exported from 'drum-synth-js/kits'.
+const drums = new DrumSynth();
+const sound = INDIAN_PERCUSSION.bayanBend;
+// In a click handler:
+await drums.resume();
+drums.trigger(sound.voice, {params:sound.params, velocity:.85});
+// Offline rendering works without Web Audio:
+const audio = render(sound.voice, {...sound.params, pitchBendSemitones:5});
+// Optional: configure every slot for an existing sequencer.
+for (const [voice, params] of Object.entries(KIT_INDIAN)) drums.configure(voice, params);
+// INDIAN_GROOVE[voice] is a frozen 16-step array of velocity values.
+```
+
+`KITS.indian` contains the same kit. `INDIAN_LABELS` maps slots to display names. Presets and groove data are frozen; copy values before editing. `npm run samples` writes eight named WAVs to `samples/indian/`. Save preset includes the instrument name, slot, parameters, and shared effects.
+
+### New sound controls
+
+| Parameter | Range / default | What it changes |
+|---|---|---|
+| `bodyModel` | `classic` (default), `modal` | Classic uses the original drum algorithm. Modal uses a sine fundamental plus up to five independent ringing tones in any slot. |
+| `strikePosition` | 0–1 / 0.5 | Modal only: centre (0) favours the fundamental; edge (1) increases upper tones relative to it. Change active resonance levels to shape the result. |
+| `damping` | 0–1 / 0 | Modal only: shortens the body and higher resonances, turning an open stroke into a muted one. |
+| `pitchBendSemitones` | −24–24 / 0 | Additional pitch gesture; positive bends up, negative bends down. Zero bypasses the gesture. Works in both models. |
+| `pitchBendTime` | 0.005–0.5 seconds / 0.1 | Time from the hit to the maximum bend. |
+| `pitchBendRelease` | 0.01–2 seconds / 0.25 | Time from maximum bend back to the underlying pitch. |
+| `resonance4Ratio`, `resonance5Ratio` | 0.5–8 / 4.2, 5.4 | Two extra partial frequencies relative to body pitch. |
+| `resonance4Level`, `resonance5Level` | 0–1 / 0 | Extra partial levels. Zero disables them. |
+| `resonance4Decay`, `resonance5Decay` | 0.01–3 seconds / 0.2 | Extra partial ringing times before modal damping. |
+
+Try **Bayan bend** with bend amount **0 versus +7 semitones**. Compare **Tabla open** and **Tabla muted**, or raise Damping on Tabla open. Move Strike position from centre to edge to change its partial balance. These controls work at full intensity; the separate velocity response settings are heard on softer hits.
+
+Modal damping divides each decay by `1 + 12 * damping * sqrt(partialRatio)` (the fundamental uses ratio 1). Strike position scales the fundamental by `1 - 0.55 * position` and the extra partials by `0.25 + 0.75 * position`. These are perceptual approximations, not simulations of a measured membrane. The pitch bend uses smooth half-cosine rise/return segments and multiplies the existing pitch sweep. It does not extend the note: raise Body decay or Ring decay if the gesture outlasts the sound. The existing sample-rate pitch cap still applies.
+
+Modal mode replaces the classic oscillator, clap bursts, and hat metal bank. FM, waveform, Body tone, clap structure, and metal-source settings are inactive in that mode, so the demo hides them. Body, noise, transient, velocity, sends, pitch, and resonance controls remain available. Modal hits do not participate in hi-hat choking, even when using the `closedHat` or `openHat` slots. Classic hats keep their normal choking behavior.
+
+All older presets default to the classic model, zero pitch bend, and zero levels in resonance slots 4–5. Their rendered WAVs remain byte-identical to v1.1.0. The new synthesis controls and named kit API include TypeScript declarations and tests. Browser playback and subjective listening remain unverified in this environment.

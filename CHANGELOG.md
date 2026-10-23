@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0 — 2026-10-23
+
+- Added Indian Percussion with eight named synthesized sounds: bayan bass/bend, tabla open/muted, dholak bass/treble, ghatam, and manjira, plus eight WAV examples.
+- Added a modal body model, strike position, damping, a smooth rise/return pitch bend, and two extra adjustable resonances (73 total per-voice parameters).
+- Added named preset exports, labels, a 16-step audition groove, and the `drum-synth-js/kits` package export.
+- Updated demo pads, conditional control explanations, preset exports, and an Indian groove button with accents at 96 BPM.
+- Excluded modal percussion from hi-hat choking; preserved existing classic preset audio.
+- Added deterministic rendering, articulation, pitch measurement, damping, validation, and choke regression tests.
+
 ## 1.1.0 — 2026-10-02
 
 - Added independent delay and reverb sends to every voice, with shared filtered feedback delay and generated stereo convolution reverb.

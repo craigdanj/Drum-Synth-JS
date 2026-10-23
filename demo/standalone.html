@@ -15,18 +15,21 @@
 .control select{width:100%;padding:8px;border:1px solid var(--line);border-radius:5px;background:#151813;color:var(--text);font:inherit;font-size:12px}
 
 .effects-panel{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}.effects-panel .hint{margin:14px 0}.effects-panel .actions{margin:14px 0}.effect-toggle{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--muted)}.effect-toggle input{accent-color:var(--accent)}.effects-panel .section-top{flex-wrap:wrap}
+
+.choke-controls[hidden]{display:none}.row{grid-template-columns:90px repeat(16,minmax(20px,1fr));min-width:500px}.pad-name{line-height:1.3}.pad{min-height:108px;height:auto;gap:12px}
 </style></head>
 <body><main>
 <header><a class="brand" href="./index.html"><span class="mark">▥</span> DRUM SYNTH <small>JS</small></a><span class="badge">SYNTHESIZED. NOT SAMPLED.</span></header>
 <section class="intro"><div class="eyebrow">YOUR BROWSER IS A DRUM MACHINE</div><h1>Shape your next <em>beat.</em></h1><p>Eight voices. Endless character. Sculpt a sound, build a groove, take it with you.</p></section>
 <div class="toolbar"><button id="enable" class="primary">Enable audio</button><span id="status" role="status">Audio is off</span><label class="master">Master <input id="master" type="range" min="0" max="1" step=".01" value=".7"></label></div>
-<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="deep-dub" selected>Deep / Dub</option><option value="retro-arcade">Retro Arcade</option><option value="soft-dusty">Soft / Dusty</option><option value="electro-fm">Electro / FM</option><option value="minimal">Minimal</option><option value="industrial">Industrial</option><option value="original-refined">Drum Synth</option><option value="808-refined">808-inspired</option></select></div><p id="pack-description">Rounded low drums, dark hats, muted claps, and lingering percussion.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
+<section class="pack"><div><label for="kit">SOUND PACK</label><select id="kit"><option value="indian" selected>Indian Percussion</option><option value="deep-dub">Deep / Dub</option><option value="retro-arcade">Retro Arcade</option><option value="soft-dusty">Soft / Dusty</option><option value="electro-fm">Electro / FM</option><option value="minimal">Minimal</option><option value="industrial">Industrial</option><option value="original-refined">Drum Synth</option><option value="808-refined">808-inspired</option></select></div><p id="pack-description">Tabla, bending bayan, dholak, ghatam, and ringing manjira. Synthesized interpretations with open and muted strokes.</p><p class="hint">Press Play groove to listen, or tap a pad to shape its sound. Your edits are kept separately for each kit.</p></section>
 <div class="choke-controls"><label><input id="choke-enabled" type="checkbox" checked> Hi-hat choking</label><label for="choke-fade">Fade <output id="choke-value">5 ms</output></label><input id="choke-fade" type="range" min="1" max="100" step="1" value="5"><span>Closed hats cut off ringing open hats.</span></div>
 <section aria-label="Drum pads" id="pads" class="pads"></section>
-<div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Kick</h2></div><button id="reset">Reset voice</button></div><div class="hit-strength"><label for="hit-strength">Hit strength <output id="hit-strength-value">100%</output></label><input id="hit-strength" type="range" min="1" max="100" step="1" value="100"><small>Applies to pads, Play sound, waveform & WAV export.</small></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export dry WAV</button><button id="preset">↓ Save preset</button></div></section>
-<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><label><input id="use-intensity" type="checkbox"> Use intensity</label><button id="clear">Clear</button><button id="restore">Starter beat</button><button id="all-voices-groove">All 8 groove</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">All 8 groove loads a sample pattern using every instrument. Enable Use intensity to hear its accents and ghost hits.<br><span id="intensity-hint">Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.</span> Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p><div class="effects-panel"><div class="section-top"><div><div class="eyebrow">SHARED SEND EFFECTS</div><h2>Delay &amp; reverb</h2></div><label class="effect-toggle"><input id="effects-enabled" type="checkbox" checked> Enable effects</label></div><p class="hint" id="effects-help">Choose a pad, then raise its Delay send or Reverb send. These settings shape the shared effects for every kit. Send 0% is dry; return levels control the wet sound. Changes to sends affect new hits.</p><div class="actions"><button id="try-space">Try space</button><button id="dry-kit">Dry kit</button><button id="clear-tails">Clear tails</button></div><p class="hint">Try space adds sends to this kit and sets an eighth-note delay at the current BPM. Stop groove clears tails. Waveform and WAV export are dry; Save preset includes sends and shared effect settings.</p><div class="sliders" id="effect-controls"></div></div></section></div>
-<footer><span>DRUM SYNTH JS <b>v1.1.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
+<div class="studio"><section class="panel controls"><div class="section-top"><div><div class="eyebrow">VOICE DESIGNER</div><h2 id="voice-title">Bayan bass</h2></div><button id="reset">Reset voice</button></div><div class="hit-strength"><label for="hit-strength">Hit strength <output id="hit-strength-value">100%</output></label><input id="hit-strength" type="range" min="1" max="100" step="1" value="100"><small>Applies to pads, Play sound, waveform & WAV export.</small></div><canvas id="wave" aria-label="Rendered waveform" role="img"></canvas><div id="controls" class="sliders"></div><div class="actions"><button id="audition" class="primary">Play sound</button><button id="export">↓ Export dry WAV</button><button id="preset">↓ Save preset</button></div></section>
+<section class="panel sequence"><div class="section-top"><div><div class="eyebrow">16-STEP SEQUENCER</div><h2>Find the pocket.</h2></div><span class="badge">4 / 4</span></div><div class="transport"><button id="play" class="primary" aria-pressed="false">Play groove</button><label>BPM <input id="bpm" type="number" min="40" max="240" value="96"></label><label><input id="use-intensity" type="checkbox"> Use intensity</label><button id="clear">Clear</button><button id="restore">Starter beat</button><button id="all-voices-groove">All 8 groove</button><button id="indian-groove">Indian groove</button></div><div class="grid-scroll"><div id="grid"></div></div><p class="hint">Indian groove selects the Indian kit and loads an expressive 96 BPM pattern using all eight sounds. This is a contemporary audition groove, not a traditional tala transcription. All 8 groove reloads a pattern for the current kit. Enable Use intensity to hear its accents and ghost hits.<br><span id="intensity-hint">Click a step to toggle off / 100% intensity. Enable Use intensity for soft, normal, and accented hits.</span> Select a pad to edit its sound.<br>Keyboard: A S D F G H J K to play · Space to start / stop.</p><div class="effects-panel"><div class="section-top"><div><div class="eyebrow">SHARED SEND EFFECTS</div><h2>Delay &amp; reverb</h2></div><label class="effect-toggle"><input id="effects-enabled" type="checkbox" checked> Enable effects</label></div><p class="hint" id="effects-help">Choose a pad, then raise its Delay send or Reverb send. These settings shape the shared effects for every kit. Send 0% is dry; return levels control the wet sound. Changes to sends affect new hits.</p><div class="actions"><button id="try-space">Try space</button><button id="dry-kit">Dry kit</button><button id="clear-tails">Clear tails</button></div><p class="hint">Try space adds sends to this kit and sets an eighth-note delay at the current BPM. Stop groove clears tails. Waveform and WAV export are dry; Save preset includes sends and shared effect settings.</p><div class="sliders" id="effect-controls"></div></div></section></div>
+<footer><span>DRUM SYNTH JS <b>v1.2.0</b></span><span>Made of oscillations, noise & a little attitude.</span></footer>
 </main><script type="module">/** Drum Synth JS — deterministic percussion synthesis. MIT License. */
+export const BODY_MODELS = Object.freeze(['classic', 'modal']);
 export const TRANSIENT_TYPES = Object.freeze(['noise', 'tonal', 'blend']);
 export const RESONANCE_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
 export const FM_VOICES = Object.freeze(['kick', 'snare', 'tom', 'rim', 'cowbell']);
@@ -36,6 +39,8 @@ export const PARAMS = Object.freeze({
   frequency: [25, 4000, 1], decay: [0.03, 3, 0.01], attack: [0.0005, 0.1, 0.0005],
   pitchDrop: [0, 8, 0.05], pitchDecay: [0.005, 0.5, 0.005], tone: [0, 1, 0.01],
   pitchSweepSemitones: [-48, 48, .1], pitchCurve: [.25, 4, .05],
+  pitchBendSemitones: [-24, 24, .1], pitchBendTime: [.005, .5, .005], pitchBendRelease: [.01, 2, .01],
+  strikePosition: [0, 1, .01], damping: [0, 1, .01],
   noiseHighpass: [0, 18000, 10], noiseLowpass: [20, 20000, 10], noiseResonance: [0, 1, .01],
   noise: [0, 1, 0.01], snap: [0, 1, 0.01], drive: [0, 10, 0.1],
   bodyLevel: [0, 1, 0.01], bodyDecay: [0.03, 3, 0.01],
@@ -50,7 +55,7 @@ export const PARAMS = Object.freeze({
   noiseFilterEnvAmount: [-4, 4, .05], noiseFilterEnvDecay: [.005, 3, .005],
   metalFilterEnvAmount: [-4, 4, .05], metalFilterEnvDecay: [.005, 3, .005],
   velocityToBrightness: [0, 1, .01], velocityToTransient: [0, 1, .01],
-  ...Object.fromEntries([1, 2, 3].flatMap(n => [
+  ...Object.fromEntries([1, 2, 3, 4, 5].flatMap(n => [
     [`resonance${n}Ratio`, [.5, 8, .01]], [`resonance${n}Level`, [0, 1, .01]], [`resonance${n}Decay`, [.01, 3, .01]]
   ])),
   fmDepth: [0, 4, .01], fmRatio: [.25, 8, .01], fmDecay: [.005, 3, .005],
@@ -90,6 +95,10 @@ function mergeParams(base, overrides) {
   };
   layer('pitchSweepSemitones', 'pitchDrop', 12 * Math.log2(1 + p.pitchDrop));
   layer('noiseLowpass', 'tone', 500 + p.tone * 14500);
+  if (p.bodyModel === undefined) p.bodyModel = 'classic';
+  for (const [key, value] of Object.entries({pitchBendSemitones:0, pitchBendTime:.1, pitchBendRelease:.25, strikePosition:.5, damping:0})) {
+    if (p[key] === undefined) p[key] = value;
+  }
   p.pitchCurve ??= 1; p.noiseResonance ??= 0;
   layer('bodyLevel', 'noise', 1 - p.noise);
   layer('noiseLevel', 'noise', p.noise);
@@ -116,7 +125,7 @@ function mergeParams(base, overrides) {
   if (p.transientType === undefined) p.transientType = 'noise'; p.transientTone ??= 1; p.transientFrequency ??= 1600; p.transientMix ??= .5;
   layer('transientLevel', 'snap', p.snap);
   if (p.transientDecay === undefined) p.transientDecay = 6.907755 * .003;
-  for (const [index, ratio] of [1.5, 2.37, 3.1].entries()) {
+  for (const [index, ratio] of [1.5, 2.37, 3.1, 4.2, 5.4].entries()) {
     const n=index+1;
     if (p[`resonance${n}Ratio`] === undefined) p[`resonance${n}Ratio`] = ratio;
     if (p[`resonance${n}Level`] === undefined) p[`resonance${n}Level`] = 0;
@@ -126,9 +135,10 @@ function mergeParams(base, overrides) {
 }
 export function resolveParams(voice, overrides = {}) {
   if (!Object.hasOwn(PRESETS, voice)) throw new TypeError(`Unknown voice: ${voice}`);
-  object(overrides, 'parameters'); keys(overrides, [...Object.keys(PARAMS), 'transientType', 'bodyWaveform']);
+  object(overrides, 'parameters'); keys(overrides, [...Object.keys(PARAMS), 'transientType', 'bodyWaveform', 'bodyModel']);
   if (Object.hasOwn(overrides, 'transientType') && !TRANSIENT_TYPES.includes(overrides.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
   if (Object.hasOwn(overrides, 'bodyWaveform') && !BODY_WAVEFORMS.includes(overrides.bodyWaveform)) throw new TypeError('bodyWaveform must be sine, triangle, square, or saw');
+  if (Object.hasOwn(overrides, 'bodyModel') && !BODY_MODELS.includes(overrides.bodyModel)) throw new TypeError('bodyModel must be classic or modal');
   const params = mergeParams(PRESETS[voice], overrides);
   for (const [key, [min, max]] of Object.entries(PARAMS)) number(params[key], min, max, key);
   if (!TRANSIENT_TYPES.includes(params.transientType)) throw new TypeError('transientType must be noise, tonal, or blend');
@@ -155,15 +165,19 @@ export function render(voice, overrides = {}, options = {}) {
   if (!Number.isInteger(sampleRate)) throw new RangeError('sampleRate must be an integer');
   const velocity = number(options.velocity ?? 1, 0, 1, 'velocity');
   p = velocityParams(p, velocity);
-  const isHat = voice === 'closedHat' || voice === 'openHat';
+  const modal = p.bodyModel === 'modal';
+  const isHat = !modal && (voice === 'closedHat' || voice === 'openHat');
   // Centered balance preserves the independent layer levels at 0.5.
   const metalGain = isHat ? 2 * p.metalMix : 1;
   const noiseGain = isHat ? 2 * (1 - p.metalMix) : 1;
-  const isClap = voice === 'clap';
-  const resonances = RESONANCE_VOICES.includes(voice) ? [1,2,3].map(n => ({
-    ratio:p[`resonance${n}Ratio`], level:p[`resonance${n}Level`], decay:p[`resonance${n}Decay`]
+  const isClap = !modal && voice === 'clap';
+  // A perceptual damping/strike approximation, not a physical membrane solver.
+  const ringDecay = (decay, ratio=1) => modal ? decay / (1 + 12 * p.damping * Math.sqrt(ratio)) : decay;
+  const bodyDecay = ringDecay(p.bodyDecay);
+  const resonances = (modal || RESONANCE_VOICES.includes(voice)) ? [1,2,3,4,5].map(n => ({
+    ratio:p[`resonance${n}Ratio`], level:p[`resonance${n}Level`], decay:ringDecay(p[`resonance${n}Decay`], p[`resonance${n}Ratio`])
   })).filter(r => r.level > 0) : [];
-  const bodyEnd = p.attack + Math.max(p.bodyDecay, ...resonances.map(r => r.decay));
+  const bodyEnd = p.attack + Math.max(bodyDecay, ...resonances.map(r => r.decay));
   // Separate random stream: changing burst structure never shifts the noise sequence.
   let burstSeed = ((p.seed ^ 0x9e3779b9) >>> 0) || 1;
   const randomBurst = () => {
@@ -208,10 +222,10 @@ export function render(voice, overrides = {}, options = {}) {
   const transientHz = Math.min(sampleRate * .4, p.transientFrequency);
   let transientLow = 0;
   const sweepRatio = 2 ** (p.pitchSweepSemitones / 12) - 1;
-  const fmEnabled = FM_VOICES.includes(voice) && p.fmDepth > 0;
+  const fmEnabled = !modal && FM_VOICES.includes(voice) && p.fmDepth > 0;
   let fmPhase = 0, modulatorPhase = 0;
   const sine = (mult) => Math.sin((fmEnabled ? fmPhase : phase) * mult);
-  const shapeEnabled = BODY_WAVEFORM_VOICES.includes(voice) && p.bodyLevel > 0
+  const shapeEnabled = !modal && BODY_WAVEFORM_VOICES.includes(voice) && p.bodyLevel > 0
     && p.bodyWaveform !== 'sine' && p.bodyWaveformMix > 0;
   // Finite Fourier series, with no DC term. Square duty cycle is centered on the
   // sine peak, so a 50% square and the sine blend share fundamental phase.
@@ -269,7 +283,13 @@ export function render(voice, overrides = {}, options = {}) {
     const filtered = low * (1 - p.noiseResonance) + resonant * p.noiseResonance;
     bodyLow += hpAlpha * (filtered - bodyLow);
     const brightNoise = filtered - bodyLow;
-    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))));
+    // Smooth rise to the pressure bend, then return to the unbent pitch.
+    let bend = 0;
+    if (p.pitchBendSemitones !== 0 && t < p.pitchBendTime + p.pitchBendRelease) {
+      bend = t < p.pitchBendTime ? .5 - .5 * Math.cos(Math.PI * t / p.pitchBendTime)
+        : .5 + .5 * Math.cos(Math.PI * (t - p.pitchBendTime) / p.pitchBendRelease);
+    }
+    const f = Math.min(sampleRate * 0.18, p.frequency * (1 + sweepRatio * Math.exp(-((t / p.pitchDecay) ** p.pitchCurve))) * 2 ** (bend * p.pitchBendSemitones / 12));
     phase += TAU * f / sampleRate;
     bodyBandwidth = f; fmMargin = 0;
     if (fmEnabled) {
@@ -284,7 +304,8 @@ export function render(voice, overrides = {}, options = {}) {
       fmMargin = Math.min(1, index) * modulatorHz * 2;
     }
     let body, noise = brightNoise;
-    switch (voice) {
+    if (modal) body = sine(1) * (1 - .55 * p.strikePosition);
+    else switch (voice) {
       case 'kick': body = oscillator(1) + p.tone * 0.18 * oscillator(2); break;
       case 'tom': body = 0.8 * oscillator(1) + 0.2 * oscillator(1.5); break;
       case 'snare': body = 0.65 * oscillator(1) + 0.35 * oscillator(1.47); break;
@@ -312,10 +333,10 @@ export function render(voice, overrides = {}, options = {}) {
     const impact = p.transientType === 'noise' ? clickNoise : p.transientType === 'tonal' ? knock
       : clickNoise * (1 - p.transientMix) + knock * p.transientMix;
     const transient = impact * p.transientLevel * Math.exp(-6.907755 * t / p.transientDecay) * Math.min(1, t / 0.0005);
-    let bodySignal = body * env(t, p.attack, p.bodyDecay);
+    let bodySignal = body * env(t, p.attack, bodyDecay);
     for (const resonance of resonances) {
       const taper = Math.max(0, Math.min(1, (sampleRate * .45 - f * resonance.ratio) / (sampleRate * .05)));
-      bodySignal += Math.sin(phase * resonance.ratio) * resonance.level * taper * env(t, p.attack, resonance.decay);
+      bodySignal += Math.sin(phase * resonance.ratio) * resonance.level * (modal ? .25 + .75 * p.strikePosition : 1) * taper * env(t, p.attack, resonance.decay);
     }
     let value = metalGain * p.bodyLevel * bodySignal + noiseGain * p.noiseLevel * noise * (isClap ? clapNoiseEnv(t) : env(t, p.noiseAttack, p.noiseDecay)) + transient;
     // DC blocker, saturation, and a final fade prevent offset and truncation clicks.
@@ -478,9 +499,9 @@ export class DrumSynth {
   }
   _refreshChokes() {
     const now = this.context.currentTime;
-    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat');
+    const closed = [...this._playbacks.values()].filter(r => r.voice === 'closedHat' && !r.modal);
     for (const r of this._playbacks.values()) {
-      if (r.voice !== 'openHat' || r.chokeAt <= now) continue; // A started closure is irreversible.
+      if (r.voice !== 'openHat' || r.modal || r.chokeAt <= now) continue; // A started closure is irreversible.
       let at = Infinity;
       if (this.chokeEnabled) for (const c of closed) {
         if (c.when >= now && c.when >= r.when && c.when < r.end) at = Math.min(at, c.when);
@@ -537,7 +558,7 @@ export class DrumSynth {
       panner.connect(send); send.connect(input); sends.push(send);
     }
     let stopped = false;
-    const record = {voice, when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
+    const record = {voice, modal:p.bodyModel === 'modal', when, velocity, source, gain, sends, end:when + buffer.duration, chokeAt:Infinity, chokeEnd:Infinity};
     const cleanup = () => {
       stopped = true; source.disconnect(); gain.disconnect(); panner.disconnect();
       for (const send of sends) send.disconnect();
@@ -678,7 +699,103 @@ export const KIT_SOFT_DUSTY = palette({
   cowbell: {frequency:465, bodyLevel:.85, bodyDecay:.21, noiseLevel:.01, noiseAttack:.003, noiseDecay:.04, noiseHighpass:1400, noiseLowpass:3100, transientType:'tonal', transientFrequency:950, transientLevel:.028, resonance1Ratio:2.04, resonance1Level:.05, resonance1Decay:.1, volume:.61}
 });
 
-export const KITS = Object.freeze({ original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
+// Synthesized interpretations; each named instrument also exposes its compatible slot.
+const indianBase = {
+  bodyModel:'modal', bodyLevel:.75, bodyDecay:.7, attack:.001,
+  strikePosition:.55, damping:.02, pitchSweepSemitones:0, pitchDecay:.012,
+  pitchBendSemitones:0, pitchBendTime:.12, pitchBendRelease:.28,
+  noiseLevel:.018, noiseAttack:.0005, noiseDecay:.035,
+  noiseHighpass:650, noiseLowpass:4200, noiseResonance:0,
+  transientType:'blend', transientMix:.7, transientFrequency:1500,
+  transientTone:.55, transientLevel:.12, transientDecay:.005,
+  velocityToBrightness:.35, velocityToTransient:.65,
+  tone:0, drive:0, volume:.72, fmDepth:0, delaySend:0, reverbSend:0
+};
+const indianSounds = [
+  ['bayanBass','Bayan bass','kick', {
+    frequency:92, bodyDecay:1.05, strikePosition:.2, damping:.035,
+    pitchSweepSemitones:1.3, transientFrequency:380, transientLevel:.08,
+    resonance1Ratio:2, resonance1Level:.24, resonance1Decay:.55,
+    resonance2Ratio:3, resonance2Level:.12, resonance2Decay:.32,
+    resonance3Ratio:4.05, resonance3Level:.045, resonance3Decay:.13, volume:0.7
+  }],
+  ['tablaOpen','Tabla open','snare', {
+    frequency:262, bodyDecay:1.1, strikePosition:.7, damping:.015,
+    bodyLevel:.63, transientFrequency:1950, transientLevel:.16,
+    resonance1Ratio:2, resonance1Level:.62, resonance1Decay:.9,
+    resonance2Ratio:3, resonance2Level:.38, resonance2Decay:.58,
+    resonance3Ratio:4.02, resonance3Level:.2, resonance3Decay:.32,
+    resonance4Ratio:5.05, resonance4Level:.11, resonance4Decay:.16,
+    resonance5Ratio:6.12, resonance5Level:.055, resonance5Decay:.08, volume:0.62
+  }],
+  ['tablaMuted','Tabla muted','clap', {
+    frequency:262, bodyDecay:1.1, strikePosition:.85, damping:.85,
+    bodyLevel:.56, noiseLevel:.11, noiseDecay:.04,
+    transientFrequency:2200, transientMix:.4, transientLevel:.24, transientDecay:.004,
+    resonance1Ratio:2, resonance1Level:.62, resonance1Decay:.9,
+    resonance2Ratio:3, resonance2Level:.38, resonance2Decay:.58,
+    resonance3Ratio:4.02, resonance3Level:.2, resonance3Decay:.32,
+    resonance4Ratio:5.05, resonance4Level:.11, resonance4Decay:.16,
+    resonance5Ratio:6.12, resonance5Level:.055, resonance5Decay:.08, volume:0.65
+  }],
+  ['dholakTreble','Dholak treble','closedHat', {
+    frequency:310, bodyDecay:.5, strikePosition:.7, damping:.12,
+    pitchSweepSemitones:1.8, bodyLevel:.72, noiseLevel:.085, noiseDecay:.055,
+    transientFrequency:1750, transientLevel:.15, transientMix:.5,
+    resonance1Ratio:1.59, resonance1Level:.4, resonance1Decay:.3,
+    resonance2Ratio:2.14, resonance2Level:.22, resonance2Decay:.2,
+    resonance3Ratio:2.65, resonance3Level:.1, resonance3Decay:.09,
+    resonance4Ratio:3.6, resonance4Level:.05, resonance4Decay:.05, volume:0.62
+  }],
+  ['manjira','Manjira','openHat', {
+    frequency:1450, bodyDecay:1.65, strikePosition:.8, damping:.01,
+    bodyLevel:.42, noiseLevel:.035, noiseDecay:.065, noiseHighpass:3500, noiseLowpass:11000,
+    transientFrequency:5200, transientMix:.3, transientTone:.9, transientLevel:.11,
+    resonance1Ratio:1.47, resonance1Level:.65, resonance1Decay:1.35,
+    resonance2Ratio:2.09, resonance2Level:.38, resonance2Decay:1.05,
+    resonance3Ratio:2.56, resonance3Level:.3, resonance3Decay:.7,
+    resonance4Ratio:3.71, resonance4Level:.18, resonance4Decay:.4,
+    resonance5Ratio:5.18, resonance5Level:.1, resonance5Decay:.21, volume:0.47
+  }],
+  ['bayanBend','Bayan bend','tom', {
+    frequency:92, bodyDecay:1.55, strikePosition:.25, damping:.02,
+    pitchBendSemitones:7, pitchBendTime:.14, pitchBendRelease:.34,
+    transientFrequency:380, transientLevel:.08,
+    resonance1Ratio:2, resonance1Level:.26, resonance1Decay:.75,
+    resonance2Ratio:3, resonance2Level:.13, resonance2Decay:.45,
+    resonance3Ratio:4.05, resonance3Level:.045, resonance3Decay:.16, volume:0.7
+  }],
+  ['dholakBass','Dholak bass','rim', {
+    frequency:135, bodyDecay:.7, strikePosition:.3, damping:.06,
+    pitchSweepSemitones:3.5, pitchDecay:.023, noiseLevel:.045,
+    transientFrequency:620, transientLevel:.14, transientMix:.6,
+    resonance1Ratio:1.59, resonance1Level:.35, resonance1Decay:.48,
+    resonance2Ratio:2.14, resonance2Level:.2, resonance2Decay:.25,
+    resonance3Ratio:2.92, resonance3Level:.09, resonance3Decay:.11, volume:0.68
+  }],
+  ['ghatam','Ghatam','cowbell', {
+    frequency:420, bodyDecay:.22, strikePosition:.6, damping:.025,
+    bodyLevel:.7, noiseLevel:.025, transientFrequency:2600, transientLevel:.21, transientMix:.85,
+    resonance1Ratio:1.46, resonance1Level:.48, resonance1Decay:.14,
+    resonance2Ratio:2.32, resonance2Level:.33, resonance2Decay:.09,
+    resonance3Ratio:3.17, resonance3Level:.18, resonance3Decay:.055,
+    resonance4Ratio:4.73, resonance4Level:.09, resonance4Decay:.035, volume:0.59
+  }]
+];
+export const INDIAN_PERCUSSION = Object.freeze(Object.fromEntries(indianSounds.map(([id,name,voice,patch]) =>
+  [id, Object.freeze({name, voice, params:Object.freeze(resolveParams(voice, {...indianBase,...patch}))})])));
+export const KIT_INDIAN = Object.freeze(Object.fromEntries(Object.values(INDIAN_PERCUSSION).map(({voice,params}) => [voice,params])));
+export const INDIAN_LABELS = Object.freeze(Object.fromEntries(Object.values(INDIAN_PERCUSSION).map(({voice,name}) => [voice,name])));
+// A contemporary 16-step audition pattern, not a traditional tala/theka transcription.
+const indianHits = {
+  kick:{0:1,8:.65}, snare:{0:.65,3:.65,6:1,10:.65,14:1},
+  clap:{2:.35,7:.65,11:.35,15:.65}, closedHat:{2:.65,6:.35,10:.65,14:.35},
+  openHat:{0:.35,8:.35}, tom:{12:.65}, rim:{4:.65,12:.35}, cowbell:{5:.35,9:.65,13:.35}
+};
+export const INDIAN_GROOVE = Object.freeze(Object.fromEntries(Object.entries(indianHits).map(([voice,hits]) =>
+  [voice,Object.freeze(Array.from({length:16},(_,step) => hits[step] ?? 0))])));
+
+export const KITS = Object.freeze({ indian:KIT_INDIAN, original: PRESETS, '808': KIT_808, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY });
 export const REFINEMENT_NOTES = Object.freeze({
   kick:'Longer low body, with a shorter, softer click. The original kit also sheds its noise earlier.',
   snare:'Shorter tonal body with a longer independent rattle and a less dominant initial click.',
@@ -693,10 +810,11 @@ export const REFINEMENT_NOTES = Object.freeze({
 
 
 const $ = id => document.getElementById(id);
-const voices = Object.keys(PRESETS), names = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
+const voices = Object.keys(PRESETS), standardNames = ['Kick','Snare','Clap','Closed hat','Open hat','Tom','Rim','Cowbell'];
 const shortcuts = 'asdfghjk';
-const demoKits = {'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
+const demoKits = {indian: KIT_INDIAN, 'original-refined': KIT_ORIGINAL_REFINED, '808-refined': KIT_808_REFINED, 'electro-fm': KIT_ELECTRO_FM, minimal: KIT_MINIMAL, industrial: KIT_INDUSTRIAL, 'deep-dub': KIT_DEEP_DUB, 'retro-arcade': KIT_RETRO_ARCADE, 'soft-dusty': KIT_SOFT_DUSTY};
 const kitInfo = {
+  indian:['Indian Percussion','Tabla, bending bayan, dholak, ghatam, and ringing manjira. Synthesized interpretations with open and muted strokes.'],
   'original-refined':['Drum Synth','Shaped pitch sweeps, independent layers, and focused noise filters.'],
   '808-refined':['808-inspired','Deep bass drums, crisp claps, and tightly tuned metallic hats.'],
   'electro-fm':['Electro / FM','Triangle-weighted kicks, pulse snares, and FM percussion with sharper waveforms.'],
@@ -706,12 +824,14 @@ const kitInfo = {
   'soft-dusty':['Soft / Dusty','Gentle attacks, dark rattles, damped hats, and soft tonal knocks.'],
   industrial:['Industrial','Saw-driven kicks and snares, pulse-metal clangs, and detuned hats.']
 };
-let activeKit = 'deep-dub';
+let activeKit = 'indian';
+let names = voices.map(voice => INDIAN_LABELS[voice]);
 const edits = Object.fromEntries(Object.entries(demoKits).map(([id, presets]) => [id, structuredClone(presets)]));
 let kit = edits[activeKit];
 let effects = {...DEFAULT_EFFECTS};
 let selected = 'kick', synth, running = false, timer, step = 0, nextTime = 0, queue = [], bpm = 96;
-let pattern = allVoicesGroove();
+let pattern = indianGroove();
+function indianGroove() { return voices.map(voice => [...INDIAN_GROOVE[voice]]); }
 const hitStrength = () => Number($('hit-strength').value) / 100;
 function starter() { return voices.map((v,i) => Array.from({length:16},(_,s) => {
   const on=(i===0&&[0,6,8,14].includes(s))||(i===1&&[4,12].includes(s))||(i===3&&s%2===0)||(i===4&&s===15);
@@ -745,16 +865,19 @@ async function hit(voice) {
 function flash(voice) { const pad = document.querySelector(`[data-voice="${voice}"]`); pad.classList.add('hit'); setTimeout(()=>pad.classList.remove('hit'),100); }
 voices.forEach((voice,i) => {
   const pad = document.createElement('button'); pad.className='pad'; pad.dataset.voice=voice;
-  pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span>${names[i]}</span>`;
+  pad.innerHTML=`<span class="pad-top"><span class="number">0${i+1}</span><span>${shortcuts[i].toUpperCase()}</span></span><span class="pad-name">${names[i]}</span>`;
   pad.onclick=guarded(async()=>{ select(voice); await hit(voice); }); $('pads').append(pad);
 });
 const groups = [
   ['Effect sends', {delaySend:'Delay send (amount sent to echo)',reverbSend:'Reverb send (amount sent to room)'}],
+  ['Sound model', {bodyModel:'Body model'}],
+  ['Hand percussion', {strikePosition:'Strike position (centre → edge)',damping:'Damping (open → muted)'}],
+  ['Pitch bend', {pitchBendSemitones:'Bend amount (down − / up +)',pitchBendTime:'Bend rise (time to reach peak)',pitchBendRelease:'Bend return (time back to tuning)'}],
   ['Tone & pitch', {frequency:'Frequency',pitchSweepSemitones:'Pitch sweep',pitchDecay:'Sweep time',pitchCurve:'Sweep curve',tone:'Body tone'}],
   ['Body oscillator', {bodyWaveform:'Waveform (raw tonal character)',bodyWaveformMix:'Shape blend (original → selected wave)',bodyPulseWidth:'Pulse width (square shape / hollow tone)'}],
   ['FM synthesis', {fmDepth:'FM depth (0 = off)',fmRatio:'FM ratio (× body frequency)',fmDecay:'FM decay (attack complexity)'}],
   ['Body', {bodyLevel:'Body level',attack:'Body attack',bodyDecay:'Body decay'}],
-  ...[1,2,3].map(n=>[`Body resonance ${n}`, {[`resonance${n}Ratio`]:'Pitch ratio (× body frequency)',[`resonance${n}Level`]:'Added resonance level', [`resonance${n}Decay`]:'Ring decay'}]),
+  ...[1,2,3,4,5].map(n=>[`Body resonance ${n}`, {[`resonance${n}Ratio`]:'Pitch ratio (× body frequency)',[`resonance${n}Level`]:'Added resonance level', [`resonance${n}Decay`]:'Ring decay'}]),
   ['Noise', {noiseLevel:'Noise level',noiseAttack:'Noise attack',noiseDecay:'Noise decay'}],
   ['Clap structure', {burstCount:'Burst count',burstSpacing:'Burst spacing',burstDecay:'Burst decay',tailLevel:'Tail level',tailDecay:'Tail decay',burstVariation:'Burst variation'}],
   ['Metallic source', {metalMix:'Metal / noise balance',metalDetune:'Detune',metalDamping:'Damping',metalHighpass:'Metal high-pass',metalLowpass:'Metal low-pass',metalFilterEnvAmount:'Metal sweep (+ bright / − dark start)',metalFilterEnvDecay:'Metal sweep decay'}],
@@ -763,25 +886,29 @@ const groups = [
   ['Velocity response', {velocityToBrightness:'Brightness response (darker on softer hits)',velocityToTransient:'Transient response (gentler click on softer hits)'}],
   ['Output', {drive:'Drive',volume:'Level'}]
 ];
-function format(key,value) { if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
+function format(key,value) { if(key==='pitchBendSemitones')return `${value>0?'+':''}${value.toFixed(1)} st`; if(key==='pitchBendTime'||key==='pitchBendRelease')return `${Math.round(value*1000)} ms`; if(key==='strikePosition'||key==='damping')return `${Math.round(value*100)}%`; if(key==='delaySend' || key==='reverbSend' || key==='bodyWaveformMix' || key==='bodyPulseWidth') return `${Math.round(value*100)}%`; if(key==='fmRatio') return `${value.toFixed(2)}×`;  if(/^resonance.*Ratio$/.test(key)) return `${value.toFixed(2)}×`; if(/^resonance.*Decay$/.test(key)) return `${Math.round(value*1000)} ms`; if(key.endsWith('FilterEnvAmount')) return `${value>0?'+':''}${value.toFixed(2)} oct`;  if(key==='metalDetune') return `${value} cents`; if(key==='metalMix') return `${Math.round(value*100)}% metal`; if(key==='burstCount') return String(value); return ['fmDecay','noiseFilterEnvDecay','metalFilterEnvDecay','burstSpacing','burstDecay','tailDecay','attack','bodyDecay','noiseAttack','noiseDecay','transientDecay','pitchDecay'].includes(key) ? `${Math.round(value*1000)} ms` : ['transientFrequency','frequency','noiseHighpass','noiseLowpass','metalHighpass','metalLowpass'].includes(key) ? `${Math.round(value)} Hz` : key==='pitchSweepSemitones' ? `${value.toFixed(1)} st` : value.toFixed(2); }
 function select(voice) {
   selected=voice; $('voice-title').textContent=names[voices.indexOf(voice)];
   document.querySelectorAll('.pad').forEach(p=>{p.classList.toggle('selected',p.dataset.voice===voice);p.setAttribute('aria-pressed',String(p.dataset.voice===voice));});
   $('controls').replaceChildren();
+  const modal=kit[voice].bodyModel==='modal';
+  document.querySelector('.choke-controls').hidden=voices.every(v=>kit[v].bodyModel==='modal');
   for(const [group, labels] of groups) {
-    if(group==='Body oscillator' && !BODY_WAVEFORM_VOICES.includes(voice)) continue;
-    if(group==='FM synthesis' && !FM_VOICES.includes(voice)) continue;
-    if(group.startsWith('Body resonance') && !RESONANCE_VOICES.includes(voice)) continue;
-    if(group==='Metallic source' && !voice.includes('Hat')) continue;
-    if(group==='Clap structure' && voice!=='clap') continue;
+    if(group==='Hand percussion' && !modal)continue;
+    if(group==='Body oscillator' && (modal || !BODY_WAVEFORM_VOICES.includes(voice))) continue;
+    if(group==='FM synthesis' && (modal || !FM_VOICES.includes(voice))) continue;
+    if(group.startsWith('Body resonance') && !modal && !RESONANCE_VOICES.includes(voice)) continue;
+    if(group==='Metallic source' && (modal || !voice.includes('Hat'))) continue;
+    if(group==='Clap structure' && (modal || voice!=='clap')) continue;
     const heading=document.createElement('h3');heading.className='control-group';heading.textContent=group;$('controls').append(heading);
+    if(group==='Hand percussion' || group==='Pitch bend') {const note=document.createElement('p');note.className='control-note';note.textContent=group==='Hand percussion'?'Centre favours the low body; edge emphasises upper ringing tones. Damping shortens the body and damps higher tones faster. These are synthesized approximations.':'A second pitch motion: rises or falls to the bend amount, then returns to the tuning. Amount 0 switches it off. Try Bayan bend with 0 versus +7 semitones.';$('controls').append(note);}
     if(group==='Effect sends') {const note=document.createElement('p');note.className='control-note';note.textContent='0% is dry. Raise a send to add echo or space to this instrument’s next hits. Shared effect settings are beside the sequencer. WAV export and the waveform remain dry.';$('controls').append(note);}
     if(group==='Body oscillator') {const note=document.createElement('p');note.className='control-note';note.id='oscillator-help';note.textContent='Sine is round; triangle adds gentle edges; square is hollow; saw is buzzy. Blend 0% keeps the original sine-based body; 100% uses the selected wave. Pulse width only affects square (50% is symmetric). Raise Body level to hear it; works at 100% hit strength. Added resonances keep their sine tone.';$('controls').append(note);}
     if(group==='Noise filter' || group==='Metallic source') {
       const note=document.createElement('p');note.className='control-note';note.textContent='Sweep starts brighter (+) or darker (−), then returns to the low-pass setting. Amount 0 disables it. Works at 100% hit strength too.';$('controls').append(note);
     }
     if(group==='FM synthesis') {const note=document.createElement('p');note.className='control-note';note.textContent='Adds a complex or metallic attack to the original tonal body. Depth 0 is off; larger depth adds more modulation. Ratio changes character; decay sets how quickly it settles. Try Tom: depth 1, ratio 1.4, decay 120 ms. Works at 100% intensity.';$('controls').append(note);}
-    if(group==='Body resonance 1') {const note=document.createElement('p');note.className='control-note';note.textContent='Add up to three ringing tones to the existing body. Ratio follows body pitch; each tone has its own decay. Level 0 disables a tone. Body level controls them all.';$('controls').append(note);}
+    if(group==='Body resonance 1') {const note=document.createElement('p');note.className='control-note';note.textContent='Add up to five ringing tones to the existing body. Ratio follows body pitch; each tone has its own decay. Level 0 disables a tone. Body level controls them all.';$('controls').append(note);}
     if(group==='Transient') {const note=document.createElement('p');note.className='control-note';note.textContent='Shapes the initial impact, even at 100% strength. Raise Transient level to hear it clearly; it does not change the drum body.';$('controls').append(note);}
     if(group==='Velocity response') {
       const note=document.createElement('p');note.className='control-note';note.id='velocity-help';
@@ -789,7 +916,14 @@ function select(voice) {
       $('controls').append(note);
     }
     for(const [key,label] of Object.entries(labels)) {
-    if(voice==='clap' && key==='noiseDecay') continue;
+    if(modal && key==='tone')continue;
+    if(key==='bodyModel') {
+      const wrapper=document.createElement('div');wrapper.className='control';
+      wrapper.innerHTML='<label for="param-bodyModel">Body model (source of the ringing tone)</label><select id="param-bodyModel"><option value="classic">Classic drum voice</option><option value="modal">Resonant percussion</option></select>';
+      const input=wrapper.querySelector('select');input.value=kit[voice].bodyModel;
+      input.onchange=()=>{kit[voice].bodyModel=input.value;select(voice);};$('controls').append(wrapper);continue;
+    }
+    if(!modal && voice==='clap' && key==='noiseDecay') continue;
     if(key==='bodyWaveform') {
       const wrapper=document.createElement('div');wrapper.className='control';
       wrapper.innerHTML='<label for="param-bodyWaveform">Waveform (raw tonal character)</label><select id="param-bodyWaveform" aria-describedby="oscillator-help"><option value="sine">Sine (round)</option><option value="triangle">Triangle (gentle edges)</option><option value="square">Square / pulse (hollow)</option><option value="saw">Saw (buzzy)</option></select>';
@@ -894,11 +1028,15 @@ $('bpm').onchange=()=>{const value=Number($('bpm').value);bpm=Number.isFinite(va
 $('reset').onclick=()=>{kit[selected]={...demoKits[activeKit][selected]};select(selected);};
 async function changeKit(id) {
   const resume = running; stop(); activeKit=id; kit=edits[activeKit]; $('kit').value=id;
-  select(selected);
+  refreshLabels();select(selected);buildGrid();
   const [name,description]=kitInfo[id];
   $('pack-description').textContent = description;
   if(resume) await toggle();
   status(`${name} kit loaded`);
+}
+function refreshLabels() {
+  names=activeKit==='indian'?voices.map(v=>INDIAN_LABELS[v]):standardNames;
+  document.querySelectorAll('.pad-name').forEach((label,i)=>label.textContent=names[i]);
 }
 $('kit').onchange=guarded(()=>changeKit($('kit').value));
 $('use-intensity').onchange=buildGrid;
@@ -912,13 +1050,19 @@ $('try-space').onclick=guarded(()=>{
   buildEffects();select(selected);status('Space sends applied to this kit. Press Play groove or tap a pad.');
 });
 $('clear').onclick=()=>{pattern=voices.map(()=>Array(16).fill(0));buildGrid();};$('restore').onclick=()=>{pattern=starter();buildGrid();};
+$('indian-groove').onclick=guarded(async()=>{
+  const resume=running;stop();await changeKit('indian');pattern=indianGroove();
+  bpm=96;$('bpm').value=bpm;$('use-intensity').checked=true;buildGrid();
+  if(resume)await toggle();
+  status('Indian groove loaded at 96 BPM with expressive intensities. Press Play groove.');
+});
 $('all-voices-groove').onclick=guarded(async()=>{
-  const resume=running;stop();pattern=allVoicesGroove();buildGrid();
+  const resume=running;stop();pattern=activeKit==='indian'?indianGroove():allVoicesGroove();buildGrid();
   if(resume)await toggle();
   status('All 8 groove loaded — every instrument plays.');
 });
 $('export').onclick=guarded(()=>{download(encodeWav(render(selected,kit[selected],{velocity:hitStrength()})),'audio/wav',`drum-synth-${activeKit}-${selected}-v${Math.round(hitStrength()*100)}.wav`);status('Dry WAV exported — playback effects are not included.');});
-$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
+$('preset').onclick=()=>download(JSON.stringify({kit:activeKit,name:names[voices.indexOf(selected)],voice:selected,params:kit[selected],effects:{...effects}},null,2),'application/json',`${activeKit}-${selected}-preset.json`);
 document.addEventListener('keydown',guarded(async event=>{if(event.repeat||event.ctrlKey||event.metaKey||event.altKey||['INPUT','BUTTON','TEXTAREA','SELECT'].includes(event.target.tagName))return;const index=shortcuts.indexOf(event.key.toLowerCase());if(index>=0){event.preventDefault();select(voices[index]);await hit(voices[index]);}else if(event.code==='Space'){event.preventDefault();await toggle();}}));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
 window.addEventListener('resize',draw);window.addEventListener('pagehide',()=>{stop();synth?.dispose();synth=undefined;});
